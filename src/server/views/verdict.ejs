@@ -197,17 +197,53 @@
       <p><%= originalMessage %></p>
     </div>
 
-    <!-- ═══ AGENT REPORTS (placeholder for 15.4) ═══ -->
-    <% if (agentReports && Array.isArray(agentReports)) { %>
+    <!-- ═══ AGENT REPORTS ═══ -->
+    <% if (agentReports && Array.isArray(agentReports) && agentReports.length > 0) { %>
       <div class="fc-section">
         <div class="fc-section-title">Agent Reports</div>
-        <% agentReports.forEach(function(report) { %>
-          <div class="fc-agent-card">
-            <div class="fc-agent-role"><%= report.agentRole %></div>
-            <p><%= report.summary %></p>
-            <p>Confidence: <%= report.confidenceScore %>%</p>
-          </div>
-        <% }); %>
+        <div class="accordion fc-accordion" id="agentReportsAccordion">
+          <% agentReports.forEach(function(report, idx) { %>
+            <div class="accordion-item fc-accordion-item">
+              <h2 class="accordion-header">
+                <button class="accordion-button fc-accordion-btn collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#agentReport<%= idx %>" aria-expanded="false" aria-controls="agentReport<%= idx %>">
+                  <span class="fc-agent-role-label"><%= report.agentRole %></span>
+                  <span class="fc-agent-confidence-badge"><%= report.confidenceScore %>%</span>
+                </button>
+              </h2>
+              <div id="agentReport<%= idx %>" class="accordion-collapse collapse" data-bs-parent="#agentReportsAccordion">
+                <div class="accordion-body fc-accordion-body">
+                  <p class="fc-agent-summary"><%= report.summary %></p>
+                  <p class="fc-agent-assessment"><%= report.overallAssessment %></p>
+                  <% if (report.findings && report.findings.length > 0) { %>
+                    <div class="fc-findings">
+                      <% report.findings.forEach(function(finding) { %>
+                        <div class="fc-finding-card">
+                          <div class="fc-finding-header">
+                            <span class="fc-finding-claim"><%= finding.claim %></span>
+                            <span class="fc-finding-assessment fc-assessment-<%= finding.assessment %>"><%= finding.assessment %></span>
+                          </div>
+                          <% if (finding.sources && finding.sources.length > 0) { %>
+                            <div class="fc-finding-sources">
+                              <% finding.sources.forEach(function(src) { %>
+                                <div class="fc-finding-source">
+                                  <a href="<%= src.url %>" target="_blank" rel="noopener"><%= src.title %></a>
+                                  <span class="fc-source-credibility"><%= src.credibility %></span>
+                                  <% if (src.relevantSnippet) { %>
+                                    <blockquote><%= src.relevantSnippet %></blockquote>
+                                  <% } %>
+                                </div>
+                              <% }); %>
+                            </div>
+                          <% } %>
+                        </div>
+                      <% }); %>
+                    </div>
+                  <% } %>
+                </div>
+              </div>
+            </div>
+          <% }); %>
+        </div>
       </div>
     <% } %>
 
@@ -222,6 +258,12 @@
         <div class="fc-footer-item">
           <span class="fc-footer-label">Cost</span>
           <span>$<%= totalCostUsd.toFixed(2) %></span>
+        </div>
+      <% } %>
+      <% if (verdict.deepReasoningActivated) { %>
+        <div class="fc-footer-item">
+          <span class="fc-footer-label">Deep Reasoning</span>
+          <span>Active</span>
         </div>
       <% } %>
       <div class="fc-footer-item">

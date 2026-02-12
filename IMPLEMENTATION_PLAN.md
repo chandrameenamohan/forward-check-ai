@@ -703,7 +703,7 @@
 - Test: `"should render falsification criteria"`
 
 ### Task 15.4: Verdict page — Agent reports and sources collapsible sections
-- [ ]
+- [x]
 **Objective:** Add collapsible agent report sections, sources list, and original claim to the verdict page.
 **Details:**
 - Add to `src/server/views/verdict.ejs`:

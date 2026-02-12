@@ -541,6 +541,152 @@
     .fc-criteria-prove + .fc-criteria-item::before { color: var(--fc-accent-green); }
     .fc-criteria-disprove ~ .fc-criteria-item::before { color: var(--fc-accent-red); }
 
+    /* ─── ACCORDION / AGENT REPORTS ─── */
+    .fc-accordion { border: none; }
+
+    .fc-accordion-item {
+      background: transparent;
+      border: 1px solid var(--fc-border);
+      border-radius: 6px !important;
+      margin-bottom: 0.5rem;
+      overflow: hidden;
+    }
+
+    .fc-accordion-item:last-child { margin-bottom: 0; }
+
+    .fc-accordion-btn {
+      background: var(--fc-surface-raised);
+      color: var(--fc-text);
+      font-size: 0.85rem;
+      padding: 0.85rem 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      box-shadow: none !important;
+    }
+
+    .fc-accordion-btn::after {
+      filter: invert(0.5);
+    }
+
+    .fc-accordion-btn:not(.collapsed) {
+      background: var(--fc-surface-raised);
+      color: var(--fc-text);
+    }
+
+    .fc-agent-role-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--fc-verdict-color);
+    }
+
+    .fc-agent-confidence-badge {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      padding: 0.15rem 0.5rem;
+      background: var(--fc-surface);
+      border: 1px solid var(--fc-border);
+      border-radius: 100px;
+      color: var(--fc-text-muted);
+      margin-left: auto;
+    }
+
+    .fc-accordion-body {
+      background: var(--fc-surface);
+      border-top: 1px solid var(--fc-border);
+      padding: 1.25rem;
+    }
+
+    .fc-agent-summary {
+      font-size: 0.88rem;
+      color: var(--fc-text);
+      line-height: 1.6;
+      margin-bottom: 0.5rem;
+    }
+
+    .fc-agent-assessment {
+      font-size: 0.84rem;
+      color: var(--fc-text-muted);
+      line-height: 1.6;
+      margin-bottom: 1rem;
+    }
+
+    .fc-finding-card {
+      padding: 0.75rem;
+      background: var(--fc-surface-raised);
+      border: 1px solid var(--fc-border);
+      border-radius: 4px;
+      margin-bottom: 0.5rem;
+    }
+
+    .fc-finding-card:last-child { margin-bottom: 0; }
+
+    .fc-finding-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .fc-finding-claim {
+      font-size: 0.82rem;
+      color: var(--fc-text);
+      font-weight: 500;
+    }
+
+    .fc-finding-assessment {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.1rem 0.4rem;
+      border-radius: 3px;
+      white-space: nowrap;
+    }
+
+    .fc-assessment-supported { background: rgba(34,197,94,0.1); color: var(--fc-accent-green); border: 1px solid rgba(34,197,94,0.3); }
+    .fc-assessment-contradicted { background: rgba(239,68,68,0.1); color: var(--fc-accent-red); border: 1px solid rgba(239,68,68,0.3); }
+    .fc-assessment-insufficient_evidence { background: rgba(107,114,128,0.1); color: var(--fc-accent-gray); border: 1px solid rgba(107,114,128,0.3); }
+    .fc-assessment-mixed { background: rgba(234,179,8,0.1); color: var(--fc-accent-amber); border: 1px solid rgba(234,179,8,0.3); }
+
+    .fc-finding-sources { margin-top: 0.5rem; }
+
+    .fc-finding-source {
+      padding: 0.4rem 0;
+    }
+
+    .fc-finding-source a {
+      color: var(--fc-accent-blue);
+      text-decoration: none;
+      font-size: 0.8rem;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.2s;
+    }
+
+    .fc-finding-source a:hover { border-bottom-color: var(--fc-accent-blue); }
+
+    .fc-source-credibility {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.58rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--fc-text-dim);
+      margin-left: 0.5rem;
+    }
+
+    .fc-finding-source blockquote {
+      padding: 0.4rem 0.8rem;
+      border-left: 2px solid var(--fc-border);
+      color: var(--fc-text-dim);
+      font-style: italic;
+      font-size: 0.78rem;
+      margin: 0.3rem 0 0;
+      line-height: 1.5;
+    }
+
     .fc-footer {
       margin-top: 3rem;
       padding-top: 1.5rem;
