@@ -141,7 +141,7 @@
 - Test: `"should reject missing falsification criteria"`
 
 ### Task 2.3: AgentReport schema
-- [ ]
+- [x]
 **Objective:** Define the Zod schema for Investigator agent output.
 **Details:**
 - Create `src/schemas/agent-report.ts`
