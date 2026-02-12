@@ -81,7 +81,7 @@
 - Cleanup: delete test database file after each test
 
 ### Task 1.2: Investigations table schema and migration
-- [ ]
+- [x]
 **Objective:** Create the `investigations` table with all fields needed to store pipeline results.
 **Details:**
 - Create `src/db/migrations.ts` — `runMigrations(db)` function
