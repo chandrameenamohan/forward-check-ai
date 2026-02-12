@@ -451,7 +451,7 @@
 - QA test: `"should investigate a known false claim via real API"` — real Anthropic + mock search tools
 
 ### Task 9.2: Domain Expertise investigator
-- [ ]
+- [x]
 **Objective:** Build the Domain Expertise investigator that checks factual accuracy against authoritative sources.
 **Details:**
 - Create `src/agents/investigators/domain-expertise-agent.ts`
