@@ -410,7 +410,7 @@
 ## Phase 8: Claim Strategist Agent
 
 ### Task 8.1: Claim Strategist agent implementation
-- [ ]
+- [x]
 **Objective:** Build the Claim Strategist agent that plans the investigation using Opus 4.6 with extended thinking.
 **Details:**
 - Create `src/agents/strategist-agent.ts`
