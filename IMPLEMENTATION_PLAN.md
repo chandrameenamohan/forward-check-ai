@@ -66,7 +66,7 @@
 ## Phase 1: Database Layer
 
 ### Task 1.1: SQLite connection with WAL mode
-- [ ]
+- [x]
 **Objective:** Create a SQLite database connection using better-sqlite3 with WAL mode enabled.
 **Details:**
 - Create `src/db/connection.ts` — exports a function `createDatabase(path: string)` that returns a better-sqlite3 Database instance

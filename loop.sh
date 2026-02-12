@@ -54,6 +54,7 @@ while [ $iteration -lt $MAX_ITERATIONS ]; do
 
   # Run Claude Code autonomously with streaming output
   cat "$PROMPT_FILE" | claude --print \
+    --model claude-opus-4-6 \
     --dangerously-skip-permissions \
     --verbose \
     2>&1 | tee "$log_file"
