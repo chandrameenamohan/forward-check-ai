@@ -293,7 +293,7 @@
 ## Phase 5: Express Server
 
 ### Task 5.1: Express server with health endpoint
-- [ ]
+- [x]
 **Objective:** Set up Express 5 server with a `/health` endpoint.
 **Details:**
 - Create `src/server/app.ts` — creates and configures Express app
