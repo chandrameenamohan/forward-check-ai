@@ -49,7 +49,7 @@
 - Test: `"should use default values for optional vars"`
 
 ### Task 0.4: Set up Pino logger
-- [ ]
+- [x]
 **Objective:** Create a configured Pino logger instance for structured JSON logging.
 **Details:**
 - Create `src/config/logger.ts` — exports a configured Pino instance
