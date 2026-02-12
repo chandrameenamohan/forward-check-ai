@@ -754,7 +754,7 @@
 ## Phase 17: Demo Preparation
 
 ### Task 17.1: Seed demo claims for testing
-- [ ]
+- [x]
 **Objective:** Create a script that runs 3 demo claims through the pipeline and saves results.
 **Details:**
 - Create `scripts/seed-demo.ts`
