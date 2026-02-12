@@ -128,7 +128,7 @@
 - Test: `"should reject invalid domain enum value"`
 
 ### Task 2.2: SearchStrategy schema
-- [ ]
+- [x]
 **Objective:** Define the Zod schema for Claim Strategist agent output.
 **Details:**
 - Create `src/schemas/search-strategy.ts`
