@@ -771,7 +771,7 @@
 - Verify verdict pages render at `/v/:id` for each
 
 ### Task 17.2: Dynamic effort escalation indicator
-- [ ]
+- [x]
 **Objective:** Implement the "Deep Reasoning Mode" detection and display in the pipeline and verdict page.
 **Details:**
 - In `src/orchestrator/pipeline.ts`: detect when investigator confidence spread > 30 points, set `deepReasoningActivated: true`, escalate DA effort to "max"
