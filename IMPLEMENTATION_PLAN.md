@@ -433,7 +433,7 @@
 ## Phase 9: Investigator Agents
 
 ### Task 9.1: Source Verification investigator
-- [ ]
+- [x]
 **Objective:** Build the Source Verification investigator that checks claim origins and credibility.
 **Details:**
 - Create `src/agents/investigators/source-verification-agent.ts`
