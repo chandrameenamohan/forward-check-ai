@@ -167,7 +167,7 @@
 - Test: `"should enforce max 500 chars on thinkingExcerpt"`
 
 ### Task 2.5: FinalVerdict schema
-- [ ]
+- [x]
 **Objective:** Define the Zod schema for Judge agent output.
 **Details:**
 - Create `src/schemas/final-verdict.ts`
