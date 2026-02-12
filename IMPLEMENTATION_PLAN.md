@@ -93,7 +93,7 @@
 - Cleanup: delete test database after each test
 
 ### Task 1.3: Investigation repository (CRUD operations)
-- [ ]
+- [x]
 **Objective:** Create a repository class for investigations table with create, read, update operations.
 **Details:**
 - Create `src/db/investigation-repository.ts` — class `InvestigationRepository`
