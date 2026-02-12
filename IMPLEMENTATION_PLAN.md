@@ -571,7 +571,7 @@
 ## Phase 13: Pipeline Orchestrator
 
 ### Task 13.1: Pipeline orchestrator — full investigation flow
-- [ ]
+- [x]
 **Objective:** Build the orchestrator that runs the complete investigation pipeline from message to verdict.
 **Details:**
 - Create `src/orchestrator/pipeline.ts`
