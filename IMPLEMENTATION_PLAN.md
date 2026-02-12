@@ -239,7 +239,7 @@
 ## Phase 4: Search Tools
 
 ### Task 4.1: Brave Search tool implementation
-- [ ]
+- [x]
 **Objective:** Implement the Brave Web Search API tool that investigators will use.
 **Details:**
 - Create `src/tools/brave-search.ts`
