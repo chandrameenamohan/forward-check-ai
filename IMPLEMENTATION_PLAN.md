@@ -726,7 +726,7 @@
 ## Phase 16: Application Entry Point
 
 ### Task 16.1: Compose and start the full application
-- [ ]
+- [x]
 **Objective:** Create the main entry point that wires all modules together and starts the bot + server.
 **Details:**
 - Update `src/index.ts`:
