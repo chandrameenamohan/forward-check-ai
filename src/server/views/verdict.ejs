@@ -4,91 +4,587 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Verdict — ForwardCheck</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Instrument+Serif:ital@0;1&family=Satoshi:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --fc-bg: #0a0a0f;
+      --fc-surface: #12121a;
+      --fc-surface-raised: #1a1a26;
+      --fc-border: #2a2a3a;
+      --fc-text: #e8e8ef;
+      --fc-text-muted: #8888a0;
+      --fc-text-dim: #55556a;
+      --fc-accent-green: #22c55e;
+      --fc-accent-amber: #eab308;
+      --fc-accent-gray: #6b7280;
+      --fc-accent-red: #ef4444;
+      --fc-accent-purple: #a855f7;
+      --fc-accent-blue: #3b82f6;
+      --fc-verdict-color: <%= verdict.category === 'likely-true' ? '#22c55e' : verdict.category === 'partially-true' ? '#eab308' : verdict.category === 'unverified' ? '#6b7280' : verdict.category === 'likely-false' ? '#ef4444' : verdict.category === 'satire' ? '#a855f7' : '#3b82f6' %>;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--fc-bg);
+      color: var(--fc-text);
+      font-family: 'Satoshi', -apple-system, sans-serif;
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .fc-wrapper {
+      position: relative;
+      z-index: 1;
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 4rem;
+    }
+
+    .fc-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--fc-border);
+      margin-bottom: 2.5rem;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--fc-text-dim);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .fc-topbar-brand { color: var(--fc-text-muted); font-weight: 500; }
+
+    /* ─── HERO ─── */
+    .fc-hero {
+      text-align: center;
+      padding: 3rem 0 2.5rem;
+      position: relative;
+    }
+
+    .fc-hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 320px;
+      height: 320px;
+      background: radial-gradient(circle, var(--fc-verdict-color) 0%, transparent 70%);
+      opacity: 0.06;
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .fc-verdict-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.6rem 1.6rem;
+      border: 2px solid var(--fc-verdict-color);
+      border-radius: 100px;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.8rem;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--fc-verdict-color);
+      background: color-mix(in srgb, var(--fc-verdict-color) 8%, transparent);
+      animation: badge-in 0.6s ease-out both;
+    }
+
+    @keyframes badge-in {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .fc-verdict-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--fc-verdict-color);
+      box-shadow: 0 0 8px var(--fc-verdict-color);
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .fc-confidence-ring {
+      margin: 2rem auto 0;
+      position: relative;
+      width: 160px;
+      height: 160px;
+    }
+
+    .fc-confidence-ring svg {
+      transform: rotate(-90deg);
+      width: 160px;
+      height: 160px;
+    }
+
+    .fc-confidence-ring .ring-bg {
+      fill: none;
+      stroke: var(--fc-surface-raised);
+      stroke-width: 8;
+    }
+
+    .fc-confidence-ring .ring-fill {
+      fill: none;
+      stroke: var(--fc-verdict-color);
+      stroke-width: 8;
+      stroke-linecap: round;
+      stroke-dasharray: <%= (verdict.confidence / 100 * 408).toFixed(1) %> 408;
+      filter: drop-shadow(0 0 6px var(--fc-verdict-color));
+      animation: ring-draw 1.2s ease-out both;
+    }
+
+    @keyframes ring-draw { from { stroke-dasharray: 0 408; } }
+
+    .fc-confidence-number {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .fc-confidence-value {
+      font-family: 'Instrument Serif', serif;
+      font-size: 3.2rem;
+      line-height: 1;
+      color: var(--fc-text);
+    }
+
+    .fc-confidence-pct {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--fc-text-dim);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-top: 0.2rem;
+    }
+
+    .fc-nuance-tag {
+      display: inline-block;
+      margin-top: 1.2rem;
+      padding: 0.25rem 0.8rem;
+      background: var(--fc-surface-raised);
+      border: 1px solid var(--fc-border);
+      border-radius: 4px;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--fc-text-muted);
+    }
+
+    .fc-deep-reasoning {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-top: 1rem;
+      padding: 0.3rem 0.9rem;
+      background: linear-gradient(135deg, rgba(168,85,247,0.12), rgba(59,130,246,0.12));
+      border: 1px solid rgba(168,85,247,0.3);
+      border-radius: 100px;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--fc-accent-purple);
+    }
+
+    .fc-deep-reasoning-icon {
+      width: 12px;
+      height: 12px;
+      animation: spin-slow 4s linear infinite;
+    }
+
+    @keyframes spin-slow { to { transform: rotate(360deg); } }
+
+    .fc-summary {
+      margin-top: 2rem;
+      font-family: 'Instrument Serif', serif;
+      font-size: 1.35rem;
+      font-style: italic;
+      line-height: 1.55;
+      color: var(--fc-text);
+      max-width: 580px;
+      margin-left: auto;
+      margin-right: auto;
+      animation: fade-up 0.7s ease-out 0.3s both;
+    }
+
+    @keyframes fade-up {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─── CONFIDENCE DECOMPOSITION ─── */
+    .fc-decomposition {
+      margin-top: 3rem;
+      padding: 1.5rem;
+      background: var(--fc-surface);
+      border: 1px solid var(--fc-border);
+      border-radius: 8px;
+      animation: fade-up 0.7s ease-out 0.5s both;
+    }
+
+    .fc-decomposition-title {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--fc-text-dim);
+      margin-bottom: 1.25rem;
+    }
+
+    .fc-bar-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 0.9rem;
+    }
+
+    .fc-bar-row:last-child { margin-bottom: 0; }
+
+    .fc-bar-label {
+      flex: 0 0 180px;
+      font-size: 0.78rem;
+      color: var(--fc-text-muted);
+      text-align: right;
+      font-weight: 500;
+    }
+
+    .fc-bar-track {
+      flex: 1;
+      height: 6px;
+      background: var(--fc-surface-raised);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .fc-bar-fill {
+      height: 100%;
+      border-radius: 3px;
+      background: var(--fc-verdict-color);
+      animation: bar-grow 1s ease-out 0.7s both;
+    }
+
+    @keyframes bar-grow { from { width: 0 !important; } }
+
+    .fc-bar-value {
+      flex: 0 0 36px;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--fc-text-dim);
+      text-align: right;
+    }
+
+    /* ─── SECTIONS (placeholder for 15.3 / 15.4) ─── */
+    .fc-section {
+      margin-top: 2.5rem;
+      padding: 1.5rem;
+      background: var(--fc-surface);
+      border: 1px solid var(--fc-border);
+      border-radius: 8px;
+    }
+
+    .fc-section-title {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--fc-text-dim);
+      margin-bottom: 1rem;
+      padding-bottom: 0.6rem;
+      border-bottom: 1px solid var(--fc-border);
+    }
+
+    .fc-section p, .fc-section li {
+      font-size: 0.88rem;
+      color: var(--fc-text-muted);
+      line-height: 1.65;
+    }
+
+    .fc-section ul { list-style: none; padding: 0; }
+
+    .fc-section li {
+      padding: 0.4rem 0;
+      padding-left: 1rem;
+      position: relative;
+    }
+
+    .fc-section li::before {
+      content: '\203A';
+      position: absolute;
+      left: 0;
+      color: var(--fc-verdict-color);
+      font-weight: 700;
+    }
+
+    .fc-section a {
+      color: var(--fc-accent-blue);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.2s;
+    }
+
+    .fc-section a:hover { border-bottom-color: var(--fc-accent-blue); }
+
+    .fc-section blockquote {
+      padding: 0.6rem 1rem;
+      border-left: 2px solid var(--fc-border);
+      color: var(--fc-text-dim);
+      font-style: italic;
+      font-size: 0.84rem;
+      margin: 0.5rem 0;
+    }
+
+    .fc-section em { color: var(--fc-text-dim); font-size: 0.84rem; }
+
+    .fc-agent-card {
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--fc-border);
+    }
+
+    .fc-agent-card:last-child { border-bottom: none; }
+
+    .fc-agent-role {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--fc-verdict-color);
+      margin-bottom: 0.4rem;
+    }
+
+    .fc-footer {
+      margin-top: 3rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--fc-border);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--fc-text-dim);
+      letter-spacing: 0.06em;
+    }
+
+    .fc-footer-item { display: flex; align-items: center; gap: 0.4rem; }
+    .fc-footer-label { text-transform: uppercase; letter-spacing: 0.1em; }
+
+    @media (max-width: 640px) {
+      .fc-wrapper { padding: 1.25rem 1rem 3rem; }
+      .fc-hero { padding: 2rem 0 2rem; }
+      .fc-confidence-ring { width: 130px; height: 130px; }
+      .fc-confidence-ring svg { width: 130px; height: 130px; }
+      .fc-confidence-value { font-size: 2.6rem; }
+      .fc-summary { font-size: 1.15rem; }
+      .fc-bar-label { flex: 0 0 120px; font-size: 0.7rem; }
+      .fc-bar-value { font-size: 0.65rem; }
+      .fc-footer { flex-direction: column; gap: 0.6rem; }
+    }
+  </style>
 </head>
 <body>
-  <h1>Verdict: <%= verdict.category %></h1>
-  <% if (verdict.nuanceTag) { %>
-    <p><strong>Nuance:</strong> <%= verdict.nuanceTag %></p>
-  <% } %>
-  <p><strong>Confidence:</strong> <%= verdict.confidence %>%</p>
-  <% if (verdict.deepReasoningActivated) { %>
-    <p><em>Deep Reasoning Mode activated</em></p>
-  <% } %>
+  <div class="fc-wrapper">
 
-  <h2>Summary</h2>
-  <p><%= verdict.summary %></p>
+    <div class="fc-topbar">
+      <span class="fc-topbar-brand">ForwardCheck</span>
+      <span>Investigation #<%= id.slice(0, 8) %></span>
+    </div>
 
-  <h2>Reasoning</h2>
-  <p><%= verdict.reasoning %></p>
-
-  <% if (verdict.manipulationTechniques && verdict.manipulationTechniques.length > 0) { %>
-    <h2>Manipulation Techniques</h2>
-    <% verdict.manipulationTechniques.forEach(function(tech) { %>
-      <div>
-        <h3><%= tech.technique %></h3>
-        <p><%= tech.description %></p>
-        <blockquote><%= tech.evidenceQuote %></blockquote>
-        <p>Severity: <%= tech.severity %>/100</p>
+    <!-- ═══ HERO SECTION ═══ -->
+    <section class="fc-hero">
+      <div class="fc-verdict-badge">
+        <span class="fc-verdict-dot"></span>
+        <%= verdict.category %>
       </div>
-    <% }); %>
-  <% } %>
 
-  <% if (verdict.keyFindings && verdict.keyFindings.length > 0) { %>
-    <h2>Key Findings</h2>
-    <ul>
-      <% verdict.keyFindings.forEach(function(finding) { %>
-        <li><%= finding %></li>
-      <% }); %>
-    </ul>
-  <% } %>
+      <% if (verdict.nuanceTag) { %>
+        <div><span class="fc-nuance-tag"><%= verdict.nuanceTag %></span></div>
+      <% } %>
 
-  <% if (verdict.sources && verdict.sources.length > 0) { %>
-    <h2>Sources</h2>
-    <ul>
-      <% verdict.sources.forEach(function(source) { %>
-        <li><a href="<%= source.url %>"><%= source.title %></a> — <%= source.relevance %></li>
-      <% }); %>
-    </ul>
-  <% } %>
+      <% if (verdict.deepReasoningActivated) { %>
+        <div>
+          <span class="fc-deep-reasoning">
+            <svg class="fc-deep-reasoning-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2a10 10 0 1 0 10 10" stroke-linecap="round"/>
+            </svg>
+            Deep Reasoning Mode
+          </span>
+        </div>
+      <% } %>
 
-  <% if (challengeReport) { %>
-    <h2>Devil's Advocate</h2>
-    <p><strong>Outcome:</strong> <%= verdict.devilsAdvocateOutcome %></p>
-    <p><%= challengeReport.overallAssessment %></p>
-    <% if (challengeReport.thinkingExcerpt) { %>
-      <p><em><%= challengeReport.thinkingExcerpt %></em></p>
+      <div class="fc-confidence-ring">
+        <svg viewBox="0 0 140 140">
+          <circle class="ring-bg" cx="70" cy="70" r="65"/>
+          <circle class="ring-fill" cx="70" cy="70" r="65"/>
+        </svg>
+        <div class="fc-confidence-number">
+          <span class="fc-confidence-value"><%= verdict.confidence %></span>
+          <span class="fc-confidence-pct">% confidence</span>
+        </div>
+      </div>
+
+      <p class="fc-summary"><%= verdict.summary %></p>
+    </section>
+
+    <!-- ═══ CONFIDENCE DECOMPOSITION ═══ -->
+    <div class="fc-decomposition">
+      <div class="fc-decomposition-title">Confidence Decomposition</div>
+
+      <div class="fc-bar-row">
+        <span class="fc-bar-label">Evidence Strength</span>
+        <div class="fc-bar-track">
+          <div class="fc-bar-fill" style="width: <%= verdict.confidenceDecomposition.evidenceStrength %>%"></div>
+        </div>
+        <span class="fc-bar-value"><%= verdict.confidenceDecomposition.evidenceStrength %></span>
+      </div>
+
+      <div class="fc-bar-row">
+        <span class="fc-bar-label">Source Reliability</span>
+        <div class="fc-bar-track">
+          <div class="fc-bar-fill" style="width: <%= verdict.confidenceDecomposition.sourceReliability %>%"></div>
+        </div>
+        <span class="fc-bar-value"><%= verdict.confidenceDecomposition.sourceReliability %></span>
+      </div>
+
+      <div class="fc-bar-row">
+        <span class="fc-bar-label">Claim Complexity</span>
+        <div class="fc-bar-track">
+          <div class="fc-bar-fill" style="width: <%= verdict.confidenceDecomposition.claimComplexity %>%"></div>
+        </div>
+        <span class="fc-bar-value"><%= verdict.confidenceDecomposition.claimComplexity %></span>
+      </div>
+
+      <div class="fc-bar-row">
+        <span class="fc-bar-label">Counter-Argument Resilience</span>
+        <div class="fc-bar-track">
+          <div class="fc-bar-fill" style="width: <%= verdict.confidenceDecomposition.counterArgumentResilience %>%"></div>
+        </div>
+        <span class="fc-bar-value"><%= verdict.confidenceDecomposition.counterArgumentResilience %></span>
+      </div>
+    </div>
+
+    <!-- ═══ REMAINING SECTIONS (placeholders for 15.3 / 15.4) ═══ -->
+
+    <% if (verdict.manipulationTechniques && verdict.manipulationTechniques.length > 0) { %>
+      <div class="fc-section">
+        <div class="fc-section-title">Manipulation Techniques</div>
+        <% verdict.manipulationTechniques.forEach(function(tech) { %>
+          <div class="fc-agent-card">
+            <div class="fc-agent-role"><%= tech.technique %></div>
+            <p><%= tech.description %></p>
+            <blockquote><%= tech.evidenceQuote %></blockquote>
+            <p>Severity: <%= tech.severity %>/100</p>
+          </div>
+        <% }); %>
+      </div>
     <% } %>
-  <% } %>
 
-  <% if (verdict.thinkingSummary) { %>
-    <h2>Judge Reasoning</h2>
-    <p><em><%= verdict.thinkingSummary %></em></p>
-  <% } %>
+    <div class="fc-section">
+      <div class="fc-section-title">Reasoning</div>
+      <p><%= verdict.reasoning %></p>
+    </div>
 
-  <h2>Original Claim</h2>
-  <p><%= originalMessage %></p>
-
-  <% if (agentReports && Array.isArray(agentReports)) { %>
-    <h2>Agent Reports</h2>
-    <% agentReports.forEach(function(report) { %>
-      <div>
-        <h3><%= report.agentRole %></h3>
-        <p><%= report.summary %></p>
-        <p>Confidence: <%= report.confidenceScore %>%</p>
+    <% if (verdict.keyFindings && verdict.keyFindings.length > 0) { %>
+      <div class="fc-section">
+        <div class="fc-section-title">Key Findings</div>
+        <ul>
+          <% verdict.keyFindings.forEach(function(finding) { %>
+            <li><%= finding %></li>
+          <% }); %>
+        </ul>
       </div>
-    <% }); %>
-  <% } %>
+    <% } %>
 
-  <footer>
-    <p>
+    <% if (verdict.sources && verdict.sources.length > 0) { %>
+      <div class="fc-section">
+        <div class="fc-section-title">Sources</div>
+        <ul>
+          <% verdict.sources.forEach(function(source) { %>
+            <li><a href="<%= source.url %>"><%= source.title %></a> — <%= source.relevance %></li>
+          <% }); %>
+        </ul>
+      </div>
+    <% } %>
+
+    <% if (challengeReport) { %>
+      <div class="fc-section">
+        <div class="fc-section-title">Devil's Advocate</div>
+        <p><strong>Outcome:</strong> <%= verdict.devilsAdvocateOutcome %></p>
+        <p><%= challengeReport.overallAssessment %></p>
+        <% if (challengeReport.thinkingExcerpt) { %>
+          <p><em><%= challengeReport.thinkingExcerpt %></em></p>
+        <% } %>
+      </div>
+    <% } %>
+
+    <% if (verdict.thinkingSummary) { %>
+      <div class="fc-section">
+        <div class="fc-section-title">Judge Reasoning</div>
+        <p><em><%= verdict.thinkingSummary %></em></p>
+      </div>
+    <% } %>
+
+    <div class="fc-section">
+      <div class="fc-section-title">Original Claim</div>
+      <p><%= originalMessage %></p>
+    </div>
+
+    <% if (agentReports && Array.isArray(agentReports)) { %>
+      <div class="fc-section">
+        <div class="fc-section-title">Agent Reports</div>
+        <% agentReports.forEach(function(report) { %>
+          <div class="fc-agent-card">
+            <div class="fc-agent-role"><%= report.agentRole %></div>
+            <p><%= report.summary %></p>
+            <p>Confidence: <%= report.confidenceScore %>%</p>
+          </div>
+        <% }); %>
+      </div>
+    <% } %>
+
+    <footer class="fc-footer">
       <% if (pipelineDurationMs) { %>
-        Duration: <%= (pipelineDurationMs / 1000).toFixed(1) %>s |
+        <div class="fc-footer-item">
+          <span class="fc-footer-label">Duration</span>
+          <span><%= (pipelineDurationMs / 1000).toFixed(1) %>s</span>
+        </div>
       <% } %>
       <% if (totalCostUsd) { %>
-        Cost: $<%= totalCostUsd.toFixed(2) %> |
+        <div class="fc-footer-item">
+          <span class="fc-footer-label">Cost</span>
+          <span>$<%= totalCostUsd.toFixed(2) %></span>
+        </div>
       <% } %>
-      ID: <%= id %>
-    </p>
-  </footer>
+      <div class="fc-footer-item">
+        <span class="fc-footer-label">ID</span>
+        <span><%= id %></span>
+      </div>
+    </footer>
+
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

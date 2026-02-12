@@ -670,7 +670,7 @@
 - Cleanup: test database cleaned after tests
 
 ### Task 15.2: Verdict page EJS template — hero section
-- [ ]
+- [x]
 **Objective:** Build the verdict page hero section with verdict badge, confidence score, and confidence decomposition chart.
 **Details:**
 - Create `src/server/views/verdict.ejs`
