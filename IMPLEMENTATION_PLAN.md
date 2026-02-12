@@ -330,7 +330,7 @@
 ## Phase 6: Telegram Bot
 
 ### Task 6.1: Grammy bot setup with forwarded message handler
-- [ ]
+- [x]
 **Objective:** Set up the Grammy Telegram bot that handles forwarded messages.
 **Details:**
 - Create `src/bot/bot.ts` — creates and configures Grammy Bot instance
