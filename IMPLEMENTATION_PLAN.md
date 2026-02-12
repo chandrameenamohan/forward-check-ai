@@ -550,7 +550,7 @@
 - Test: `"should not override opinion category regardless of confidence"`
 
 ### Task 12.2: Telegram verdict formatter
-- [ ]
+- [x]
 **Objective:** Build the formatter that converts FinalVerdict into Telegram HTML with emoji, confidence bar, and summary.
 **Details:**
 - Create `src/formatter/telegram-formatter.ts`
