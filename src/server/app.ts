@@ -3,6 +3,8 @@ import type { Request, Response, NextFunction } from "express";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createLogger } from "../config/logger.js";
+import type { InvestigationRepository } from "../db/investigation-repository.js";
+import { createInvestigateRouter } from "./routes/investigate.js";
 
 const logger = createLogger({ level: "info" });
 
@@ -11,8 +13,11 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 /**
  * Create and configure the Express application.
  * Does NOT call app.listen() — that belongs in the entry point.
+ *
+ * @param repo - Optional InvestigationRepository for API routes.
+ *               When provided, mounts /api/investigate and /api/investigation/:id routes.
  */
-export function createApp(): express.Express {
+export function createApp(repo?: InvestigationRepository): express.Express {
   const app = express();
 
   // JSON body parsing
@@ -30,6 +35,11 @@ export function createApp(): express.Express {
       uptime: process.uptime(),
     });
   });
+
+  // Investigation API routes (only when repo is provided)
+  if (repo) {
+    app.use(createInvestigateRouter(repo));
+  }
 
   // 404 handler
   app.use((_req: Request, res: Response) => {

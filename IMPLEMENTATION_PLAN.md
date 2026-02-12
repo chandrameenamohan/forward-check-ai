@@ -309,7 +309,7 @@
 - Test: `"should include timestamp in health response"`
 
 ### Task 5.2: Investigation API endpoint
-- [ ]
+- [x]
 **Objective:** Create a POST `/api/investigate` endpoint that accepts a claim and kicks off investigation.
 **Details:**
 - Create `src/server/routes/investigate.ts`
