@@ -388,7 +388,7 @@
 - QA test: `"should classify 'Modi gives Rs 5000' as factual_claim via real API"` — real Anthropic call
 
 ### Task 7.2: Non-factual response handler
-- [ ]
+- [x]
 **Objective:** Create quick response handlers for non-factual message categories.
 **Details:**
 - Create `src/agents/non-factual-handler.ts`
