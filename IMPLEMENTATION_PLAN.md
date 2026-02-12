@@ -370,7 +370,7 @@
 ## Phase 7: Classifier Agent
 
 ### Task 7.1: Classifier agent implementation
-- [ ]
+- [x]
 **Objective:** Build the Classifier agent that routes incoming messages using Haiku.
 **Details:**
 - Create `src/agents/classifier-agent.ts`
