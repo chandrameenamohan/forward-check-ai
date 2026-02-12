@@ -212,7 +212,7 @@
 - QA test: `"should make a real API call to Haiku and get a response"` — uses real API key from .env, sends simple "Hello" prompt, validates response has content
 
 ### Task 3.2: Agentic tool-use loop
-- [ ]
+- [x]
 **Objective:** Build the core agentic loop that handles multi-turn tool-use conversations with Claude.
 **Details:**
 - Create `src/orchestrator/agent-runner.ts`
