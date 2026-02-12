@@ -95,8 +95,10 @@ Telegram Message → Classifier (Haiku) → Claim Strategist (Opus 4.6)
 
 ## Gotchas
 
-_(Updated by ralph loop as discoveries are made)_
+- **Zod v4 installed (4.3.6):** The `z` import and API (`z.object`, `z.string`, `z.enum`, etc.) are compatible with the spec's schema definitions. Import as `import { z } from "zod"`.
+- **Express v5 installed (5.2.1):** Express 5 is the latest major. Router API is mostly the same as v4 but `req.params` returns `Record<string, string | undefined>` and error handling has minor differences.
 
 ## Decisions Log
 
 - **Task 0.1:** Used `noUncheckedIndexedAccess: true` in tsconfig for extra safety on array/object indexing. Used `isolatedModules: true` for compatibility with transpilers. Vitest config kept minimal — no globals, file pattern `tests/**/*.test.ts`.
+- **Task 0.2:** Installed all production deps. Zod resolved to v4 (4.3.6) — API is backward-compatible with spec schemas. Express resolved to v5 (5.2.1). All 9 production packages + 3 dev type packages installed and importable.

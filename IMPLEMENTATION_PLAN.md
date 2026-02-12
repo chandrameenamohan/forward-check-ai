@@ -23,7 +23,7 @@
 - `npx vitest run` passes
 
 ### Task 0.2: Install production dependencies
-- [ ]
+- [x]
 **Objective:** Install all production dependencies specified in the tech stack.
 **Details:**
 - Install: `grammy`, `express`, `better-sqlite3`, `@anthropic-ai/sdk`, `zod`, `nanoid`, `pino`, `pino-pretty`, `ejs`
