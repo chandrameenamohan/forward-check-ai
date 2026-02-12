@@ -257,7 +257,7 @@
 - Test: `"should export valid Claude tool definition"`
 
 ### Task 4.2: Google Fact Check API tool implementation
-- [ ]
+- [x]
 **Objective:** Implement the Google Fact Check API tool for finding existing fact-checks.
 **Details:**
 - Create `src/tools/google-factcheck.ts`
