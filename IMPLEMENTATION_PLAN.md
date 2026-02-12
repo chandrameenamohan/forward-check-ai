@@ -785,7 +785,7 @@
 - Test: `"should set deepReasoningActivated flag in verdict"`
 
 ### Task 17.3: In-memory cache for repeated claims
-- [ ]
+- [x]
 **Objective:** Add a simple in-memory cache to avoid re-investigating identical claims.
 **Details:**
 - Create `src/services/claim-cache.ts`

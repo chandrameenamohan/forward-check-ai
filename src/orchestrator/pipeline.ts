@@ -4,6 +4,7 @@ import type { InvestigationRepository } from "../db/investigation-repository.js"
 import type { FinalVerdict } from "../schemas/final-verdict.js";
 import type { AgentReport } from "../schemas/agent-report.js";
 import type { PipelineStage } from "../bot/status-updater.js";
+import { ClaimCache } from "../services/claim-cache.js";
 import { runClassifier } from "../agents/classifier-agent.js";
 import { handleNonFactual } from "../agents/non-factual-handler.js";
 import { runStrategist } from "../agents/strategist-agent.js";
@@ -34,6 +35,7 @@ export interface InvestigateResult {
   nonFactualResponse?: string;
   totalCostUsd: number;
   durationMs: number;
+  cached?: boolean;
 }
 
 /**
@@ -43,15 +45,18 @@ export class InvestigationPipeline {
   private client: ClaudeClient;
   private toolRegistry: ToolRegistry;
   private repo: InvestigationRepository;
+  private cache: ClaimCache;
 
   constructor(
     client: ClaudeClient,
     toolRegistry: ToolRegistry,
     repo: InvestigationRepository,
+    cache?: ClaimCache,
   ) {
     this.client = client;
     this.toolRegistry = toolRegistry;
     this.repo = repo;
+    this.cache = cache ?? new ClaimCache();
   }
 
   async investigate(
@@ -59,6 +64,23 @@ export class InvestigationPipeline {
     options?: InvestigateOptions,
   ): Promise<InvestigateResult> {
     const startTime = Date.now();
+
+    // ── Check cache for repeated claims ──────────────────────
+    const cached = this.cache.get(message);
+    if (cached) {
+      logger.info(
+        { investigationId: cached.investigationId },
+        "Returning cached result for repeated claim",
+      );
+      return {
+        verdict: cached.result,
+        investigationId: cached.investigationId,
+        totalCostUsd: 0,
+        durationMs: Date.now() - startTime,
+        cached: true,
+      };
+    }
+
     let totalCostUsd = 0;
 
     // Create investigation record in DB
@@ -225,6 +247,9 @@ export class InvestigationPipeline {
       },
       "Pipeline completed",
     );
+
+    // ── Cache the result for repeated claims ─────────────────
+    this.cache.set(message, finalVerdict, investigationId);
 
     return {
       verdict: finalVerdict,

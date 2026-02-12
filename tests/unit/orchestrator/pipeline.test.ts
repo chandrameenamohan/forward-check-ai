@@ -192,6 +192,7 @@ import { runDevilsAdvocate } from "../../../src/agents/devils-advocate-agent.js"
 import { runJudge } from "../../../src/agents/judge-agent.js";
 import { enforceConfidenceGates } from "../../../src/formatter/confidence-gates.js";
 import { InvestigationPipeline } from "../../../src/orchestrator/pipeline.js";
+import { ClaimCache } from "../../../src/services/claim-cache.js";
 
 const mockedRunClassifier = vi.mocked(runClassifier);
 const mockedRunStrategist = vi.mocked(runStrategist);
@@ -604,6 +605,61 @@ describe("InvestigationPipeline", () => {
       await expect(pipeline.investigate("Test")).rejects.toThrow(
         "All investigators failed",
       );
+    });
+  });
+
+  describe("claim cache integration", () => {
+    it("should return cached result on repeated claim", async () => {
+      const { finalVerdict } = setupFullPipelineMocks();
+
+      // First call — runs full pipeline
+      const result1 = await pipeline.investigate("PM Modi Rs 5000 transfer");
+      expect(result1.verdict).toEqual(finalVerdict);
+      expect(result1.cached).toBeUndefined();
+      expect(mockedRunClassifier).toHaveBeenCalledOnce();
+
+      // Second call — same claim should return cached result
+      const result2 = await pipeline.investigate("PM Modi Rs 5000 transfer");
+      expect(result2.verdict).toEqual(finalVerdict);
+      expect(result2.cached).toBe(true);
+      expect(result2.totalCostUsd).toBe(0);
+      expect(result2.investigationId).toBe("test-investigation-id");
+
+      // Classifier should NOT have been called again
+      expect(mockedRunClassifier).toHaveBeenCalledOnce();
+    });
+
+    it("should not cache non-factual results", async () => {
+      const greetingResult = makeClassifierResult({ category: "greeting" });
+      mockedRunClassifier.mockResolvedValue({ result: greetingResult, costUsd: 0.01 });
+      mockedHandleNonFactual.mockReturnValue({
+        text: "Hello!",
+        shouldInvestigate: false,
+      });
+
+      await pipeline.investigate("Hello");
+      await pipeline.investigate("Hello");
+
+      // Classifier should have been called twice (no caching for non-factual)
+      expect(mockedRunClassifier).toHaveBeenCalledTimes(2);
+    });
+
+    it("should accept external ClaimCache instance", async () => {
+      const externalCache = new ClaimCache(5000);
+      const pipelineWithCache = new InvestigationPipeline(
+        mockClient,
+        mockRegistry,
+        mockRepo,
+        externalCache,
+      );
+
+      setupFullPipelineMocks();
+      await pipelineWithCache.investigate("Test claim");
+
+      // External cache should have the entry
+      const cached = externalCache.get("Test claim");
+      expect(cached).not.toBeNull();
+      expect(cached!.investigationId).toBe("test-investigation-id");
     });
   });
 });
