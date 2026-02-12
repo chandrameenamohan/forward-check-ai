@@ -273,7 +273,7 @@
 - Test: `"should export valid Claude tool definition"`
 
 ### Task 4.3: Tool registry and executor
-- [ ]
+- [x]
 **Objective:** Create a tool registry that maps tool names to their execution functions, used by the agent runner.
 **Details:**
 - Create `src/tools/tool-registry.ts`
