@@ -468,7 +468,7 @@
 - QA test: `"should investigate a health claim via real API"` — real Anthropic + mock search tools
 
 ### Task 9.3: Pattern Matching investigator
-- [ ]
+- [x]
 **Objective:** Build the Pattern Matching investigator that searches fact-checker databases for existing debunks.
 **Details:**
 - Create `src/agents/investigators/pattern-matching-agent.ts`
