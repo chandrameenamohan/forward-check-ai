@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 import { createLogger } from "../config/logger.js";
 import type { InvestigationRepository } from "../db/investigation-repository.js";
 import { createInvestigateRouter } from "./routes/investigate.js";
+import { createVerdictRouter } from "./routes/verdict.js";
 
 const logger = createLogger({ level: "info" });
 
@@ -39,6 +40,7 @@ export function createApp(repo?: InvestigationRepository): express.Express {
   // Investigation API routes (only when repo is provided)
   if (repo) {
     app.use(createInvestigateRouter(repo));
+    app.use(createVerdictRouter(repo));
   }
 
   // 404 handler

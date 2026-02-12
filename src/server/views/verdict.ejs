@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verdict — ForwardCheck</title>
+</head>
+<body>
+  <h1>Verdict: <%= verdict.category %></h1>
+  <% if (verdict.nuanceTag) { %>
+    <p><strong>Nuance:</strong> <%= verdict.nuanceTag %></p>
+  <% } %>
+  <p><strong>Confidence:</strong> <%= verdict.confidence %>%</p>
+  <% if (verdict.deepReasoningActivated) { %>
+    <p><em>Deep Reasoning Mode activated</em></p>
+  <% } %>
+
+  <h2>Summary</h2>
+  <p><%= verdict.summary %></p>
+
+  <h2>Reasoning</h2>
+  <p><%= verdict.reasoning %></p>
+
+  <% if (verdict.manipulationTechniques && verdict.manipulationTechniques.length > 0) { %>
+    <h2>Manipulation Techniques</h2>
+    <% verdict.manipulationTechniques.forEach(function(tech) { %>
+      <div>
+        <h3><%= tech.technique %></h3>
+        <p><%= tech.description %></p>
+        <blockquote><%= tech.evidenceQuote %></blockquote>
+        <p>Severity: <%= tech.severity %>/100</p>
+      </div>
+    <% }); %>
+  <% } %>
+
+  <% if (verdict.keyFindings && verdict.keyFindings.length > 0) { %>
+    <h2>Key Findings</h2>
+    <ul>
+      <% verdict.keyFindings.forEach(function(finding) { %>
+        <li><%= finding %></li>
+      <% }); %>
+    </ul>
+  <% } %>
+
+  <% if (verdict.sources && verdict.sources.length > 0) { %>
+    <h2>Sources</h2>
+    <ul>
+      <% verdict.sources.forEach(function(source) { %>
+        <li><a href="<%= source.url %>"><%= source.title %></a> — <%= source.relevance %></li>
+      <% }); %>
+    </ul>
+  <% } %>
+
+  <% if (challengeReport) { %>
+    <h2>Devil's Advocate</h2>
+    <p><strong>Outcome:</strong> <%= verdict.devilsAdvocateOutcome %></p>
+    <p><%= challengeReport.overallAssessment %></p>
+    <% if (challengeReport.thinkingExcerpt) { %>
+      <p><em><%= challengeReport.thinkingExcerpt %></em></p>
+    <% } %>
+  <% } %>
+
+  <% if (verdict.thinkingSummary) { %>
+    <h2>Judge Reasoning</h2>
+    <p><em><%= verdict.thinkingSummary %></em></p>
+  <% } %>
+
+  <h2>Original Claim</h2>
+  <p><%= originalMessage %></p>
+
+  <% if (agentReports && Array.isArray(agentReports)) { %>
+    <h2>Agent Reports</h2>
+    <% agentReports.forEach(function(report) { %>
+      <div>
+        <h3><%= report.agentRole %></h3>
+        <p><%= report.summary %></p>
+        <p>Confidence: <%= report.confidenceScore %>%</p>
+      </div>
+    <% }); %>
+  <% } %>
+
+  <footer>
+    <p>
+      <% if (pipelineDurationMs) { %>
+        Duration: <%= (pipelineDurationMs / 1000).toFixed(1) %>s |
+      <% } %>
+      <% if (totalCostUsd) { %>
+        Cost: $<%= totalCostUsd.toFixed(2) %> |
+      <% } %>
+      ID: <%= id %>
+    </p>
+  </footer>
+</body>
+</html>

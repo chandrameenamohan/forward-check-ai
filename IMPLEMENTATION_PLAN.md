@@ -653,7 +653,7 @@
 ## Phase 15: Web Verdict Page
 
 ### Task 15.1: Verdict page route and data loading
-- [ ]
+- [x]
 **Objective:** Create the Express route that loads investigation data for the web verdict page.
 **Details:**
 - Create `src/server/routes/verdict.ts`
