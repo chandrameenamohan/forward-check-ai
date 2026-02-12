@@ -533,7 +533,7 @@
 ## Phase 12: Verdict Formatter
 
 ### Task 12.1: Confidence gate enforcement
-- [ ]
+- [x]
 **Objective:** Build the confidence gate logic that mechanically overrides verdict category if confidence doesn't match the gate range.
 **Details:**
 - Create `src/formatter/confidence-gates.ts`
