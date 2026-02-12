@@ -97,8 +97,15 @@ Telegram Message → Classifier (Haiku) → Claim Strategist (Opus 4.6)
 
 - **Zod v4 installed (4.3.6):** The `z` import and API (`z.object`, `z.string`, `z.enum`, etc.) are compatible with the spec's schema definitions. Import as `import { z } from "zod"`.
 - **Express v5 installed (5.2.1):** Express 5 is the latest major. Router API is mostly the same as v4 but `req.params` returns `Record<string, string | undefined>` and error handling has minor differences.
+- **Zod v4 `.default()` + `.transform()` ordering:** In Zod v4, `.default()` placed AFTER `.transform().pipe()` returns the raw default value without running the transform. Place `.default()` BEFORE `.transform()` so the default feeds through the pipeline. Example: `z.string().default("3000").transform(val => parseInt(val, 10)).pipe(z.number())`.
+- **dotenv v17 logs injection messages to stdout:** `dotenv@17.2.4` prints "[dotenv@17.2.4] injecting env (N) from .env" on every `config()` call. This is cosmetic noise in tests but harmless.
+
+## Conventions
+
+- **Env config testing pattern:** `loadEnv()` accepts an optional `env` record for testing. Pass env vars directly instead of manipulating `process.env` to avoid interference from `.env` file loading.
 
 ## Decisions Log
 
 - **Task 0.1:** Used `noUncheckedIndexedAccess: true` in tsconfig for extra safety on array/object indexing. Used `isolatedModules: true` for compatibility with transpilers. Vitest config kept minimal — no globals, file pattern `tests/**/*.test.ts`.
 - **Task 0.2:** Installed all production deps. Zod resolved to v4 (4.3.6) — API is backward-compatible with spec schemas. Express resolved to v5 (5.2.1). All 9 production packages + 3 dev type packages installed and importable.
+- **Task 0.3:** Env config uses Zod for validation with `loadEnv(env?)` pattern. `dotenv.config()` called inside `loadEnv()` only when no custom env is provided. Added `dotenv` as production dependency. `.env.example` already existed from prior setup.

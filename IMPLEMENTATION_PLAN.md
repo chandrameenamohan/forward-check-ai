@@ -35,7 +35,7 @@
 - `npm ls` shows no missing deps
 
 ### Task 0.3: Create environment configuration module
-- [ ]
+- [x]
 **Objective:** Build a typed environment config loader that reads `.env` and validates required variables.
 **Details:**
 - Create `src/config/env.ts` — loads env vars with defaults, validates required keys
