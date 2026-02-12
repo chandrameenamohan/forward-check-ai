@@ -54,6 +54,7 @@ Telegram Message → Classifier (Haiku) → Claim Strategist (Opus 4.6)
 | Server | `src/server/` | Express server, health endpoint, verdict pages |
 | Database | `src/db/` | SQLite connection, investigation repository |
 | Schemas | `src/schemas/` | Zod schemas for all agent I/O |
+| Services | `src/services/` | Claude client wrapper, claim cache |
 | Agents | `src/agents/` | Agent implementations (classifier, strategist, investigators, DA, judge) |
 | Tools | `src/tools/` | Search tools (Brave, Google Fact Check) |
 | Orchestrator | `src/orchestrator/` | Pipeline orchestration, agent runner, tool-use loop |
@@ -100,6 +101,7 @@ Telegram Message → Classifier (Haiku) → Claim Strategist (Opus 4.6)
 - **Zod v4 `.default()` + `.transform()` ordering:** In Zod v4, `.default()` placed AFTER `.transform().pipe()` returns the raw default value without running the transform. Place `.default()` BEFORE `.transform()` so the default feeds through the pipeline. Example: `z.string().default("3000").transform(val => parseInt(val, 10)).pipe(z.number())`.
 - **dotenv v17 logs injection messages to stdout:** `dotenv@17.2.4` prints "[dotenv@17.2.4] injecting env (N) from .env" on every `config()` call. This is cosmetic noise in tests but harmless.
 - **SQLite `datetime('now')` has second-level granularity:** Rapid sequential inserts get identical `created_at` values, making `ORDER BY created_at DESC` non-deterministic. Use `ORDER BY rowid DESC` for reliable insertion-order sorting.
+- **Vitest 4 `it()` options API:** Vitest 4 removed the `it(name, fn, { timeout })` 3-arg signature. Use `it(name, { timeout }, fn)` or `it.skipIf(cond)(name, { timeout }, fn)` instead. The old pattern was deprecated in Vitest 3.
 
 ## Conventions
 
@@ -114,3 +116,4 @@ Telegram Message → Classifier (Haiku) → Claim Strategist (Opus 4.6)
 - **Task 1.1:** Database connection uses `createDatabase(dbPath)` factory function. Enables WAL mode and foreign keys via pragmas. Auto-creates parent directories with `mkdirSync(dirname(dbPath), { recursive: true })`. Tests use `os.tmpdir()` with random UUIDs for isolation, and clean up `-wal`/`-shm` files in afterEach.
 - **Task 1.2:** Migrations use `runMigrations(db)` with `CREATE TABLE IF NOT EXISTS` for idempotency. All JSON columns (classifier_result, search_strategy, agent_reports, challenge_report, final_verdict) use the `JSON` column type — stored as TEXT in SQLite but semantically typed. Default values: `status='pending'`, `created_at=datetime('now')`, `total_cost_usd=0`.
 - **Task 1.3:** `InvestigationRepository` class wraps better-sqlite3 with typed CRUD methods. JSON columns serialized with `JSON.stringify()` on write, `JSON.parse()` on read. Uses `nanoid()` for ID generation (21-char default). `getRecent()` orders by `rowid DESC` instead of `created_at DESC` because `datetime('now')` has second-level granularity — multiple inserts within the same second get identical timestamps.
+- **Task 3.1:** `ClaudeClient` class wraps Anthropic SDK with `createMessage()` and `estimateCost()`. Pricing: Haiku $1/$5, Sonnet $3/$15, Opus $5/$25 per MTok (input/output). Thinking tokens billed as output tokens. Exposes `_client` getter for test mocking — assign `client._client.messages.create` directly. QA test uses `it.skipIf(!apiKey)` to auto-skip when no API key is set. `MODELS` constant exported with all 3 model IDs.

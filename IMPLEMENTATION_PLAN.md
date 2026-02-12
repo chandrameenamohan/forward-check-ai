@@ -196,7 +196,7 @@
 ## Phase 3: Anthropic SDK Integration
 
 ### Task 3.1: Claude client wrapper
-- [ ]
+- [x]
 **Objective:** Create a thin wrapper around the Anthropic SDK that handles initialization and provides typed helper methods.
 **Details:**
 - Create `src/services/claude-client.ts`

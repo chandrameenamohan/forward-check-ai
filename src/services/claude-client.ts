@@ -1,0 +1,110 @@
+import Anthropic from "@anthropic-ai/sdk";
+import type { MessageCreateParamsNonStreaming, Message } from "@anthropic-ai/sdk/resources/messages/messages.js";
+import { createLogger } from "../config/logger.js";
+
+const logger = createLogger({ level: "info" });
+
+/** Model constants for the 3-tier strategy */
+export const MODELS = {
+  HAIKU: "claude-haiku-4-5-20251001",
+  SONNET: "claude-sonnet-4-5-20250929",
+  OPUS: "claude-opus-4-6",
+} as const;
+
+export type ModelId = (typeof MODELS)[keyof typeof MODELS];
+
+/** Per-million-token pricing (USD) */
+const PRICING: Record<string, { input: number; output: number }> = {
+  [MODELS.HAIKU]: { input: 1, output: 5 },
+  [MODELS.SONNET]: { input: 3, output: 15 },
+  [MODELS.OPUS]: { input: 5, output: 25 },
+};
+
+/** Result returned from createMessage, bundling the API response with cost info */
+export interface CreateMessageResult {
+  response: Message;
+  costUsd: number;
+}
+
+/**
+ * Thin wrapper around the Anthropic SDK that handles initialization,
+ * provides typed helper methods, and logs token usage + cost.
+ */
+export class ClaudeClient {
+  private readonly client: Anthropic;
+
+  constructor(apiKey: string) {
+    this.client = new Anthropic({ apiKey });
+  }
+
+  /** Expose client for internal mocking in tests */
+  get _client(): Anthropic {
+    return this.client;
+  }
+
+  /**
+   * Wraps client.messages.create() with logging for model, token usage, and cost.
+   */
+  async createMessage(
+    params: MessageCreateParamsNonStreaming,
+  ): Promise<CreateMessageResult> {
+    const response = await this.client.messages.create(params);
+
+    const { input_tokens, output_tokens } = response.usage;
+
+    // Count thinking tokens from response content blocks
+    let thinkingTokens = 0;
+    for (const block of response.content) {
+      if (block.type === "thinking") {
+        // Thinking tokens are included in output_tokens by the API,
+        // but we track them separately for logging
+        thinkingTokens++;
+      }
+    }
+
+    const costUsd = this.estimateCost(
+      params.model,
+      input_tokens,
+      output_tokens,
+    );
+
+    logger.info(
+      {
+        model: params.model,
+        inputTokens: input_tokens,
+        outputTokens: output_tokens,
+        costUsd: costUsd.toFixed(6),
+        stopReason: response.stop_reason,
+      },
+      "Claude API call completed",
+    );
+
+    return { response, costUsd };
+  }
+
+  /**
+   * Estimate USD cost based on model pricing.
+   * Thinking tokens are billed as output tokens.
+   */
+  estimateCost(
+    model: string,
+    inputTokens: number,
+    outputTokens: number,
+    thinkingTokens: number = 0,
+  ): number {
+    const pricing = PRICING[model];
+    if (!pricing) {
+      logger.warn({ model }, "Unknown model for cost estimation, using Opus pricing");
+      const opusPricing = PRICING[MODELS.OPUS]!;
+      return (
+        (inputTokens / 1_000_000) * opusPricing.input +
+        ((outputTokens + thinkingTokens) / 1_000_000) * opusPricing.output
+      );
+    }
+
+    return (
+      (inputTokens / 1_000_000) * pricing.input +
+      ((outputTokens + thinkingTokens) / 1_000_000) * pricing.output
+    );
+  }
+}
