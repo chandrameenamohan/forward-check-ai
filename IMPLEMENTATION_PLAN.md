@@ -345,7 +345,7 @@
 - Test: `"should handle text messages"`
 
 ### Task 6.2: Telegram status updater
-- [ ]
+- [x]
 **Objective:** Create a utility that edits Telegram messages to show investigation progress.
 **Details:**
 - Create `src/bot/status-updater.ts`
