@@ -510,7 +510,7 @@
 ## Phase 11: Judge Agent
 
 ### Task 11.1: Judge agent implementation
-- [ ]
+- [x]
 **Objective:** Build the Judge agent that synthesizes all evidence, verifies contested claims, and renders the final verdict using Opus 4.6.
 **Details:**
 - Create `src/agents/judge-agent.ts`

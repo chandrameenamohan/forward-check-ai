@@ -29,6 +29,8 @@ export interface AgentConfig {
   onToolCall?: (name: string, input: unknown) => Promise<string> | string;
   /** Timeout in milliseconds (default 120_000) */
   timeoutMs?: number;
+  /** Optional output_config for effort levels (e.g., { effort: "max" }) */
+  outputConfig?: { effort: "low" | "medium" | "high" | "max" };
 }
 
 /** Result of a completed agent run */
@@ -82,6 +84,7 @@ async function runAgentLoop(config: AgentConfig): Promise<AgentResult> {
     tools,
     thinkingConfig,
     onToolCall,
+    outputConfig,
   } = config;
 
   // Clone messages to avoid mutating the caller's array
@@ -102,6 +105,7 @@ async function runAgentLoop(config: AgentConfig): Promise<AgentResult> {
       messages,
       ...(tools && tools.length > 0 ? { tools } : {}),
       ...(thinkingConfig ? { thinking: thinkingConfig } : {}),
+      ...(outputConfig ? { output_config: outputConfig } : {}),
     });
 
     totalInputTokens += response.usage.input_tokens;
