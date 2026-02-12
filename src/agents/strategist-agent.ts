@@ -205,6 +205,19 @@ export async function runStrategist(
     strategyInput["thinkingExcerpt"] = thinkingExcerpt;
   }
 
+  // Sometimes the model returns nested objects as JSON strings within tool_use input.
+  // Parse them back to objects before Zod validation.
+  for (const key of Object.keys(strategyInput)) {
+    const val = strategyInput[key];
+    if (typeof val === "string" && val.startsWith("{")) {
+      try {
+        strategyInput[key] = JSON.parse(val) as unknown;
+      } catch {
+        // Not valid JSON — leave as-is for Zod to catch
+      }
+    }
+  }
+
   // Validate with Zod schema
   const validation = SearchStrategySchema.safeParse(strategyInput);
   if (!validation.success) {

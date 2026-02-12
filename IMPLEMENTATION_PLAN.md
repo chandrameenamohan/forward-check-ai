@@ -601,7 +601,7 @@
 - Test: `"should call status updates in correct order"`
 
 ### Task 13.2: End-to-end pipeline integration test
-- [ ]
+- [x]
 **Objective:** Validate the complete pipeline works end-to-end with real Anthropic API calls and mock search tools.
 **Details:**
 - Create `tests/integration/pipeline-e2e.test.ts`
