@@ -628,7 +628,7 @@
 ## Phase 14: Wire Bot to Pipeline
 
 ### Task 14.1: Bot-pipeline integration
-- [ ]
+- [x]
 **Objective:** Wire the Telegram bot to the investigation pipeline so forwarded messages trigger real investigations.
 **Details:**
 - Create `src/bot/message-handler.ts`
