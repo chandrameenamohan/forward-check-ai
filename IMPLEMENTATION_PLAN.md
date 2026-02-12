@@ -685,7 +685,7 @@
 - Test: `"should render verdict page without errors"` — render EJS template with sample data, check no render errors
 
 ### Task 15.3: Verdict page — Manipulation Techniques and AI Reasoning sections
-- [ ]
+- [x]
 **Objective:** Add Manipulation Techniques cards and AI Reasoning (DA + Judge thinking excerpts) sections to the verdict page.
 **Details:**
 - Add to `src/server/views/verdict.ejs`:
