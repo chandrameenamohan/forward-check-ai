@@ -181,7 +181,7 @@
 - Test: `"should validate manipulation techniques array"`
 
 ### Task 2.6: Schemas barrel export
-- [ ]
+- [x]
 **Objective:** Create an index.ts barrel export for all schemas.
 **Details:**
 - Create `src/schemas/index.ts` — re-exports all schemas and types
