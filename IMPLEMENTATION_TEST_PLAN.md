@@ -70,7 +70,7 @@
 ## Phase T2: HTTP API End-to-End Tests
 
 ### Task T2.1: Health and investigation API E2E tests
-- [ ]
+- [x]
 **Objective:** Write integration tests that boot the real Express app (with in-memory SQLite) and hit HTTP endpoints with `fetch`.
 **Details:**
 - Create `tests/integration/api-e2e.test.ts`
