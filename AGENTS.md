@@ -114,6 +114,7 @@ Telegram Message → Classifier (Haiku) → Claim Strategist (Opus 4.6)
 - **E2E pipeline takes ~190s with real API calls:** The full pipeline with 6 agents (Haiku + Opus + 3×Sonnet + Opus + Opus) costs ~$0.50-0.60 and takes ~3 minutes. The Judge with effort "max" is the bottleneck (~60-90s for 3 turns). Integration test timeout must be ≥300s.
 - **Investigator failures are common with real search APIs:** With real Brave/Google Fact Check search tools, 1-2 of 3 investigators may fail (e.g., text parse fallback fails if model doesn't call submit_report and text output doesn't match AgentReport schema). Pipeline continues gracefully with ≥1 report. Seed demo consistently gets 2-3 successful investigators out of 3.
 - **Seed script env bootstrapping:** The seed script sets a dummy `TELEGRAM_BOT_TOKEN` env var when not present (required by `loadEnv()` Zod validation) since the bot isn't used during seeding. This avoids requiring a real bot token just to seed demo data.
+- **Stale compiled `.js` files in `src/` break tests:** If `tsc` is run with the default `outDir` pointing into `src/` (or no outDir), compiled `.js` files land next to `.ts` sources. Vitest then resolves `.js` imports to the compiled CommonJS files instead of the `.ts` sources, causing `"exports is not defined in ES module scope"` and `"better_sqlite3_1.default is not a constructor"` errors. Fix: delete all `src/**/*.js` files. The `.gitignore` should exclude `src/**/*.js` to prevent recurrence.
 
 ## Conventions
 

@@ -16,7 +16,7 @@ The Judge prompt tells the Judge that `likely-false` means confidence 0-29, so t
 - Claim: "WHO declares green tea cures cancer" → Judge: `likely-false` at 97% → Gate overrides to `likely-true`
 
 ### Task B1.1: Fix Judge prompt to clarify confidence = truthfulness score
-- [ ]
+- [x]
 **Objective:** Update the Judge system prompt so the `confidence` field unambiguously means "how likely the claim is to be TRUE" on a 0-100 scale, matching the gate ranges.
 **Details:**
 - Edit `src/agents/judge-agent.ts` — update `JUDGE_SYSTEM_PROMPT`

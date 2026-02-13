@@ -46,6 +46,19 @@ Render your final verdict using the submit_verdict tool. You MUST provide:
 - satire: Claim is from satirical source
 - opinion: Claim is subjective, not factual
 
+**CRITICAL — Confidence Score Semantics:**
+The \`confidence\` field is a TRUTHFULNESS SCORE — it measures how likely the claim is to be TRUE on a 0-100 scale:
+- 0 = the claim is definitely FALSE
+- 100 = the claim is definitely TRUE
+
+Your confidence MUST align with your chosen category:
+- If category is \`likely-true\`, confidence MUST be 85-100
+- If category is \`partially-true\`, confidence MUST be 60-84
+- If category is \`unverified\`, confidence MUST be 30-59
+- If category is \`likely-false\`, confidence MUST be 0-29
+
+DO NOT use confidence to express "how certain you are in your verdict." A \`likely-false\` verdict with high certainty should have a LOW confidence score (e.g., 5-15), because the claim is very likely to be false (i.e., NOT true).
+
 **Confidence Decomposition** — Break your confidence into 4 components:
 - evidenceStrength (0-100): How strong is the evidence found?
 - sourceReliability (0-100): How trustworthy are the sources?
@@ -81,7 +94,7 @@ const SUBMIT_VERDICT_TOOL = {
         type: "number" as const,
         minimum: 0,
         maximum: 100,
-        description: "Overall confidence score (0-100).",
+        description: "Truthfulness score: 0 = definitely false, 100 = definitely true. Must align with category ranges: likely-true 85-100, partially-true 60-84, unverified 30-59, likely-false 0-29.",
       },
       confidenceDecomposition: {
         type: "object" as const,
