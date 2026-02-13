@@ -28,6 +28,11 @@ export function createApp(repo?: InvestigationRepository): express.Express {
   app.set("view engine", "ejs");
   app.set("views", join(__dirname, "views"));
 
+  // Landing page
+  app.get("/", (_req: Request, res: Response) => {
+    res.render("landing");
+  });
+
   // Health endpoint
   app.get("/health", (_req: Request, res: Response) => {
     res.json({
