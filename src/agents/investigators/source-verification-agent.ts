@@ -1,10 +1,11 @@
 import type { Tool } from "@anthropic-ai/sdk/resources/messages/messages.js";
 import type { ClaudeClient } from "../../services/claude-client.js";
 import { MODELS } from "../../services/claude-client.js";
-import { AgentReportSchema, type AgentReport } from "../../schemas/agent-report.js";
+import type { AgentReport } from "../../schemas/agent-report.js";
 import type { SearchStrategy } from "../../schemas/search-strategy.js";
 import type { ToolRegistry } from "../../tools/tool-registry.js";
 import { runAgent } from "../../orchestrator/agent-runner.js";
+import { extractReport } from "./report-extractor.js";
 import { createLogger } from "../../config/logger.js";
 
 const logger = createLogger({ level: "info" });
@@ -181,32 +182,23 @@ export async function runSourceVerification(
     },
   });
 
-  // Try to extract report from submit_report tool call
-  const submitCall = result.toolCalls.find((tc) => tc.name === "submit_report");
-
-  let reportData: unknown;
-  if (submitCall) {
-    reportData = submitCall.input;
-  } else {
-    // Fallback: try to parse the text output as JSON
-    logger.warn("Source verification agent did not call submit_report, attempting text parse");
-    const text = result.text.trim();
-    // Strip markdown code fences if present
-    const jsonText = text.replace(/^```(?:json)?\s*/, "").replace(/\s*```$/, "");
-    reportData = JSON.parse(jsonText);
-  }
-
-  // Validate with Zod schema
-  const validation = AgentReportSchema.safeParse(reportData);
-  if (!validation.success) {
-    logger.error(
-      { errors: validation.error.issues, input: reportData },
-      "Source verification report failed Zod validation",
-    );
-    throw new Error(
-      `Source verification report failed schema validation: ${validation.error.message}`,
-    );
-  }
+  // Extract and validate report (with retry and JSON fallback)
+  const report = await extractReport({
+    toolCalls: result.toolCalls,
+    text: result.text,
+    agentRole: "source_verification",
+    client,
+    model: MODELS.SONNET,
+    systemPrompt,
+    messages: [
+      {
+        role: "user",
+        content: `Investigate the following claim for source verification:\n\n"${claim}"\n\nUse the search tools to find the claim's origin, evaluate source credibility, and look for existing debunks. When done, call submit_report with your findings.`,
+      },
+    ],
+    tools: allTools,
+  });
+  const validation = { data: report };
 
   logger.info(
     {

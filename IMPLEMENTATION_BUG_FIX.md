@@ -72,7 +72,7 @@ Pattern matching and domain expertise investigators sometimes exhaust their 4-tu
 - `npx tsc --noEmit` passes
 
 ### Task B2.2: Improve submit_report fallback with retry
-- [ ]
+- [x]
 **Objective:** When an investigator doesn't call `submit_report`, instead of fragile JSON.parse, send a follow-up message asking the agent to call the tool.
 **Details:**
 - Create `src/agents/investigators/report-extractor.ts` — shared helper used by all 3 investigators

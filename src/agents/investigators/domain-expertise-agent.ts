@@ -1,10 +1,11 @@
 import type { Tool } from "@anthropic-ai/sdk/resources/messages/messages.js";
 import type { ClaudeClient } from "../../services/claude-client.js";
 import { MODELS } from "../../services/claude-client.js";
-import { AgentReportSchema, type AgentReport } from "../../schemas/agent-report.js";
+import type { AgentReport } from "../../schemas/agent-report.js";
 import type { SearchStrategy } from "../../schemas/search-strategy.js";
 import type { ToolRegistry } from "../../tools/tool-registry.js";
 import { runAgent } from "../../orchestrator/agent-runner.js";
+import { extractReport } from "./report-extractor.js";
 import { createLogger } from "../../config/logger.js";
 
 const logger = createLogger({ level: "info" });
@@ -237,31 +238,23 @@ export async function runDomainExpertise(
     },
   });
 
-  // Try to extract report from submit_report tool call
-  const submitCall = result.toolCalls.find((tc) => tc.name === "submit_report");
-
-  let reportData: unknown;
-  if (submitCall) {
-    reportData = submitCall.input;
-  } else {
-    // Fallback: try to parse the text output as JSON
-    logger.warn("Domain expertise agent did not call submit_report, attempting text parse");
-    const text = result.text.trim();
-    const jsonText = text.replace(/^```(?:json)?\s*/, "").replace(/\s*```$/, "");
-    reportData = JSON.parse(jsonText);
-  }
-
-  // Validate with Zod schema
-  const validation = AgentReportSchema.safeParse(reportData);
-  if (!validation.success) {
-    logger.error(
-      { errors: validation.error.issues, input: reportData },
-      "Domain expertise report failed Zod validation",
-    );
-    throw new Error(
-      `Domain expertise report failed schema validation: ${validation.error.message}`,
-    );
-  }
+  // Extract and validate report (with retry and JSON fallback)
+  const report = await extractReport({
+    toolCalls: result.toolCalls,
+    text: result.text,
+    agentRole: "domain_expertise",
+    client,
+    model: MODELS.SONNET,
+    systemPrompt,
+    messages: [
+      {
+        role: "user",
+        content: `Investigate the following claim from a ${validDomain} domain expertise perspective:\n\n"${claim}"\n\nUse brave_web_search to find authoritative sources and domain-specific evidence. When done, call submit_report with your findings.`,
+      },
+    ],
+    tools,
+  });
+  const validation = { data: report };
 
   logger.info(
     {

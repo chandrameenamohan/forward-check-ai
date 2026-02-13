@@ -416,7 +416,7 @@ describe("runSourceVerification", () => {
   });
 
   it("should fall back to text parsing when submit_report not called", async () => {
-    // Model returns text instead of using submit_report tool
+    // Turn 1: model returns text instead of using submit_report tool
     const textResponse = buildMockMessage({
       content: [
         {
@@ -428,7 +428,20 @@ describe("runSourceVerification", () => {
       stop_reason: "end_turn",
     });
 
+    // Retry: model still returns text instead of calling submit_report
+    const retryTextResponse = buildMockMessage({
+      content: [
+        {
+          type: "text" as const,
+          text: "I already provided my report above.",
+          citations: null,
+        },
+      ],
+      stop_reason: "end_turn",
+    });
+
     mockCreate.mockResolvedValueOnce(textResponse);
+    mockCreate.mockResolvedValueOnce(retryTextResponse);
 
     const result = await runSourceVerification(
       "Some claim",
