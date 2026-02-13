@@ -43,7 +43,7 @@
 ## Phase 1: Hero Section
 
 ### Task 1.1: Landing page hero — headline, subheadline, CTA
-- [ ]
+- [x]
 **Objective:** Build the hero section using StoryBrand formula: problem statement, solution pitch, and primary CTA.
 **Details:**
 - Add hero section to `landing.ejs`

@@ -68,11 +68,47 @@ describe("Landing page routes", () => {
     expect(html).toContain("GitHub");
   });
 
-  it("GET / should contain empty main element", async () => {
+  it("GET / should contain main element", async () => {
     const port = await startServer();
     const res = await fetch(`http://127.0.0.1:${port}/`);
     const html = await res.text();
 
     expect(html).toContain("<main");
   });
+
+  it("GET / should contain hero headline text", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/`);
+    const html = await res.text();
+
+    expect(html).toContain("Lies travel fast");
+    expect(html).toContain("The truth needs backup");
+  });
+
+  it("GET / should contain primary CTA link", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/`);
+    const html = await res.text();
+
+    expect(html).toContain("t.me/ForwardCheckBot");
+    expect(html).toContain("Try it on Telegram");
+  });
+
+  it("GET / should contain secondary CTA link to live verdict", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/`);
+    const html = await res.text();
+
+    expect(html).toContain("See a live verdict");
+  });
+
+  it("GET / should contain hero subheadline text", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/`);
+    const html = await res.text();
+
+    expect(html).toContain("Six AI agents investigate");
+    expect(html).toContain("60 seconds");
+  });
+
 });
