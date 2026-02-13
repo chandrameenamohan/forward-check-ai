@@ -180,4 +180,33 @@ describe("Landing page routes", () => {
     expect(html).toContain("When You Hit Forward");
   });
 
+  it("GET / should contain feature cards section", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/`);
+    const html = await res.text();
+
+    expect(html).toContain("fc-features");
+    expect(html).toContain("Not Just True or False");
+  });
+
+  it("GET / should contain all 3 feature cards with titles", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/`);
+    const html = await res.text();
+
+    expect(html).toContain("See the Tricks");
+    expect(html).toContain("Watch the Debate");
+    expect(html).toContain("Four Scores, Not One");
+  });
+
+  it("GET / should contain feature card descriptions", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/`);
+    const html = await res.text();
+
+    expect(html).toContain("emotional framing");
+    expect(html).toContain("Devil");
+    expect(html).toContain("evidence strength");
+  });
+
 });

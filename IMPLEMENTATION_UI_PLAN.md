@@ -109,7 +109,7 @@
 ## Phase 3: Key Features Section
 
 ### Task 3.1: Feature cards — manipulation detection, visible reasoning, confidence decomposition
-- [ ]
+- [x]
 **Objective:** Showcase the 3 differentiated features that make ForwardCheck unique.
 **Details:**
 - Section title: "Not Just True or False"
