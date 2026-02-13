@@ -85,7 +85,7 @@
 ## Phase 2: How It Works Section
 
 ### Task 2.1: Six-agent pipeline visualization
-- [ ]
+- [x]
 **Objective:** Create a visual representation of the 6-agent investigation pipeline, showing the flow from message to verdict.
 **Details:**
 - Section title: "How It Works" or "Your Personal Newsroom"

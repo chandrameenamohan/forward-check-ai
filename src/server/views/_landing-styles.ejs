@@ -493,6 +493,246 @@
       100% { opacity: 0; }
     }
 
+    /* ─── PIPELINE SECTION ─── */
+    .fc-pipeline {
+      padding: 4rem 0 3rem;
+      text-align: center;
+    }
+
+    .fc-pipeline-header {
+      margin-bottom: 3rem;
+    }
+
+    .fc-pipeline-eyebrow {
+      display: inline-block;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.62rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--fc-accent-green);
+      margin-bottom: 1rem;
+      padding: 0.3rem 0.9rem;
+      background: rgba(34, 197, 94, 0.06);
+      border: 1px solid rgba(34, 197, 94, 0.12);
+      border-radius: 100px;
+    }
+
+    .fc-pipeline-title {
+      font-family: 'Instrument Serif', serif;
+      font-size: clamp(1.8rem, 4.5vw, 2.8rem);
+      font-weight: 400;
+      line-height: 1.2;
+      color: var(--fc-text);
+      margin-bottom: 0.8rem;
+    }
+
+    .fc-pipeline-sub {
+      font-family: 'Satoshi', sans-serif;
+      font-size: clamp(0.92rem, 2vw, 1.05rem);
+      color: var(--fc-text-muted);
+      line-height: 1.7;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    /* ─── PIPELINE TRACK (desktop: horizontal) ─── */
+    .fc-pipeline-track {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 0;
+    }
+
+    /* ─── PIPELINE STEP ─── */
+    .fc-pipeline-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+      flex: 0 1 150px;
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    }
+
+    .fc-pipeline-step[data-step="2"] { transition-delay: 0.08s; }
+    .fc-pipeline-step[data-step="3"] { transition-delay: 0.16s; }
+    .fc-pipeline-step[data-step="4"] { transition-delay: 0.24s; }
+    .fc-pipeline-step[data-step="5"] { transition-delay: 0.32s; }
+
+    .fc-pipeline-step--visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ─── NODE (icon circle) ─── */
+    .fc-pipeline-node {
+      position: relative;
+      z-index: 2;
+    }
+
+    .fc-pipeline-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      background: rgba(18, 18, 26, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--fc-border);
+      color: var(--fc-text-muted);
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    .fc-pipeline-step:hover .fc-pipeline-icon {
+      border-color: rgba(34, 197, 94, 0.3);
+      box-shadow: 0 0 20px rgba(34, 197, 94, 0.08);
+    }
+
+    /* ─── CARD (below icon) ─── */
+    .fc-pipeline-card {
+      text-align: center;
+    }
+
+    .fc-pipeline-card-head {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.35rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .fc-pipeline-name {
+      font-family: 'Satoshi', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--fc-text);
+      letter-spacing: 0.01em;
+    }
+
+    .fc-pipeline-multiplier {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--fc-accent-blue);
+      font-weight: 400;
+    }
+
+    .fc-pipeline-badge {
+      display: inline-block;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.55rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.15rem 0.55rem;
+      border-radius: 100px;
+    }
+
+    .fc-pipeline-badge--haiku {
+      color: var(--fc-accent-gray);
+      background: rgba(107, 114, 128, 0.1);
+      border: 1px solid rgba(107, 114, 128, 0.2);
+    }
+
+    .fc-pipeline-badge--sonnet {
+      color: var(--fc-accent-blue);
+      background: rgba(59, 130, 246, 0.08);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+    }
+
+    .fc-pipeline-badge--opus {
+      color: var(--fc-accent-green);
+      background: rgba(34, 197, 94, 0.06);
+      border: 1px solid rgba(34, 197, 94, 0.15);
+      box-shadow: 0 0 8px rgba(34, 197, 94, 0.06);
+    }
+
+    .fc-pipeline-desc {
+      font-family: 'Satoshi', sans-serif;
+      font-size: 0.75rem;
+      color: var(--fc-text-dim);
+      line-height: 1.5;
+      max-width: 130px;
+      margin: 0 auto;
+    }
+
+    /* ─── CONNECTORS (desktop arrows) ─── */
+    .fc-pipeline-connector {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      width: 32px;
+      padding-top: 14px;
+      color: var(--fc-border);
+    }
+
+    .fc-pipeline-arrow {
+      opacity: 0.5;
+    }
+
+    /* ─── MOBILE: vertical timeline ─── */
+    @media (max-width: 768px) {
+      .fc-pipeline-track {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0;
+        position: relative;
+        padding-left: 36px;
+      }
+
+      /* Vertical spine */
+      .fc-pipeline-track::before {
+        content: '';
+        position: absolute;
+        top: 24px;
+        bottom: 24px;
+        left: 23px;
+        width: 1px;
+        background: linear-gradient(180deg, var(--fc-border), rgba(34, 197, 94, 0.2), var(--fc-border));
+      }
+
+      .fc-pipeline-step {
+        flex-direction: row;
+        align-items: flex-start;
+        flex: none;
+        gap: 1rem;
+        text-align: left;
+      }
+
+      .fc-pipeline-node {
+        flex-shrink: 0;
+      }
+
+      .fc-pipeline-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+      }
+
+      .fc-pipeline-card {
+        text-align: left;
+        padding: 0.5rem 0 1.25rem;
+      }
+
+      .fc-pipeline-card-head {
+        flex-direction: row;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .fc-pipeline-desc {
+        max-width: none;
+        margin: 0;
+      }
+
+      .fc-pipeline-connector {
+        display: none;
+      }
+    }
+
     @media (max-width: 640px) {
       .fc-landing-wrapper { padding: 1.25rem 1rem 3rem; }
 
@@ -527,6 +767,12 @@
         animation: none !important;
         opacity: 1 !important;
         transform: none !important;
+      }
+
+      .fc-pipeline-step {
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
       }
     }
   </style>

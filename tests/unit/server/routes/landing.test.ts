@@ -149,4 +149,35 @@ describe("Landing page routes", () => {
     expect(html).toContain("94%");
   });
 
+  it("GET / should contain all 6 agent pipeline steps", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/`);
+    const html = await res.text();
+
+    expect(html).toContain("Classifier");
+    expect(html).toContain("Strategist");
+    expect(html).toContain("Investigators");
+    expect(html).toContain("Devil");
+    expect(html).toContain("Judge");
+  });
+
+  it("GET / should contain pipeline section with model tier badges", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/`);
+    const html = await res.text();
+
+    expect(html).toContain("Haiku");
+    expect(html).toContain("Opus");
+    expect(html).toContain("Sonnet");
+  });
+
+  it("GET / should contain pipeline section heading", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/`);
+    const html = await res.text();
+
+    expect(html).toContain("fc-pipeline");
+    expect(html).toContain("When You Hit Forward");
+  });
+
 });
