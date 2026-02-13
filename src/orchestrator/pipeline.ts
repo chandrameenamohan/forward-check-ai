@@ -151,19 +151,27 @@ export class InvestigationPipeline {
       ),
     ]);
 
-    // Collect successful reports
+    // Collect successful reports — map indices to roles for error identification
+    const investigatorRoles = ["source_verification", "domain_expertise", "pattern_matching"] as const;
     const agentReports: AgentReport[] = [];
-    for (const result of investigatorResults) {
+    for (let i = 0; i < investigatorResults.length; i++) {
+      const result = investigatorResults[i]!;
+      const role = investigatorRoles[i]!;
       if (result.status === "fulfilled") {
         agentReports.push(result.value.report);
         totalCostUsd += result.value.costUsd;
       } else {
         logger.error(
-          { error: result.reason },
-          "Investigator failed, continuing with remaining reports",
+          { error: result.reason, agent: role },
+          `Investigator ${role} failed, continuing with remaining reports`,
         );
       }
     }
+
+    logger.info(
+      { successfulAgents: agentReports.map((r) => r.agentRole) },
+      "Investigators completed",
+    );
 
     if (agentReports.length === 0) {
       throw new Error("All investigators failed — cannot proceed with pipeline");

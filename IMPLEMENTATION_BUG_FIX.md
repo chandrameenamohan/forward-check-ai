@@ -99,7 +99,7 @@ Pattern matching and domain expertise investigators sometimes exhaust their 4-tu
 In `pipeline.ts` line 161, the error log says "Investigator failed, continuing with remaining reports" but doesn't say WHICH investigator failed. With 3 running in parallel, it's impossible to tell from logs.
 
 ### Task B3.1: Add investigator identity to failure logs
-- [ ]
+- [x]
 **Objective:** Log the investigator role name when an investigator fails in the pipeline.
 **Details:**
 - Edit `src/orchestrator/pipeline.ts` — in the `Promise.allSettled` result loop (lines 155-166):
