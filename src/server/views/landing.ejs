@@ -72,7 +72,7 @@
       </section>
 
       <!-- ─── DEMO ANIMATION ─── -->
-      <section class="fc-demo" aria-label="Live fact-check demo">
+      <section class="fc-demo fc-animate" aria-label="Live fact-check demo">
         <div class="fc-demo-card">
           <!-- Forwarded message bubble -->
           <div class="fc-demo-message">
@@ -150,7 +150,7 @@
 
       <!-- ─── PIPELINE: HOW IT WORKS ─── -->
       <section class="fc-pipeline" aria-label="How the pipeline works">
-        <div class="fc-pipeline-header">
+        <div class="fc-pipeline-header fc-animate">
           <span class="fc-pipeline-eyebrow">The Pipeline</span>
           <h2 class="fc-pipeline-title">What Happens When You Hit Forward</h2>
           <p class="fc-pipeline-sub">Your message passes through five specialized AI agents — like a tiny newsroom built just for you.</p>
@@ -259,35 +259,16 @@
         </div>
       </section>
 
-      <script>
-        (function() {
-          var steps = document.querySelectorAll('.fc-pipeline-step');
-          if (!steps.length || !('IntersectionObserver' in window)) {
-            steps.forEach(function(s) { s.classList.add('fc-pipeline-step--visible'); });
-            return;
-          }
-          var obs = new IntersectionObserver(function(entries) {
-            entries.forEach(function(entry) {
-              if (entry.isIntersecting) {
-                entry.target.classList.add('fc-pipeline-step--visible');
-                obs.unobserve(entry.target);
-              }
-            });
-          }, { threshold: 0.2 });
-          steps.forEach(function(s) { obs.observe(s); });
-        })();
-      </script>
-
       <!-- ─── FEATURES ─── -->
       <section class="fc-features" aria-label="Key features">
-        <div class="fc-features-header">
+        <div class="fc-features-header fc-animate">
           <span class="fc-features-eyebrow">What Makes This Different</span>
           <h2 class="fc-features-title">Not Just True or False</h2>
         </div>
 
-        <div class="fc-features-grid">
+        <div class="fc-features-grid fc-animate-stagger">
           <!-- Card 1: Manipulation Detection -->
-          <div class="fc-features-card">
+          <div class="fc-features-card fc-animate" style="--fc-stagger:0">
             <div class="fc-features-card-accent fc-features-card-accent--red"></div>
             <div class="fc-features-icon">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
@@ -297,7 +278,7 @@
           </div>
 
           <!-- Card 2: Visible AI Reasoning -->
-          <div class="fc-features-card">
+          <div class="fc-features-card fc-animate" style="--fc-stagger:1">
             <div class="fc-features-card-accent fc-features-card-accent--blue"></div>
             <div class="fc-features-icon">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
@@ -307,7 +288,7 @@
           </div>
 
           <!-- Card 3: Confidence Decomposition -->
-          <div class="fc-features-card">
+          <div class="fc-features-card fc-animate" style="--fc-stagger:2">
             <div class="fc-features-card-accent fc-features-card-accent--green"></div>
             <div class="fc-features-icon">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="12" width="4" height="9" rx="1"/><rect x="10" y="8" width="4" height="13" rx="1"/><rect x="17" y="3" width="4" height="18" rx="1"/></svg>
@@ -323,7 +304,7 @@
       <%- include('_opus-showcase') %>
 
       <!-- ─── FINAL CTA ─── -->
-      <section class="fc-final-cta" aria-label="Get started">
+      <section class="fc-final-cta fc-animate" aria-label="Get started">
         <div class="fc-final-cta-glow" aria-hidden="true"></div>
 
         <h2 class="fc-final-cta-headline">Know Before You Share.</h2>
@@ -350,5 +331,44 @@
     </footer>
 
   </div>
+
+  <script>
+    (function() {
+      /* Respect prefers-reduced-motion: show everything immediately */
+      var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      /* ─── Pipeline steps (existing behavior) ─── */
+      var steps = document.querySelectorAll('.fc-pipeline-step');
+      if (reduced || !('IntersectionObserver' in window)) {
+        steps.forEach(function(s) { s.classList.add('fc-pipeline-step--visible'); });
+      } else {
+        var pipeObs = new IntersectionObserver(function(entries) {
+          entries.forEach(function(entry) {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('fc-pipeline-step--visible');
+              pipeObs.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.2 });
+        steps.forEach(function(s) { pipeObs.observe(s); });
+      }
+
+      /* ─── Generic scroll animations for .fc-animate ─── */
+      var animEls = document.querySelectorAll('.fc-animate');
+      if (reduced || !('IntersectionObserver' in window)) {
+        animEls.forEach(function(el) { el.classList.add('fc-animate--visible'); });
+        return;
+      }
+      var animObs = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('fc-animate--visible');
+            animObs.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+      animEls.forEach(function(el) { animObs.observe(el); });
+    })();
+  </script>
 </body>
 </html>

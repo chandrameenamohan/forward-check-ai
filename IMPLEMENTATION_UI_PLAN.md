@@ -202,7 +202,7 @@
 ## Phase 7: Animations & Polish
 
 ### Task 7.1: Scroll animations and micro-interactions
-- [ ]
+- [x]
 **Objective:** Add entrance animations triggered by scroll and hover micro-interactions for a polished demo experience.
 **Details:**
 - `IntersectionObserver` based fade-in/slide-up for each section

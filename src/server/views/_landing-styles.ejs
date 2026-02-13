@@ -1596,10 +1596,41 @@
       }
     }
 
-    /* ─── ADD PULSE TO REDUCED MOTION ─── */
+    /* ─── SCROLL ANIMATIONS ─── */
+    html {
+      scroll-behavior: smooth;
+    }
+
+    .fc-animate {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+    }
+
+    .fc-animate--visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Staggered children: each child delays slightly after the previous */
+    .fc-animate-stagger > .fc-animate {
+      transition-delay: calc(var(--fc-stagger, 0) * 0.1s);
+    }
+
+    /* ─── ALL REDUCED MOTION ─── */
     @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+
       .fc-final-cta-btn {
         animation: none !important;
+      }
+
+      .fc-animate {
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
       }
     }
   </style>

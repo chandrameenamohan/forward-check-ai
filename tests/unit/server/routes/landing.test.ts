@@ -325,4 +325,47 @@ describe("Landing page routes", () => {
     expect(html).toContain("View on GitHub");
   });
 
+  it("GET / should include IntersectionObserver script", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/`);
+    const html = await res.text();
+
+    expect(html).toContain("IntersectionObserver");
+    expect(html).toContain("fc-animate");
+  });
+
+  it("GET / should include smooth scroll CSS", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/`);
+    const html = await res.text();
+
+    expect(html).toContain("scroll-behavior: smooth");
+  });
+
+  it("GET / should have animatable sections with fc-animate class", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/`);
+    const html = await res.text();
+
+    expect(html).toContain("fc-animate");
+    expect(html).toContain("fc-animate--visible");
+  });
+
+  it("GET / should have staggered animation delays on feature cards", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/`);
+    const html = await res.text();
+
+    expect(html).toContain("fc-animate-stagger");
+  });
+
+  it("GET / should disable scroll animations for prefers-reduced-motion", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/`);
+    const html = await res.text();
+
+    expect(html).toContain("prefers-reduced-motion");
+    expect(html).toContain("fc-animate");
+  });
+
 });
