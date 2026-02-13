@@ -141,7 +141,7 @@
 ## Phase T5: Confidence Gate Regression Tests
 
 ### Task T5.1: Exhaustive confidence gate boundary tests
-- [ ]
+- [x]
 **Objective:** Add boundary-value tests for every confidence gate threshold to catch regressions in verdict category overrides.
 **Details:**
 - Create `tests/unit/formatter/confidence-gates-regression.test.ts`
