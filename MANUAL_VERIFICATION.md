@@ -65,8 +65,8 @@ Stop the server first (`Ctrl+C`), then:
 npx tsx scripts/seed-demo.ts
 ```
 
-- ~$1.50 API cost, ~5-10 minutes
-- Processes 3 claims through the full 6-agent pipeline
+- ~$2.00 API cost, ~7-13 minutes
+- Processes 4 claims through the full 6-agent pipeline
 - Save the investigation IDs from the output
 
 **Expected results after bug fixes:**
@@ -76,6 +76,7 @@ npx tsx scripts/seed-demo.ts
 | "PM Modi announced Rs 5000..." | likely-false | 0-29 |
 | "WHO declares green tea cures cancer" | likely-false | 0-29 |
 | "Chandrayaan-3 landed on Moon's south pole" | likely-true or partially-true | 60-100 |
+| "NASA confirmed water on Mars in 2024" | likely-true or partially-true | 50-100 |
 
 **Watch for:**
 - No "Confidence gate override" warnings (B1 fix)
@@ -147,7 +148,7 @@ Press `Ctrl+C` in the server terminal.
 |------|---------|------|------|
 | 1 | `npm run dev` | Free | Instant |
 | 2 | `bash scripts/qa-manual-checks.sh` | Free | 1 min |
-| 3 | `npx tsx scripts/seed-demo.ts` | ~$1.50 | 5-10 min |
+| 3 | `npx tsx scripts/seed-demo.ts` | ~$2.00 | 7-13 min |
 | 4 | Browser: verdict pages | Free | 5 min |
 | 5 | Telegram bot (optional) | ~$0.50/claim | 2-3 min |
 | 6 | `Ctrl+C` | Free | Instant |

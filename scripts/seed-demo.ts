@@ -40,6 +40,10 @@ const DEMO_CLAIMS = [
     message:
       "India's Chandrayaan-3 successfully landed on the Moon's south pole in August 2023",
   },
+  {
+    label: "TRUE",
+    message: "NASA confirmed water on Mars in 2024",
+  },
 ];
 
 async function main(): Promise<void> {

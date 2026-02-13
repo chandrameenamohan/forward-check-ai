@@ -41,7 +41,12 @@ export function createInvestigateRouter(
       return;
     }
 
-    res.json(investigation);
+    // Reshape: expose final_verdict as both "verdict" and "final_verdict"
+    // so consumers can use the intuitive name
+    res.json({
+      ...investigation,
+      verdict: investigation.final_verdict,
+    });
   });
 
   return router;
