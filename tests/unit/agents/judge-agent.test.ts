@@ -1,12 +1,15 @@
 import { describe, it, expect, vi, beforeEach, type Mock } from "vitest";
 import { ClaudeClient, MODELS } from "../../../src/services/claude-client.js";
 import type { Message } from "@anthropic-ai/sdk/resources/messages/messages.js";
-import { FinalVerdictSchema, type FinalVerdict } from "../../../src/schemas/final-verdict.js";
-import type { AgentReport } from "../../../src/schemas/agent-report.js";
-import type { ChallengeReport } from "../../../src/schemas/challenge-report.js";
-import type { SearchStrategy } from "../../../src/schemas/search-strategy.js";
+import { FinalVerdictSchema } from "../../../src/schemas/final-verdict.js";
 import { ToolRegistry } from "../../../src/tools/tool-registry.js";
 import { runJudge } from "../../../src/agents/judge-agent.js";
+import {
+  makeAgentReport,
+  makeChallengeReport,
+  makeFinalVerdict,
+  makeSearchStrategy,
+} from "../../fixtures/index.js";
 
 /**
  * Helper to build a mock Message response from the Anthropic API.
@@ -36,7 +39,7 @@ function buildMockMessage(
   };
 }
 
-const VALID_FINAL_VERDICT: FinalVerdict = {
+const VALID_FINAL_VERDICT = makeFinalVerdict({
   category: "likely-false",
   nuanceTag: "fabricated",
   confidence: 12,
@@ -87,81 +90,34 @@ const VALID_FINAL_VERDICT: FinalVerdict = {
     whatWouldProveTrue: ["Official PMO press release announcing Rs 5000 direct transfer"],
     whatWouldProveFalse: ["No official documentation exists"],
   },
-  devilsAdvocateOutcome: "counter_argument_failed",
-  deepReasoningActivated: false,
   thinkingSummary:
     "After reviewing all evidence, I find the investigator consensus overwhelming. The claim has no official backing and matches a known scam pattern.",
-};
+});
 
-const SAMPLE_AGENT_REPORTS: AgentReport[] = [
-  {
+const SAMPLE_AGENT_REPORTS = [
+  makeAgentReport({
     agentRole: "source_verification",
     summary: "No credible sources found supporting the claim.",
-    findings: [
-      {
-        claim: "PM Modi announced Rs 5000 direct transfer",
-        assessment: "contradicted",
-        confidence: 15,
-        sources: [
-          {
-            url: "https://pib.gov.in",
-            title: "PIB Official",
-            credibility: "high",
-            relevantSnippet: "No such announcement found in official records.",
-          },
-        ],
-      },
-    ],
     manipulationIndicators: ["authority_impersonation", "appeal_to_greed"],
     overallAssessment: "Claim appears fabricated with no official backing.",
     confidenceScore: 12,
-  },
-  {
+  }),
+  makeAgentReport({
     agentRole: "domain_expertise",
     summary: "Economic analysis shows this claim is implausible.",
-    findings: [
-      {
-        claim: "Rs 5000 direct transfer to all citizens",
-        assessment: "contradicted",
-        confidence: 18,
-        sources: [
-          {
-            url: "https://rbi.org.in",
-            title: "RBI Statistics",
-            credibility: "high",
-            relevantSnippet: "No new DBT scheme announced in this period.",
-          },
-        ],
-      },
-    ],
     overallAssessment: "The fiscal impact would be enormous and no budget allocation exists.",
     confidenceScore: 15,
-  },
-  {
+  }),
+  makeAgentReport({
     agentRole: "pattern_matching",
     summary: "Multiple fact-checkers have debunked similar claims.",
-    findings: [
-      {
-        claim: "Modi Rs 5000 transfer viral message",
-        assessment: "contradicted",
-        confidence: 10,
-        sources: [
-          {
-            url: "https://altnews.in/fact-check",
-            title: "AltNews Fact Check",
-            credibility: "high",
-            relevantSnippet: "This is a recurring scam message that has been debunked multiple times.",
-          },
-        ],
-      },
-    ],
     manipulationIndicators: ["zombie_claim", "chain_message_format"],
     overallAssessment: "Classic zombie claim pattern, recycled with updated dates.",
     confidenceScore: 8,
-  },
+  }),
 ];
 
-const SAMPLE_CHALLENGE_REPORT: ChallengeReport = {
+const SAMPLE_CHALLENGE_REPORT = makeChallengeReport({
   challenges: [
     {
       targetAgent: "source_verification",
@@ -173,43 +129,20 @@ const SAMPLE_CHALLENGE_REPORT: ChallengeReport = {
   ],
   overallAssessment:
     "The counter-argument fails. The investigator consensus is robust.",
-  suggestedConfidenceAdjustment: -5,
-  counterArgumentSucceeded: false,
   counterArgumentSummary:
     "I attempted to construct arguments defending this claim but could not find any credible pathway.",
   thinkingExcerpt:
     "Let me attempt to build the strongest possible case FOR this claim being true...",
-};
+});
 
-const SAMPLE_SEARCH_STRATEGY: SearchStrategy = {
+const SAMPLE_SEARCH_STRATEGY = makeSearchStrategy({
   claimCharacteristics: {
     type: "authority_claim",
     suspectedPattern: "authority_impersonation",
     verifiabilityAssessment: "Highly verifiable — official government announcements leave a clear paper trail.",
   },
-  investigatorGuidance: {
-    sourceVerification: {
-      targetQueries: ["PM Modi Rs 5000 transfer official announcement", "PIB press release direct transfer"],
-      prioritySources: ["pib.gov.in", "india.gov.in"],
-      lookFor: "Official government press releases or PMO statements",
-    },
-    domainExpertise: {
-      targetQueries: ["India direct benefit transfer budget 2024", "PM-KISAN scheme latest update"],
-      prioritySources: ["rbi.org.in", "finmin.nic.in"],
-      lookFor: "Budget allocations and existing DBT scheme details",
-    },
-    patternMatching: {
-      targetQueries: ["PM Modi Rs 5000 fact check", "Modi free money scam viral"],
-      prioritySources: ["altnews.in", "boomlive.in", "snopes.com"],
-      lookFor: "Previous debunks of similar viral messages",
-    },
-  },
-  falsificationCriteria: {
-    whatWouldProveTrue: ["Official PMO press release announcing Rs 5000 direct transfer"],
-    whatWouldProveFalse: ["No official documentation from PMO or Finance Ministry"],
-  },
   thinkingExcerpt: "This claim has characteristics of a typical authority impersonation scam...",
-};
+});
 
 describe("runJudge", () => {
   let client: ClaudeClient;
@@ -400,8 +333,7 @@ describe("runJudge", () => {
   });
 
   it("should produce verdict with correct category for high confidence", async () => {
-    const highConfidenceVerdict: FinalVerdict = {
-      ...VALID_FINAL_VERDICT,
+    const highConfidenceVerdict = makeFinalVerdict({
       category: "likely-true",
       confidence: 92,
       confidenceDecomposition: {
@@ -410,8 +342,7 @@ describe("runJudge", () => {
         claimComplexity: 85,
         counterArgumentResilience: 95,
       },
-      devilsAdvocateOutcome: "counter_argument_failed",
-    };
+    });
 
     const response = buildMockMessage({
       content: [

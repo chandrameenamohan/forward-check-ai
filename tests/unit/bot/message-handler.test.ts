@@ -2,8 +2,8 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { Bot } from "grammy";
 import type { Update, UserFromGetMe } from "grammy/types";
 import type { InvestigationPipeline, InvestigateResult } from "../../../src/orchestrator/pipeline.js";
-import type { FinalVerdict } from "../../../src/schemas/final-verdict.js";
 import { createMessageHandler } from "../../../src/bot/message-handler.js";
+import { makeFinalVerdict } from "../../fixtures/index.js";
 
 const FAKE_TOKEN = "123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11";
 
@@ -32,34 +32,14 @@ function makeMessageUpdate(overrides: Record<string, unknown>): Update {
   } as Update;
 }
 
-function makeFakeVerdict(overrides?: Partial<FinalVerdict>): FinalVerdict {
-  return {
+function makeFakeVerdict(overrides?: Parameters<typeof makeFinalVerdict>[0]) {
+  return makeFinalVerdict({
     category: "likely-false",
     confidence: 15,
-    confidenceDecomposition: {
-      evidenceStrength: 20,
-      sourceReliability: 10,
-      claimComplexity: 50,
-      counterArgumentResilience: 15,
-    },
     summary: "This claim is not supported by evidence.",
     reasoning: "No credible source confirms this.",
-    manipulationTechniques: [
-      {
-        technique: "Appeal to authority",
-        description: "Uses a government figure for credibility",
-        evidence: "PM Modi mentioned",
-        severity: 7,
-      },
-    ],
-    keyFindings: ["No official announcement found"],
-    sources: [{ url: "https://example.com", title: "Example", relevance: "Primary source" }],
-    whatWouldChangeMyMind: "An official government press release",
-    devilsAdvocateOutcome: "Counter-argument failed",
-    deepReasoningActivated: false,
-    thinkingSummary: "Analyzed claims carefully",
     ...overrides,
-  };
+  });
 }
 
 const BASE_URL = "http://localhost:3000";

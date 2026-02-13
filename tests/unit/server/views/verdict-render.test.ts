@@ -3,15 +3,18 @@ import ejs from "ejs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { readFileSync } from "node:fs";
-import type { FinalVerdict } from "../../../../src/schemas/final-verdict.js";
-import type { ChallengeReport } from "../../../../src/schemas/challenge-report.js";
-import type { AgentReport } from "../../../../src/schemas/agent-report.js";
+import {
+  makeFinalVerdict,
+  makeChallengeReport,
+  makeAgentReport,
+  makeSearchStrategy,
+} from "../../../fixtures/index.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const viewsDir = join(__dirname, "../../../../src/server/views");
 
-function sampleVerdict(): FinalVerdict {
-  return {
+function sampleVerdict() {
+  return makeFinalVerdict({
     category: "likely-false",
     nuanceTag: "fabricated",
     confidence: 12,
@@ -45,14 +48,12 @@ function sampleVerdict(): FinalVerdict {
       whatWouldProveTrue: ["Official government notification"],
       whatWouldProveFalse: ["PIB fact-check debunking the claim"],
     },
-    devilsAdvocateOutcome: "counter_argument_failed",
-    deepReasoningActivated: false,
     thinkingSummary: "Analyzed all evidence carefully.",
-  };
+  });
 }
 
-function sampleChallengeReport(): ChallengeReport {
-  return {
+function sampleChallengeReport() {
+  return makeChallengeReport({
     challenges: [
       {
         targetAgent: "source_verification",
@@ -63,35 +64,18 @@ function sampleChallengeReport(): ChallengeReport {
       },
     ],
     overallAssessment: "Counter-argument was weak.",
-    suggestedConfidenceAdjustment: -5,
-    counterArgumentSucceeded: false,
     counterArgumentSummary: "The counter-argument did not hold up.",
     thinkingExcerpt: "Tried to find supporting evidence but failed.",
-  };
+  });
 }
 
-function sampleAgentReport(role: AgentReport["agentRole"]): AgentReport {
-  return {
+function sampleAgentReport(role: ReturnType<typeof makeAgentReport>["agentRole"]) {
+  return makeAgentReport({
     agentRole: role,
     summary: `${role} investigation summary`,
-    findings: [
-      {
-        claim: "PM Modi Rs 5000 transfer",
-        assessment: "contradicted",
-        confidence: 85,
-        sources: [
-          {
-            url: "https://example.com",
-            title: "Example Source",
-            credibility: "high",
-            relevantSnippet: "No such scheme exists.",
-          },
-        ],
-      },
-    ],
     overallAssessment: "Claim is not supported by evidence.",
     confidenceScore: 15,
-  };
+  });
 }
 
 function renderVerdict(overrides?: Record<string, unknown>): string {
@@ -103,35 +87,7 @@ function renderVerdict(overrides?: Record<string, unknown>): string {
     originalMessage: "PM Modi announced Rs 5000 direct transfer to all citizens",
     verdict: sampleVerdict(),
     challengeReport: sampleChallengeReport(),
-    searchStrategy: {
-      claimCharacteristics: {
-        type: "authority_claim",
-        suspectedPattern: "authority_impersonation",
-        verifiabilityAssessment: "Verifiable",
-      },
-      investigatorGuidance: {
-        sourceVerification: {
-          targetQueries: ["Modi Rs 5000"],
-          prioritySources: ["pib.gov.in"],
-          lookFor: "Official announcements",
-        },
-        domainExpertise: {
-          targetQueries: ["India DBT scheme"],
-          prioritySources: ["rbi.org.in"],
-          lookFor: "Economic policy",
-        },
-        patternMatching: {
-          targetQueries: ["Modi WhatsApp forward"],
-          prioritySources: ["snopes.com"],
-          lookFor: "Previous debunks",
-        },
-      },
-      falsificationCriteria: {
-        whatWouldProveTrue: ["Official PIB notification"],
-        whatWouldProveFalse: ["PIB debunk"],
-      },
-      thinkingExcerpt: "Analyzing claim...",
-    },
+    searchStrategy: makeSearchStrategy(),
     agentReports: [
       sampleAgentReport("source_verification"),
       sampleAgentReport("domain_expertise"),

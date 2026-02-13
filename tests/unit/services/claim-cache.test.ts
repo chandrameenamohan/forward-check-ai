@@ -1,29 +1,6 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
 import { ClaimCache } from "../../../src/services/claim-cache.js";
-import type { FinalVerdict } from "../../../src/schemas/final-verdict.js";
-
-function makeFakeVerdict(overrides?: Partial<FinalVerdict>): FinalVerdict {
-  return {
-    category: "likely-false",
-    confidence: 22,
-    confidenceDecomposition: {
-      evidenceStrength: 30,
-      sourceReliability: 20,
-      claimComplexity: 50,
-      counterArgumentResilience: 10,
-    },
-    summary: "This claim is false.",
-    reasoning: "No evidence supports it.",
-    manipulationTechniques: [],
-    keyFindings: ["No evidence found"],
-    sources: [],
-    whatWouldChangeMyMind: "Official government announcement",
-    devilsAdvocateOutcome: "counter_argument_failed",
-    deepReasoningActivated: false,
-    thinkingSummary: "Analyzed and found false.",
-    ...overrides,
-  };
-}
+import { makeFinalVerdict as makeFakeVerdict } from "../../fixtures/index.js";
 
 describe("ClaimCache", () => {
   let cache: ClaimCache;

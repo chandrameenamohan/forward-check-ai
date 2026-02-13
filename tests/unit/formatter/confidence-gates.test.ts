@@ -1,29 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { enforceConfidenceGates } from "../../../src/formatter/confidence-gates.js";
-import type { FinalVerdict } from "../../../src/schemas/final-verdict.js";
-
-function makeVerdict(overrides: Partial<FinalVerdict> = {}): FinalVerdict {
-  return {
-    category: "likely-true",
-    confidence: 90,
-    confidenceDecomposition: {
-      evidenceStrength: 90,
-      sourceReliability: 85,
-      claimComplexity: 80,
-      counterArgumentResilience: 95,
-    },
-    summary: "Test summary",
-    reasoning: "Test reasoning",
-    manipulationTechniques: [],
-    keyFindings: ["finding1"],
-    sources: [],
-    whatWouldChangeMyMind: "Nothing",
-    devilsAdvocateOutcome: "counter_argument_failed",
-    deepReasoningActivated: false,
-    thinkingSummary: "Test thinking",
-    ...overrides,
-  };
-}
+import { makeFinalVerdict as makeVerdict } from "../../fixtures/index.js";
 
 describe("enforceConfidenceGates", () => {
   it("should not change category when confidence matches gate", () => {

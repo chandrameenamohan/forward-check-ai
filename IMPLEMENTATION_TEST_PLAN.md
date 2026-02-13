@@ -47,7 +47,7 @@
 - Test: `"canned search results have expected shape"` — validate structure
 
 ### Task T1.2: Refactor existing tests to use shared fixtures
-- [ ]
+- [x]
 **Objective:** Replace inline fixture construction in existing test files with calls to factory functions from `tests/fixtures/`.
 **Details:**
 - Audit all 42 test files for inline object literals matching pipeline schemas

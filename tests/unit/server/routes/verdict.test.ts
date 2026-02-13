@@ -9,94 +9,13 @@ import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { randomUUID } from "node:crypto";
 import { unlinkSync } from "node:fs";
-import type { FinalVerdict } from "../../../../src/schemas/final-verdict.js";
-import type { ChallengeReport } from "../../../../src/schemas/challenge-report.js";
-import type { AgentReport } from "../../../../src/schemas/agent-report.js";
-
-/** Sample FinalVerdict for seeding completed investigations. */
-function makeFinalVerdict(): FinalVerdict {
-  return {
-    category: "likely-false",
-    nuanceTag: "fabricated",
-    confidence: 12,
-    confidenceDecomposition: {
-      evidenceStrength: 15,
-      sourceReliability: 10,
-      claimComplexity: 40,
-      counterArgumentResilience: 8,
-    },
-    summary: "This claim is fabricated and has no official backing.",
-    reasoning: "No credible government source supports this claim.",
-    manipulationTechniques: [
-      {
-        technique: "Authority Impersonation",
-        description: "Uses PM's name for credibility",
-        evidenceQuote: "PM Modi announced...",
-        severity: 85,
-      },
-    ],
-    keyFindings: ["No official announcement found", "Known viral forward"],
-    sources: [
-      {
-        url: "https://pib.gov.in",
-        title: "Press Information Bureau",
-        relevance: "Official government source",
-      },
-    ],
-    whatWouldChangeMyMind:
-      "Official PIB press release confirming the scheme.",
-    falsificationCriteria: {
-      whatWouldProveTrue: ["Official government notification"],
-      whatWouldProveFalse: ["PIB fact-check debunking the claim"],
-    },
-    devilsAdvocateOutcome: "counter_argument_failed",
-    deepReasoningActivated: false,
-    thinkingSummary: "Analyzed all evidence carefully.",
-  };
-}
-
-function makeChallengeReport(): ChallengeReport {
-  return {
-    challenges: [
-      {
-        targetAgent: "source_verification",
-        claim: "No official source found",
-        challenge: "Could there be a regional announcement?",
-        severity: "minor",
-        evidence: "Some state schemes exist",
-      },
-    ],
-    overallAssessment: "Counter-argument was weak.",
-    suggestedConfidenceAdjustment: -5,
-    counterArgumentSucceeded: false,
-    counterArgumentSummary: "The counter-argument did not hold up.",
-    thinkingExcerpt: "Tried to find supporting evidence but failed.",
-  };
-}
-
-function makeAgentReport(role: AgentReport["agentRole"]): AgentReport {
-  return {
-    agentRole: role,
-    summary: `${role} investigation summary`,
-    findings: [
-      {
-        claim: "PM Modi Rs 5000 transfer",
-        assessment: "contradicted",
-        confidence: 85,
-        sources: [
-          {
-            url: "https://example.com",
-            title: "Example Source",
-            credibility: "high",
-            relevantSnippet: "No such scheme exists.",
-          },
-        ],
-      },
-    ],
-    overallAssessment: "Claim is not supported by evidence.",
-    confidenceScore: 15,
-  };
-}
+import {
+  makeFinalVerdict,
+  makeChallengeReport,
+  makeAgentReport,
+  makeClassifierResult,
+  makeSearchStrategy,
+} from "../../../fixtures/index.js";
 
 describe("Verdict page routes", () => {
   let server: Server | undefined;
@@ -143,51 +62,38 @@ describe("Verdict page routes", () => {
   /** Seed a completed investigation with full pipeline data. */
   function seedCompletedInvestigation(): string {
     const id = repo.create("PM Modi announced Rs 5000 direct transfer");
-    repo.updateClassifierResult(id, {
-      category: "factual_claim",
+    repo.updateClassifierResult(id, makeClassifierResult({
       extractedClaim: "PM Modi announced Rs 5000 direct transfer",
-      isCompound: false,
       domain: "economics",
-      language: "en",
-      urgency: "medium",
       reasoning: "Contains a specific monetary policy claim.",
-    });
-    repo.updateSearchStrategy(id, {
-      claimCharacteristics: {
-        type: "authority_claim",
-        suspectedPattern: "authority_impersonation",
-        verifiabilityAssessment: "Verifiable through official sources.",
-      },
-      investigatorGuidance: {
-        sourceVerification: {
-          targetQueries: ["Modi Rs 5000 transfer", "PIB fact check"],
-          prioritySources: ["pib.gov.in"],
-          lookFor: "Official announcements",
-        },
-        domainExpertise: {
-          targetQueries: ["India direct benefit transfer", "DBT scheme"],
-          prioritySources: ["rbi.org.in"],
-          lookFor: "Economic policy details",
-        },
-        patternMatching: {
-          targetQueries: ["Modi 5000 WhatsApp forward", "viral claim"],
-          prioritySources: ["snopes.com"],
-          lookFor: "Previous debunks",
-        },
-      },
-      falsificationCriteria: {
-        whatWouldProveTrue: ["Official PIB notification"],
-        whatWouldProveFalse: ["PIB debunk"],
-      },
-      thinkingExcerpt: "Analyzing the claim characteristics...",
-    });
+    }));
+    repo.updateSearchStrategy(id, makeSearchStrategy());
     repo.updateAgentReports(id, [
-      makeAgentReport("source_verification"),
-      makeAgentReport("domain_expertise"),
-      makeAgentReport("pattern_matching"),
+      makeAgentReport({ agentRole: "source_verification" }),
+      makeAgentReport({ agentRole: "domain_expertise" }),
+      makeAgentReport({ agentRole: "pattern_matching" }),
     ]);
     repo.updateChallengeReport(id, makeChallengeReport());
-    repo.updateFinalVerdict(id, makeFinalVerdict(), 120000, 0.55);
+    repo.updateFinalVerdict(id, makeFinalVerdict({
+      category: "likely-false",
+      nuanceTag: "fabricated",
+      confidence: 12,
+      manipulationTechniques: [
+        {
+          technique: "Authority Impersonation",
+          description: "Uses PM's name for credibility",
+          evidenceQuote: "PM Modi announced...",
+          severity: 85,
+        },
+      ],
+      sources: [
+        {
+          url: "https://pib.gov.in",
+          title: "Press Information Bureau",
+          relevance: "Official government source",
+        },
+      ],
+    }), 120000, 0.55);
     return id;
   }
 

@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, beforeEach, type Mock } from "vitest";
 import { ClaudeClient, MODELS } from "../../../src/services/claude-client.js";
 import type { Message } from "@anthropic-ai/sdk/resources/messages/messages.js";
-import { ChallengeReportSchema, type ChallengeReport } from "../../../src/schemas/challenge-report.js";
-import type { AgentReport } from "../../../src/schemas/agent-report.js";
+import { ChallengeReportSchema } from "../../../src/schemas/challenge-report.js";
 import { runDevilsAdvocate } from "../../../src/agents/devils-advocate-agent.js";
+import { makeAgentReport, makeChallengeReport } from "../../fixtures/index.js";
 
 /**
  * Helper to build a mock Message response from the Anthropic API.
@@ -33,7 +33,7 @@ function buildMockMessage(
   };
 }
 
-const VALID_CHALLENGE_REPORT: ChallengeReport = {
+const VALID_CHALLENGE_REPORT = makeChallengeReport({
   challenges: [
     {
       targetAgent: "source_verification",
@@ -52,80 +52,33 @@ const VALID_CHALLENGE_REPORT: ChallengeReport = {
   ],
   overallAssessment:
     "The counter-argument fails. While there are theoretical possibilities that the claim could be true, the complete absence of any official documentation, combined with existing fact-checks debunking similar claims, provides overwhelming evidence that this is fabricated.",
-  suggestedConfidenceAdjustment: -5,
-  counterArgumentSucceeded: false,
   counterArgumentSummary:
     "I attempted to construct arguments defending this claim but could not find any credible pathway to its truth. The investigator consensus is robust.",
   thinkingExcerpt:
     "Let me attempt to build the strongest possible case FOR this claim being true. The primary angle would be that the announcement was made through non-traditional channels...",
-};
+});
 
-const SAMPLE_AGENT_REPORTS: AgentReport[] = [
-  {
+const SAMPLE_AGENT_REPORTS = [
+  makeAgentReport({
     agentRole: "source_verification",
     summary: "No credible sources found supporting the claim.",
-    findings: [
-      {
-        claim: "PM Modi announced Rs 5000 direct transfer",
-        assessment: "contradicted",
-        confidence: 15,
-        sources: [
-          {
-            url: "https://pib.gov.in",
-            title: "PIB Official",
-            credibility: "high",
-            relevantSnippet: "No such announcement found in official records.",
-          },
-        ],
-      },
-    ],
     manipulationIndicators: ["authority_impersonation", "appeal_to_greed"],
     overallAssessment: "Claim appears fabricated with no official backing.",
     confidenceScore: 12,
-  },
-  {
+  }),
+  makeAgentReport({
     agentRole: "domain_expertise",
     summary: "Economic analysis shows this claim is implausible.",
-    findings: [
-      {
-        claim: "Rs 5000 direct transfer to all citizens",
-        assessment: "contradicted",
-        confidence: 18,
-        sources: [
-          {
-            url: "https://rbi.org.in",
-            title: "RBI Statistics",
-            credibility: "high",
-            relevantSnippet: "No new DBT scheme announced in this period.",
-          },
-        ],
-      },
-    ],
     overallAssessment: "The fiscal impact would be enormous and no budget allocation exists.",
     confidenceScore: 15,
-  },
-  {
+  }),
+  makeAgentReport({
     agentRole: "pattern_matching",
     summary: "Multiple fact-checkers have debunked similar claims.",
-    findings: [
-      {
-        claim: "Modi Rs 5000 transfer viral message",
-        assessment: "contradicted",
-        confidence: 10,
-        sources: [
-          {
-            url: "https://altnews.in/fact-check",
-            title: "AltNews Fact Check",
-            credibility: "high",
-            relevantSnippet: "This is a recurring scam message that has been debunked multiple times.",
-          },
-        ],
-      },
-    ],
     manipulationIndicators: ["zombie_claim", "chain_message_format"],
     overallAssessment: "Classic zombie claim pattern, recycled with updated dates.",
     confidenceScore: 8,
-  },
+  }),
 ];
 
 const SAMPLE_FALSIFICATION_CRITERIA = [

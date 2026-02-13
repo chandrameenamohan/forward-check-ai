@@ -2,124 +2,13 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import type { ClaudeClient } from "../../../src/services/claude-client.js";
 import type { ToolRegistry } from "../../../src/tools/tool-registry.js";
 import type { InvestigationRepository } from "../../../src/db/investigation-repository.js";
-import type { ClassifierResult } from "../../../src/schemas/classifier-result.js";
-import type { SearchStrategy } from "../../../src/schemas/search-strategy.js";
-import type { AgentReport } from "../../../src/schemas/agent-report.js";
-import type { ChallengeReport } from "../../../src/schemas/challenge-report.js";
-import type { FinalVerdict } from "../../../src/schemas/final-verdict.js";
-
-// ── Test Fixtures ──────────────────────────────────────────────
-
-function makeClassifierResult(): ClassifierResult {
-  return {
-    category: "factual_claim",
-    extractedClaim: "Test claim for escalation",
-    isCompound: false,
-    domain: "geopolitics",
-    language: "en",
-    urgency: "high",
-    reasoning: "This is a factual claim.",
-  };
-}
-
-function makeSearchStrategy(): SearchStrategy {
-  return {
-    claimCharacteristics: {
-      type: "authority_claim",
-      suspectedPattern: "authority_impersonation",
-      verifiabilityAssessment: "Verifiable through official sources",
-    },
-    investigatorGuidance: {
-      sourceVerification: {
-        targetQueries: ["query1", "query2"],
-        prioritySources: ["source.com"],
-        lookFor: "Official sources",
-      },
-      domainExpertise: {
-        targetQueries: ["query3", "query4"],
-        prioritySources: ["expert.com"],
-        lookFor: "Domain data",
-      },
-      patternMatching: {
-        targetQueries: ["query5", "query6"],
-        prioritySources: ["factcheck.com"],
-        lookFor: "Existing debunks",
-      },
-    },
-    falsificationCriteria: {
-      whatWouldProveTrue: ["Evidence A"],
-      whatWouldProveFalse: ["Evidence B"],
-    },
-    thinkingExcerpt: "Strategist thinking...",
-  };
-}
-
-function makeAgentReport(overrides: Partial<AgentReport> = {}): AgentReport {
-  return {
-    agentRole: "source_verification",
-    summary: "Summary of findings.",
-    findings: [
-      {
-        claim: "Test claim",
-        assessment: "contradicted",
-        confidence: 80,
-        sources: [
-          {
-            url: "https://example.com",
-            title: "Example Source",
-            credibility: "high",
-            relevantSnippet: "Relevant information",
-          },
-        ],
-      },
-    ],
-    overallAssessment: "Overall assessment.",
-    confidenceScore: 50,
-    ...overrides,
-  };
-}
-
-function makeChallengeReport(): ChallengeReport {
-  return {
-    challenges: [
-      {
-        targetAgent: "source_verification",
-        claim: "Test challenge",
-        challenge: "Counter-argument attempt",
-        severity: "minor",
-        evidence: "Challenge evidence",
-      },
-    ],
-    overallAssessment: "Consensus is strong.",
-    suggestedConfidenceAdjustment: -5,
-    counterArgumentSucceeded: false,
-    counterArgumentSummary: "Counter-argument failed.",
-    thinkingExcerpt: "DA thinking...",
-  };
-}
-
-function makeFinalVerdict(overrides: Partial<FinalVerdict> = {}): FinalVerdict {
-  return {
-    category: "likely-false",
-    confidence: 15,
-    confidenceDecomposition: {
-      evidenceStrength: 80,
-      sourceReliability: 85,
-      claimComplexity: 70,
-      counterArgumentResilience: 90,
-    },
-    summary: "Verdict summary.",
-    reasoning: "Verdict reasoning.",
-    manipulationTechniques: [],
-    keyFindings: ["Finding 1"],
-    sources: [{ url: "https://example.com", title: "Source", relevance: "Primary" }],
-    whatWouldChangeMyMind: "New evidence",
-    devilsAdvocateOutcome: "counter_argument_failed",
-    deepReasoningActivated: false,
-    thinkingSummary: "Judge thinking...",
-    ...overrides,
-  };
-}
+import {
+  makeClassifierResult,
+  makeSearchStrategy,
+  makeAgentReport,
+  makeChallengeReport,
+  makeFinalVerdict,
+} from "../../fixtures/index.js";
 
 // ── Mock Agent Modules ─────────────────────────────────────────
 
