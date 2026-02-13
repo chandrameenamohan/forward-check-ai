@@ -521,6 +521,113 @@ describe("runJudge", () => {
     ).rejects.toThrow("Judge did not call submit_verdict tool");
   });
 
+  it("should truncate summary longer than 500 chars instead of failing", async () => {
+    // Create a summary that is 600 chars — well over the 500 limit
+    const longSummary = "A".repeat(600);
+
+    const verdictWithLongSummary = makeFinalVerdict({
+      category: "likely-false",
+      confidence: 12,
+      summary: longSummary,
+    });
+
+    const response = buildMockMessage({
+      content: [
+        {
+          type: "thinking" as const,
+          thinking: "Analyzing...",
+        },
+        {
+          type: "tool_use" as const,
+          id: "toolu_01",
+          name: "submit_verdict",
+          input: verdictWithLongSummary,
+        },
+      ],
+      stop_reason: "tool_use",
+    });
+
+    const endTurnResponse = buildMockMessage({
+      content: [
+        {
+          type: "text" as const,
+          text: "Done.",
+          citations: null,
+        },
+      ],
+      stop_reason: "end_turn",
+    });
+
+    mockCreate.mockResolvedValueOnce(response);
+    mockCreate.mockResolvedValueOnce(endTurnResponse);
+
+    const result = await runJudge(
+      "Some claim",
+      SAMPLE_AGENT_REPORTS,
+      SAMPLE_CHALLENGE_REPORT,
+      SAMPLE_SEARCH_STRATEGY,
+      client,
+      toolRegistry,
+    );
+
+    // Should succeed (not throw) and truncate the summary
+    expect(result.verdict.summary.length).toBeLessThanOrEqual(500);
+    expect(result.verdict.summary.endsWith("...")).toBe(true);
+  });
+
+  it("should accept summary at exactly 500 chars", async () => {
+    const exactSummary = "B".repeat(500);
+
+    const verdictWithExactSummary = makeFinalVerdict({
+      category: "likely-false",
+      confidence: 12,
+      summary: exactSummary,
+    });
+
+    const response = buildMockMessage({
+      content: [
+        {
+          type: "thinking" as const,
+          thinking: "Analyzing...",
+        },
+        {
+          type: "tool_use" as const,
+          id: "toolu_01",
+          name: "submit_verdict",
+          input: verdictWithExactSummary,
+        },
+      ],
+      stop_reason: "tool_use",
+    });
+
+    const endTurnResponse = buildMockMessage({
+      content: [
+        {
+          type: "text" as const,
+          text: "Done.",
+          citations: null,
+        },
+      ],
+      stop_reason: "end_turn",
+    });
+
+    mockCreate.mockResolvedValueOnce(response);
+    mockCreate.mockResolvedValueOnce(endTurnResponse);
+
+    const result = await runJudge(
+      "Some claim",
+      SAMPLE_AGENT_REPORTS,
+      SAMPLE_CHALLENGE_REPORT,
+      SAMPLE_SEARCH_STRATEGY,
+      client,
+      toolRegistry,
+    );
+
+    // Should succeed and preserve the exact 500-char summary
+    expect(result.verdict.summary).toBe(exactSummary);
+    expect(result.verdict.summary.length).toBe(500);
+  });
+
   it("should throw when tool output fails Zod validation", async () => {
     const response = buildMockMessage({
       content: [

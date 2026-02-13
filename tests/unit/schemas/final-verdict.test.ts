@@ -280,18 +280,18 @@ describe("FinalVerdict schema", () => {
     expect(aboveHundred.success).toBe(false);
   });
 
-  it("should enforce max 300 chars on summary", async () => {
+  it("should enforce max 500 chars on summary", async () => {
     const { FinalVerdictSchema } = await import(
       "../../../src/schemas/final-verdict.js"
     );
 
     const atLimit = FinalVerdictSchema.safeParse(
-      makeValidVerdict({ summary: "x".repeat(300) }),
+      makeValidVerdict({ summary: "x".repeat(500) }),
     );
     expect(atLimit.success).toBe(true);
 
     const overLimit = FinalVerdictSchema.safeParse(
-      makeValidVerdict({ summary: "x".repeat(301) }),
+      makeValidVerdict({ summary: "x".repeat(501) }),
     );
     expect(overLimit.success).toBe(false);
   });

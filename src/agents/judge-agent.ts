@@ -129,8 +129,8 @@ const SUBMIT_VERDICT_TOOL = {
       },
       summary: {
         type: "string" as const,
-        description: "Brief summary of the verdict (max 300 chars).",
-        maxLength: 300,
+        description: "Brief summary of the verdict (max 500 chars).",
+        maxLength: 500,
       },
       reasoning: {
         type: "string" as const,
@@ -357,6 +357,11 @@ Follow the 4-phase process (Strategize → Synthesize → Evaluate → Verdict).
   const verdictInput = submitCall.input as Record<string, unknown>;
   if (thinkingSummary) {
     verdictInput["thinkingSummary"] = thinkingSummary;
+  }
+
+  // Truncate summary if it exceeds 500 chars to prevent Zod rejection
+  if (typeof verdictInput["summary"] === "string" && verdictInput["summary"].length > 500) {
+    verdictInput["summary"] = verdictInput["summary"].substring(0, 497) + "...";
   }
 
   // Validate with Zod schema

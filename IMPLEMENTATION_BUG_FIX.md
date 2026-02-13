@@ -123,7 +123,7 @@ The `summary` field in the `submit_verdict` tool schema and the `FinalVerdictSch
 - The Judge's verdict was excellent (identified geographic imprecision at 69°S vs 90°S) but was discarded
 
 ### Task B4.1: Increase summary maxLength and truncate gracefully
-- [ ]
+- [x]
 **Objective:** Prevent valid verdicts from being rejected over summary length. Increase the limit and add a truncation safety net.
 **Details:**
 - Edit `src/schemas/final-verdict.ts` — change `summary` maxLength from 300 to 500

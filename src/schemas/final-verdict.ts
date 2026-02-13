@@ -46,7 +46,7 @@ export const FinalVerdictSchema = z.object({
     .optional(),
   confidence: z.number().min(0).max(100),
   confidenceDecomposition: ConfidenceDecomposition,
-  summary: z.string().max(300),
+  summary: z.string().max(500),
   reasoning: z.string(),
   manipulationTechniques: z.array(ManipulationTechnique),
   keyFindings: z.array(z.string()),
