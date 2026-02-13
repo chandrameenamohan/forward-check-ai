@@ -220,7 +220,7 @@
 - Test: `"GET / should include IntersectionObserver script"`
 
 ### Task 7.2: Meta tags, OG image, and SEO
-- [ ]
+- [x]
 **Objective:** Add Open Graph meta tags and a favicon so the page looks professional when shared.
 **Details:**
 - `<title>`: "ForwardCheck-AI — Fact-check any message in 60 seconds"

@@ -368,4 +368,51 @@ describe("Landing page routes", () => {
     expect(html).toContain("fc-animate");
   });
 
+  it("GET / should contain og:title meta tag", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/`);
+    const html = await res.text();
+
+    expect(html).toContain('og:title');
+    expect(html).toContain('og:description');
+    expect(html).toContain('og:image');
+    expect(html).toContain('og:url');
+  });
+
+  it("GET / should contain twitter card meta tags", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/`);
+    const html = await res.text();
+
+    expect(html).toContain('twitter:card');
+    expect(html).toContain('twitter:title');
+    expect(html).toContain('twitter:description');
+  });
+
+  it("GET / should contain meta description", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/`);
+    const html = await res.text();
+
+    expect(html).toContain('name="description"');
+    expect(html).toContain("fact-check");
+  });
+
+  it("GET / should contain favicon link", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/`);
+    const html = await res.text();
+
+    expect(html).toContain('rel="icon"');
+    expect(html).toContain('image/svg+xml');
+  });
+
+  it("GET / should contain canonical URL", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/`);
+    const html = await res.text();
+
+    expect(html).toContain('rel="canonical"');
+  });
+
 });
