@@ -9,7 +9,7 @@
 ## Phase T0: Coverage Tooling
 
 ### Task T0.1: Add Vitest coverage with V8 provider
-- [ ]
+- [x]
 **Objective:** Install `@vitest/coverage-v8` and configure `vitest.config.ts` to generate coverage reports.
 **Details:**
 - `npm install -D @vitest/coverage-v8`
