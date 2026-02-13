@@ -13,7 +13,7 @@ import { runDomainExpertise } from "../agents/investigators/domain-expertise-age
 import { runPatternMatching } from "../agents/investigators/pattern-matching-agent.js";
 import { runDevilsAdvocate } from "../agents/devils-advocate-agent.js";
 import { runJudge } from "../agents/judge-agent.js";
-import { enforceConfidenceGates } from "../formatter/confidence-gates.js";
+import { enforceConfidenceGates, detectConfidenceMismatch } from "../formatter/confidence-gates.js";
 import { createLogger } from "../config/logger.js";
 
 const logger = createLogger({ level: "info" });
@@ -224,6 +224,17 @@ export class InvestigationPipeline {
       ...rawVerdict,
       deepReasoningActivated,
     };
+
+    if (detectConfidenceMismatch(verdictWithFlag)) {
+      logger.warn(
+        {
+          category: verdictWithFlag.category,
+          confidence: verdictWithFlag.confidence,
+        },
+        "Judge confidence/category mismatch detected — gate will override",
+      );
+    }
+
     const finalVerdict = enforceConfidenceGates(verdictWithFlag);
 
     // ── Step 9: Save to DB ──────────────────────────────────

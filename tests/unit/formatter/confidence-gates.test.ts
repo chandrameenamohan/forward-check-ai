@@ -1,5 +1,8 @@
 import { describe, it, expect } from "vitest";
-import { enforceConfidenceGates } from "../../../src/formatter/confidence-gates.js";
+import {
+  enforceConfidenceGates,
+  detectConfidenceMismatch,
+} from "../../../src/formatter/confidence-gates.js";
 import { makeFinalVerdict as makeVerdict } from "../../fixtures/index.js";
 
 describe("enforceConfidenceGates", () => {
@@ -115,5 +118,47 @@ describe("enforceConfidenceGates", () => {
     expect(result.summary).toBe("Keep this summary");
     expect(result.reasoning).toBe("Keep this reasoning");
     expect(result.keyFindings).toEqual(["finding1", "finding2"]);
+  });
+});
+
+describe("detectConfidenceMismatch", () => {
+  it("should return true for likely-false with confidence 97", () => {
+    const verdict = makeVerdict({ category: "likely-false", confidence: 97 });
+    expect(detectConfidenceMismatch(verdict)).toBe(true);
+  });
+
+  it("should return false for likely-false with confidence 15", () => {
+    const verdict = makeVerdict({ category: "likely-false", confidence: 15 });
+    expect(detectConfidenceMismatch(verdict)).toBe(false);
+  });
+
+  it("should return true for likely-true with confidence 50", () => {
+    const verdict = makeVerdict({ category: "likely-true", confidence: 50 });
+    expect(detectConfidenceMismatch(verdict)).toBe(true);
+  });
+
+  it("should return false for likely-true with confidence 92", () => {
+    const verdict = makeVerdict({ category: "likely-true", confidence: 92 });
+    expect(detectConfidenceMismatch(verdict)).toBe(false);
+  });
+
+  it("should return false for satire regardless of confidence", () => {
+    const verdict = makeVerdict({ category: "satire", confidence: 50 });
+    expect(detectConfidenceMismatch(verdict)).toBe(false);
+  });
+
+  it("should return false for opinion regardless of confidence", () => {
+    const verdict = makeVerdict({ category: "opinion", confidence: 10 });
+    expect(detectConfidenceMismatch(verdict)).toBe(false);
+  });
+
+  it("should return true for partially-true with confidence 30", () => {
+    const verdict = makeVerdict({ category: "partially-true", confidence: 30 });
+    expect(detectConfidenceMismatch(verdict)).toBe(true);
+  });
+
+  it("should return false for unverified with confidence 45", () => {
+    const verdict = makeVerdict({ category: "unverified", confidence: 45 });
+    expect(detectConfidenceMismatch(verdict)).toBe(false);
   });
 });

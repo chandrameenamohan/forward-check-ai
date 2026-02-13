@@ -34,7 +34,7 @@ The Judge prompt tells the Judge that `likely-false` means confidence 0-29, so t
 - `npx tsc --noEmit` passes
 
 ### Task B1.2: Add confidence-category alignment validation in pipeline
-- [ ]
+- [x]
 **Objective:** Add a safety check in the pipeline that logs a warning when Judge output has misaligned confidence/category, BEFORE the gate overrides.
 **Details:**
 - Edit `src/orchestrator/pipeline.ts` — after receiving `rawVerdict` from Judge (line ~212), add a check:

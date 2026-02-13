@@ -52,6 +52,7 @@ vi.mock("../../../src/agents/judge-agent.js", () => ({
 
 vi.mock("../../../src/formatter/confidence-gates.js", () => ({
   enforceConfidenceGates: vi.fn(),
+  detectConfidenceMismatch: vi.fn().mockReturnValue(false),
 }));
 
 // ── Import after mocks ────────────────────────────────────────

@@ -29,6 +29,20 @@ function getCategoryForConfidence(confidence: number): GatedCategory {
   return "unverified";
 }
 
+/**
+ * Detect whether the Judge's confidence score is misaligned with its category.
+ * Returns true if the confidence does not fall in the expected range for the category.
+ * Satire and opinion categories always return false (bypass).
+ */
+export function detectConfidenceMismatch(verdict: FinalVerdict): boolean {
+  if (BYPASS_CATEGORIES.has(verdict.category)) {
+    return false;
+  }
+
+  const expectedCategory = getCategoryForConfidence(verdict.confidence);
+  return expectedCategory !== verdict.category;
+}
+
 export function enforceConfidenceGates(verdict: FinalVerdict): FinalVerdict {
   if (BYPASS_CATEGORIES.has(verdict.category)) {
     return { ...verdict };
