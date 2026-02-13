@@ -154,7 +154,7 @@
 ## Phase 5: Tech Showcase Section
 
 ### Task 5.1: Opus 4.6 showcase and tech stack display
-- [ ]
+- [x]
 **Objective:** Highlight the creative use of Opus 4.6 (25% of judging criteria) and the tech stack.
 **Details:**
 - Section title: "Built with Opus 4.6"

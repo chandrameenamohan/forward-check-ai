@@ -245,4 +245,47 @@ describe("Landing page routes", () => {
     expect(html).toContain("/v/demo");
   });
 
+  it("GET / should contain Opus 4.6 showcase section", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/`);
+    const html = await res.text();
+
+    expect(html).toContain("fc-opus-showcase");
+    expect(html).toContain("Three Brains");
+  });
+
+  it("GET / should contain 3-tier model strategy visual", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/`);
+    const html = await res.text();
+
+    expect(html).toContain("Haiku");
+    expect(html).toContain("Sonnet");
+    expect(html).toContain("Opus 4.6");
+  });
+
+  it("GET / should contain all 4 reasoning modes", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/`);
+    const html = await res.text();
+
+    expect(html).toContain("Strategic Planning");
+    expect(html).toContain("Adversarial Challenge");
+    expect(html).toContain("Tool-Augmented Verification");
+    expect(html).toContain("Confidence Decomposition");
+  });
+
+  it("GET / should contain tech stack pills", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/`);
+    const html = await res.text();
+
+    expect(html).toContain("TypeScript");
+    expect(html).toContain("Grammy");
+    expect(html).toContain("Express");
+    expect(html).toContain("SQLite");
+    expect(html).toContain("Zod");
+    expect(html).toContain("Anthropic SDK");
+  });
+
 });

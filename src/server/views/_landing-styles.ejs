@@ -1147,4 +1147,346 @@
         padding: 0.4rem 0.75rem;
       }
     }
+
+    /* ─── OPUS 4.6 SHOWCASE SECTION ─── */
+    .fc-opus-showcase {
+      padding: 4rem 0 3rem;
+      text-align: center;
+    }
+
+    .fc-opus-header {
+      margin-bottom: 3rem;
+    }
+
+    .fc-opus-eyebrow {
+      display: inline-block;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.62rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--fc-accent-green);
+      margin-bottom: 1rem;
+      padding: 0.3rem 0.9rem;
+      background: rgba(34, 197, 94, 0.06);
+      border: 1px solid rgba(34, 197, 94, 0.12);
+      border-radius: 100px;
+    }
+
+    .fc-opus-title {
+      font-family: 'Instrument Serif', serif;
+      font-size: clamp(1.8rem, 4.5vw, 2.8rem);
+      font-weight: 400;
+      line-height: 1.2;
+      color: var(--fc-text);
+      margin-bottom: 0.8rem;
+    }
+
+    .fc-opus-sub {
+      font-family: 'Satoshi', sans-serif;
+      font-size: clamp(0.92rem, 2vw, 1.05rem);
+      color: var(--fc-text-muted);
+      line-height: 1.7;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    /* ─── 3-TIER PYRAMID ─── */
+    .fc-opus-tiers {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .fc-opus-tier {
+      position: relative;
+      display: flex;
+      align-items: stretch;
+      background: rgba(18, 18, 26, 0.7);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--fc-border);
+      border-radius: 12px;
+      overflow: hidden;
+      text-align: left;
+      transition: transform 0.3s ease-out, box-shadow 0.3s ease-out, border-color 0.3s ease-out;
+    }
+
+    .fc-opus-tier:hover {
+      transform: translateY(-2px);
+    }
+
+    /* Pyramid widths: top narrowest → bottom widest */
+    .fc-opus-tier--opus {
+      width: 72%;
+      max-width: 520px;
+    }
+
+    .fc-opus-tier--sonnet {
+      width: 86%;
+      max-width: 620px;
+    }
+
+    .fc-opus-tier--haiku {
+      width: 100%;
+      max-width: 720px;
+    }
+
+    /* Left accent bar */
+    .fc-opus-tier-accent {
+      width: 3px;
+      flex-shrink: 0;
+    }
+
+    .fc-opus-tier--haiku .fc-opus-tier-accent {
+      background: var(--fc-accent-gray);
+    }
+
+    .fc-opus-tier--sonnet .fc-opus-tier-accent {
+      background: var(--fc-accent-blue);
+    }
+
+    .fc-opus-tier--opus .fc-opus-tier-accent {
+      background: var(--fc-accent-green);
+      box-shadow: 0 0 12px rgba(34, 197, 94, 0.3);
+    }
+
+    .fc-opus-tier-content {
+      padding: 1.1rem 1.4rem;
+      flex: 1;
+    }
+
+    .fc-opus-tier-head {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.35rem;
+    }
+
+    .fc-opus-tier-badge {
+      display: inline-block;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.55rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.15rem 0.55rem;
+      border-radius: 100px;
+    }
+
+    .fc-opus-tier-badge--haiku {
+      color: var(--fc-accent-gray);
+      background: rgba(107, 114, 128, 0.1);
+      border: 1px solid rgba(107, 114, 128, 0.2);
+    }
+
+    .fc-opus-tier-badge--sonnet {
+      color: var(--fc-accent-blue);
+      background: rgba(59, 130, 246, 0.08);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+    }
+
+    .fc-opus-tier-badge--opus {
+      color: var(--fc-accent-green);
+      background: rgba(34, 197, 94, 0.06);
+      border: 1px solid rgba(34, 197, 94, 0.15);
+      box-shadow: 0 0 8px rgba(34, 197, 94, 0.06);
+    }
+
+    .fc-opus-tier-role {
+      font-family: 'Satoshi', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--fc-text);
+    }
+
+    .fc-opus-tier-desc {
+      font-family: 'Satoshi', sans-serif;
+      font-size: 0.82rem;
+      color: var(--fc-text-muted);
+      line-height: 1.55;
+    }
+
+    /* Opus tier green glow */
+    .fc-opus-tier-glow {
+      position: absolute;
+      top: -20px;
+      right: -20px;
+      width: 120px;
+      height: 120px;
+      background: radial-gradient(circle, rgba(34, 197, 94, 0.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* Hover enhancements per tier */
+    .fc-opus-tier--opus:hover {
+      border-color: rgba(34, 197, 94, 0.25);
+      box-shadow: 0 4px 30px rgba(34, 197, 94, 0.08), 0 0 60px rgba(34, 197, 94, 0.03);
+    }
+
+    .fc-opus-tier--sonnet:hover {
+      border-color: rgba(59, 130, 246, 0.25);
+      box-shadow: 0 4px 30px rgba(59, 130, 246, 0.06);
+    }
+
+    .fc-opus-tier--haiku:hover {
+      border-color: rgba(107, 114, 128, 0.3);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    /* ─── REASONING MODES DIVIDER ─── */
+    .fc-opus-modes-label {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .fc-opus-modes-line {
+      flex: 1;
+      height: 1px;
+      background: var(--fc-border);
+    }
+
+    .fc-opus-modes-tag {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.58rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--fc-accent-green);
+      white-space: nowrap;
+    }
+
+    /* ─── 4 REASONING MODE CARDS ─── */
+    .fc-opus-modes {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .fc-opus-mode {
+      background: rgba(18, 18, 26, 0.5);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--fc-border);
+      border-radius: 12px;
+      padding: 1.25rem 1.2rem;
+      text-align: left;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    .fc-opus-mode:hover {
+      border-color: rgba(34, 197, 94, 0.18);
+      box-shadow: 0 0 20px rgba(34, 197, 94, 0.04);
+    }
+
+    .fc-opus-mode-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: rgba(34, 197, 94, 0.06);
+      border: 1px solid rgba(34, 197, 94, 0.1);
+      color: var(--fc-accent-green);
+      margin-bottom: 0.85rem;
+    }
+
+    .fc-opus-mode-title {
+      font-family: 'Satoshi', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--fc-text);
+      margin-bottom: 0.4rem;
+    }
+
+    .fc-opus-mode-desc {
+      font-family: 'Satoshi', sans-serif;
+      font-size: 0.8rem;
+      color: var(--fc-text-muted);
+      line-height: 1.6;
+    }
+
+    /* ─── TECH STACK PILLS ─── */
+    .fc-opus-stack {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .fc-opus-stack-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.58rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--fc-text-dim);
+    }
+
+    .fc-opus-stack-pills {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .fc-opus-pill {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.58rem;
+      font-weight: 400;
+      letter-spacing: 0.06em;
+      color: var(--fc-text-dim);
+      padding: 0.2rem 0.65rem;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--fc-border);
+      border-radius: 100px;
+      transition: color 0.2s, border-color 0.2s;
+    }
+
+    .fc-opus-pill:hover {
+      color: var(--fc-text-muted);
+      border-color: var(--fc-text-dim);
+    }
+
+    /* ─── OPUS SHOWCASE MOBILE ─── */
+    @media (max-width: 768px) {
+      .fc-opus-tiers {
+        gap: 0.4rem;
+      }
+
+      .fc-opus-tier--opus,
+      .fc-opus-tier--sonnet,
+      .fc-opus-tier--haiku {
+        width: 100%;
+      }
+
+      .fc-opus-modes {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .fc-opus-tier-content {
+        padding: 0.9rem 1rem;
+      }
+
+      .fc-opus-tier-head {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.35rem;
+      }
+
+      .fc-opus-stack {
+        flex-direction: column;
+        gap: 0.6rem;
+      }
+
+      .fc-opus-stack-pills {
+        justify-content: center;
+      }
+    }
   </style>

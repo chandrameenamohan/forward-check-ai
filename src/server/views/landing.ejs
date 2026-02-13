@@ -318,96 +318,9 @@
         </div>
       </section>
 
-      <!-- ─── VERDICT PREVIEW ─── -->
-      <section class="fc-verdict-preview" aria-label="Live verdict example">
-        <div class="fc-verdict-preview-header">
-          <span class="fc-verdict-preview-eyebrow">Proof</span>
-          <h2 class="fc-verdict-preview-title">Don't Take Our Word For It</h2>
-          <p class="fc-verdict-preview-sub">Here's a real verdict from a viral claim that hit thousands of inboxes.</p>
-        </div>
+      <%- include('_verdict-preview') %>
 
-        <div class="fc-verdict-preview-card">
-          <!-- Glow accent behind card -->
-          <div class="fc-verdict-preview-glow" aria-hidden="true"></div>
-
-          <!-- Original claim quote -->
-          <div class="fc-verdict-preview-claim">
-            <div class="fc-verdict-preview-claim-label">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 17 20 12 15 7"/><path d="M4 18v-2a4 4 0 0 1 4-4h12"/></svg>
-              Forwarded claim
-            </div>
-            <p class="fc-verdict-preview-claim-text">PM Modi announces Rs 5000 direct transfer to all citizens through new government scheme</p>
-          </div>
-
-          <!-- Verdict badge row -->
-          <div class="fc-verdict-preview-badge-row">
-            <div class="fc-verdict-preview-badge">
-              <span class="fc-verdict-preview-badge-dot"></span>
-              LIKELY FALSE
-            </div>
-
-            <!-- Confidence ring -->
-            <div class="fc-verdict-preview-ring">
-              <svg width="52" height="52" viewBox="0 0 52 52">
-                <circle cx="26" cy="26" r="22" fill="none" stroke="var(--fc-border)" stroke-width="3"/>
-                <circle cx="26" cy="26" r="22" fill="none" stroke="var(--fc-accent-red)" stroke-width="3" stroke-linecap="round"
-                  stroke-dasharray="127.23" stroke-dashoffset="10.18"
-                  transform="rotate(-90 26 26)"/>
-              </svg>
-              <span class="fc-verdict-preview-ring-label">92%</span>
-            </div>
-          </div>
-
-          <!-- Summary -->
-          <p class="fc-verdict-preview-summary">No official government source confirms this program. The claim traces back to a viral WhatsApp forward with no links, no dates, and no named officials. Three investigators searched government press releases, PIB archives, and fact-checker databases — none found matching announcements.</p>
-
-          <!-- Confidence decomposition -->
-          <div class="fc-verdict-preview-scores">
-            <div class="fc-verdict-preview-score">
-              <div class="fc-verdict-preview-score-head">
-                <span class="fc-verdict-preview-score-label">Evidence strength</span>
-                <span class="fc-verdict-preview-score-val">18%</span>
-              </div>
-              <div class="fc-verdict-preview-score-track">
-                <div class="fc-verdict-preview-score-fill fc-verdict-preview-score-fill--low" style="width:18%"></div>
-              </div>
-            </div>
-            <div class="fc-verdict-preview-score">
-              <div class="fc-verdict-preview-score-head">
-                <span class="fc-verdict-preview-score-label">Source quality</span>
-                <span class="fc-verdict-preview-score-val">12%</span>
-              </div>
-              <div class="fc-verdict-preview-score-track">
-                <div class="fc-verdict-preview-score-fill fc-verdict-preview-score-fill--low" style="width:12%"></div>
-              </div>
-            </div>
-            <div class="fc-verdict-preview-score">
-              <div class="fc-verdict-preview-score-head">
-                <span class="fc-verdict-preview-score-label">Claim complexity</span>
-                <span class="fc-verdict-preview-score-val">35%</span>
-              </div>
-              <div class="fc-verdict-preview-score-track">
-                <div class="fc-verdict-preview-score-fill fc-verdict-preview-score-fill--mid" style="width:35%"></div>
-              </div>
-            </div>
-            <div class="fc-verdict-preview-score">
-              <div class="fc-verdict-preview-score-head">
-                <span class="fc-verdict-preview-score-label">Counter-argument resilience</span>
-                <span class="fc-verdict-preview-score-val">8%</span>
-              </div>
-              <div class="fc-verdict-preview-score-track">
-                <div class="fc-verdict-preview-score-fill fc-verdict-preview-score-fill--low" style="width:8%"></div>
-              </div>
-            </div>
-          </div>
-
-          <!-- CTA -->
-          <a href="/v/demo" class="fc-verdict-preview-cta">
-            Read the full analysis
-            <span class="fc-verdict-preview-cta-arrow">→</span>
-          </a>
-        </div>
-      </section>
+      <%- include('_opus-showcase') %>
 
     </main>
 
