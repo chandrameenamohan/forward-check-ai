@@ -192,7 +192,7 @@
 - Script prints clear pass/fail summary at the end
 
 ### Task T6.2: Full quality run with report
-- [ ]
+- [x]
 **Objective:** Add an opt-in command that runs the full quality gate INCLUDING live-API integration tests and produces a Markdown report.
 **Details:**
 - Create `scripts/quality-full.sh`

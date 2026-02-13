@@ -8,4 +8,5 @@ data/
 *.db-shm
 .DS_Store
 coverage/
+quality-report.md
 tmp/
