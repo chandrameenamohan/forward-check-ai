@@ -94,7 +94,7 @@
 ## Phase T3: Non-Factual Pipeline E2E
 
 ### Task T3.1: Non-factual message pipeline E2E test
-- [ ]
+- [x]
 **Objective:** Verify the complete pipeline short-circuits correctly for non-factual messages (greeting, opinion, scam, other) using real Anthropic API.
 **Details:**
 - Create `tests/integration/non-factual-e2e.test.ts`
