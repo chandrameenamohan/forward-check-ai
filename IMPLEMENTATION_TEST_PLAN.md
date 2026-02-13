@@ -27,7 +27,7 @@
 ## Phase T1: Shared Test Fixtures
 
 ### Task T1.1: Create shared fixture factory for pipeline data
-- [ ]
+- [x]
 **Objective:** Build a `tests/fixtures/` module that exports factory functions for all pipeline Zod types, eliminating copy-paste across test files.
 **Details:**
 - Create `tests/fixtures/index.ts` — barrel export
