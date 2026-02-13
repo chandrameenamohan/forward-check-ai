@@ -495,7 +495,7 @@ describe("runJudge", () => {
     expect(mockCreate).toHaveBeenCalledTimes(3);
   });
 
-  it("should throw when no submit_verdict tool use in response", async () => {
+  it("should throw when no submit_verdict tool use in response after retry", async () => {
     const response = buildMockMessage({
       content: [
         {
@@ -507,6 +507,8 @@ describe("runJudge", () => {
       stop_reason: "end_turn",
     });
 
+    // Mock initial response (no submit_verdict) + retry response (also no submit_verdict)
+    mockCreate.mockResolvedValueOnce(response);
     mockCreate.mockResolvedValueOnce(response);
 
     await expect(
@@ -518,7 +520,7 @@ describe("runJudge", () => {
         client,
         toolRegistry,
       ),
-    ).rejects.toThrow("Judge did not call submit_verdict tool");
+    ).rejects.toThrow("Judge did not call submit_verdict tool after retry");
   });
 
   it("should truncate summary longer than 500 chars instead of failing", async () => {

@@ -297,14 +297,14 @@ describe("AgentReport schema", () => {
     expect(AgentReportSchema.safeParse(invalidFindingConfidence).success).toBe(false);
   });
 
-  it("should enforce max 500 chars on summary", async () => {
+  it("should enforce max 800 chars on summary", async () => {
     const { AgentReportSchema } = await import(
       "../../../src/schemas/agent-report.js"
     );
 
     const longSummary = {
       agentRole: "source_verification",
-      summary: "x".repeat(501),
+      summary: "x".repeat(801),
       findings: [],
       overallAssessment: "Assessment",
       confidenceScore: 50,

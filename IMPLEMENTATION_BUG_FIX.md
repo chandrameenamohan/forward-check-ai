@@ -144,6 +144,52 @@ The `summary` field in the `submit_verdict` tool schema and the `FinalVerdictSch
 
 ---
 
+## Bug B5: Judge Exhausts Turns Without Calling submit_verdict
+
+### Root Cause
+The Judge has `MAX_TURNS = 3`. When the DA raises critical-severity challenges, the Judge follows its prompt instructions to independently verify via `brave_web_search`. It uses all 3 turns doing searches and never calls `submit_verdict`. The entire investigation (~$0.50 in API cost, ~4 minutes) is thrown away. Unlike investigators (which have a retry mechanism via report-extractor), the Judge had no fallback.
+
+**Evidence from Telegram bot testing:**
+- Claim sent via Telegram → Judge made 3 `brave_web_search` calls → "Judge did not call submit_verdict tool" → User sees "Sorry, an error occurred"
+
+### Task B5.1: Increase Judge max turns and add submit_verdict retry
+- [x]
+**Objective:** Prevent the Judge from exhausting its turns without producing a verdict.
+**Details:**
+- Edit `src/agents/judge-agent.ts` — increase `MAX_TURNS` from 3 to 5
+- Add retry fallback after the agent loop: if `submit_verdict` not found in `result.toolCalls`, send a 1-turn follow-up asking the Judge to call `submit_verdict` immediately (same pattern as investigator report-extractor)
+- Track `totalCostUsd` across initial run + retry
+- Edit `src/orchestrator/agent-runner.ts` — expose `_messages` in `AgentResult` so the retry can continue the conversation context
+**Validation:**
+- Test file: `tests/unit/agents/judge-agent.test.ts` — updated "should throw when no submit_verdict" test to mock both initial + retry responses
+- All existing tests pass
+- `npx tsc --noEmit` passes
+- Verified via Telegram bot: Judge now produces verdict after retry
+
+---
+
+## Bug B6: Investigator Summary Exceeds Zod maxLength and Kills Valid Report
+
+### Root Cause
+Same pattern as Bug B4 but for `AgentReport` schema. The `summary` field has `maxLength: 500` in the Zod schema and investigator tool definitions. The `domain_expertise` investigator sometimes writes detailed summaries exceeding 500 characters, causing Zod validation to fail and the entire investigator report to be discarded.
+
+**Evidence from integration test + Telegram bot testing:**
+- Domain expertise investigator produced excellent findings for PM Modi claim → summary was ~540 chars → Zod rejected: `"Too big: expected string to have <=500 characters"` → Investigator marked as failed
+
+### Task B6.1: Increase AgentReport summary maxLength and add truncation
+- [x]
+**Objective:** Prevent valid investigator reports from being rejected over summary length.
+**Details:**
+- Edit `src/schemas/agent-report.ts` — change `summary` maxLength from 500 to 800
+- Edit all 3 investigator files — update `submit_report` tool schema: change `summary` maxLength from 500 to 800, update description to say "(max 800 chars)"
+- Edit `src/agents/investigators/report-extractor.ts` — add truncation safety net in `validateReport()`: if summary > 800 chars, truncate to 797 + "..."
+**Validation:**
+- Test file: `tests/unit/schemas/agent-report.test.ts` — updated "should enforce max chars on summary" test for new 800 limit
+- All existing tests pass
+- `npx tsc --noEmit` passes
+
+---
+
 ## Dependency Graph
 
 ```
@@ -156,14 +202,18 @@ B2.1 (Increase max turns) ← independent, can run first
 B3.1 (Failure log identity) ← independent, can run anytime
 
 B4.1 (Summary maxLength + truncation) ← independent, can run anytime
+
+B5.1 (Judge retry fallback) ← independent, can run anytime
+
+B6.1 (AgentReport summary maxLength) ← independent, can run anytime
 ```
 
-**Recommended order:** B1.1 → B4.1 → B1.2 → B2.1 → B2.2 → B3.1
+**Recommended order:** B1.1 → B4.1 → B1.2 → B2.1 → B2.2 → B3.1 → B5.1 → B6.1
 
-(B4.1 is placed early because it's a quick fix that prevents wasted API spend.)
-
-After all fixes, re-run `npx tsx scripts/seed-demo.ts` to verify:
+After all fixes, re-run `npx tsx scripts/seed-demo.ts` and test via Telegram bot to verify:
 - Claims get correct verdicts (likely-false stays likely-false)
 - Chandrayaan-3 verdict is accepted (not rejected by Zod)
 - All 3 investigators succeed (no submit_report failures)
 - Failure logs name the specific agent that failed
+- Judge produces verdict even when doing multiple web searches (B5 fix)
+- Investigator reports with long summaries are not rejected (B6 fix)

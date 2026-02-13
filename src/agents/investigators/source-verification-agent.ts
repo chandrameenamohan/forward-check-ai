@@ -71,8 +71,8 @@ const SUBMIT_REPORT_TOOL: Tool = {
       },
       summary: {
         type: "string" as const,
-        description: "Brief summary of your investigation findings (max 500 chars).",
-        maxLength: 500,
+        description: "Brief summary of your investigation findings (max 800 chars).",
+        maxLength: 800,
       },
       findings: {
         type: "array" as const,

@@ -1,3 +1,4 @@
+import type { MessageParam } from "@anthropic-ai/sdk/resources/messages/messages.js";
 import type { ClaudeClient } from "../services/claude-client.js";
 import { MODELS } from "../services/claude-client.js";
 import { FinalVerdictSchema, type FinalVerdict } from "../schemas/final-verdict.js";
@@ -11,7 +12,7 @@ import { createLogger } from "../config/logger.js";
 const logger = createLogger({ level: "info" });
 
 /** Max turns for the Judge agent loop (search + verdict + end_turn margin) */
-const MAX_TURNS = 3;
+const MAX_TURNS = 5;
 
 const JUDGE_SYSTEM_PROMPT = `You are the Judge — the Senior Editor of an investigative newsroom. You render the FINAL verdict on a claim after reviewing all evidence from your investigation team.
 
@@ -339,6 +340,8 @@ Follow the 4-phase process (Strategize → Synthesize → Evaluate → Verdict).
     timeoutMs: 180_000,
   });
 
+  let totalCostUsd = result.totalCostUsd;
+
   // Extract thinking summary from thinking blocks
   let thinkingSummary = "";
   if (result.thinkingBlocks.length > 0) {
@@ -347,10 +350,50 @@ Follow the 4-phase process (Strategize → Synthesize → Evaluate → Verdict).
   }
 
   // Find the submit_verdict tool call
-  const submitCall = result.toolCalls.find((tc) => tc.name === "submit_verdict");
+  let submitCall = result.toolCalls.find((tc) => tc.name === "submit_verdict");
+
+  // Retry: if Judge didn't call submit_verdict, send a follow-up asking for it
+  if (!submitCall) {
+    logger.warn("Judge did not call submit_verdict, sending retry follow-up");
+
+    const retryMessages: MessageParam[] = [
+      ...result._messages,
+      {
+        role: "user",
+        content:
+          "You must call the submit_verdict tool now with your complete verdict. Do not respond with text — call the submit_verdict tool immediately.",
+      },
+    ];
+
+    const retryResult = await runAgent({
+      client,
+      model: MODELS.OPUS,
+      systemPrompt: JUDGE_SYSTEM_PROMPT,
+      messages: retryMessages,
+      maxTurns: 1,
+      tools: allTools,
+      thinkingConfig: { type: "adaptive" },
+      onToolCall: async (name, input) => {
+        if (name === "submit_verdict") {
+          return "Verdict submitted successfully.";
+        }
+        return toolRegistry.execute(name, input);
+      },
+      timeoutMs: 60_000,
+    });
+
+    totalCostUsd += retryResult.totalCostUsd;
+
+    // Merge any thinking blocks from retry
+    if (retryResult.thinkingBlocks.length > 0 && !thinkingSummary) {
+      thinkingSummary = retryResult.thinkingBlocks[0]!.substring(0, 500);
+    }
+
+    submitCall = retryResult.toolCalls.find((tc) => tc.name === "submit_verdict");
+  }
 
   if (!submitCall) {
-    throw new Error("Judge did not call submit_verdict tool");
+    throw new Error("Judge did not call submit_verdict tool after retry");
   }
 
   // Inject thinking summary from actual thinking blocks
@@ -385,13 +428,13 @@ Follow the 4-phase process (Strategize → Synthesize → Evaluate → Verdict).
       manipulationTechniquesCount: validation.data.manipulationTechniques.length,
       keyFindingsCount: validation.data.keyFindings.length,
       sourcesCount: validation.data.sources.length,
-      costUsd: result.totalCostUsd.toFixed(6),
+      costUsd: totalCostUsd.toFixed(6),
     },
     "Judge completed",
   );
 
   return {
     verdict: validation.data,
-    costUsd: result.totalCostUsd,
+    costUsd: totalCostUsd,
   };
 }

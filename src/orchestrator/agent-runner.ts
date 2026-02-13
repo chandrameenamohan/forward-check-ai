@@ -47,6 +47,8 @@ export interface AgentResult {
   totalOutputTokens: number;
   /** Total estimated cost in USD */
   totalCostUsd: number;
+  /** Internal conversation messages (for retry/follow-up use) */
+  _messages: MessageParam[];
 }
 
 /**
@@ -193,5 +195,6 @@ async function runAgentLoop(config: AgentConfig): Promise<AgentResult> {
     totalInputTokens,
     totalOutputTokens,
     totalCostUsd,
+    _messages: messages,
   };
 }

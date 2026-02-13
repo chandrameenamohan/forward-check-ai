@@ -17,7 +17,7 @@ const Finding = z.object({
 
 export const AgentReportSchema = z.object({
   agentRole: z.enum(["source_verification", "domain_expertise", "pattern_matching"]),
-  summary: z.string().max(500),
+  summary: z.string().max(800),
   findings: z.array(Finding),
   manipulationIndicators: z.array(z.string()).optional(),
   overallAssessment: z.string(),

@@ -73,6 +73,14 @@ export async function extractReport(params: ExtractReportParams): Promise<AgentR
 
 /** Validate unknown data against AgentReportSchema, throwing on failure */
 function validateReport(data: unknown, agentRole: string): AgentReport {
+  // Truncate summary if it exceeds 800 chars to prevent Zod rejection
+  if (data && typeof data === "object" && "summary" in data) {
+    const record = data as Record<string, unknown>;
+    if (typeof record["summary"] === "string" && record["summary"].length > 800) {
+      record["summary"] = record["summary"].substring(0, 797) + "...";
+    }
+  }
+
   const validation = AgentReportSchema.safeParse(data);
   if (!validation.success) {
     logger.error(
