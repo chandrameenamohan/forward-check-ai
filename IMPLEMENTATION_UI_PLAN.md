@@ -24,7 +24,7 @@
 - Verify page loads in browser without errors
 
 ### Task 0.2: Create shared CSS design tokens partial
-- [ ]
+- [x]
 **Objective:** Extract the common design tokens (colors, fonts, spacing) into a reusable `_design-tokens.ejs` partial so both landing and verdict pages share the same visual language.
 **Details:**
 - Create `src/server/views/_design-tokens.ejs` — CSS variables only (no component styles)

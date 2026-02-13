@@ -1,39 +1,7 @@
-<style>
+<%- include('_design-tokens') %>
+  <style>
     :root {
-      --fc-bg: #0a0a0f;
-      --fc-surface: #12121a;
-      --fc-surface-raised: #1a1a26;
-      --fc-border: #2a2a3a;
-      --fc-text: #e8e8ef;
-      --fc-text-muted: #8888a0;
-      --fc-text-dim: #55556a;
-      --fc-accent-green: #22c55e;
-      --fc-accent-amber: #eab308;
-      --fc-accent-gray: #6b7280;
-      --fc-accent-red: #ef4444;
-      --fc-accent-purple: #a855f7;
-      --fc-accent-blue: #3b82f6;
       --fc-verdict-color: <%= verdict.category === 'likely-true' ? '#22c55e' : verdict.category === 'partially-true' ? '#eab308' : verdict.category === 'unverified' ? '#6b7280' : verdict.category === 'likely-false' ? '#ef4444' : verdict.category === 'satire' ? '#a855f7' : '#3b82f6' %>;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      background: var(--fc-bg);
-      color: var(--fc-text);
-      font-family: 'Satoshi', -apple-system, sans-serif;
-      line-height: 1.6;
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
-
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
-      pointer-events: none;
-      z-index: 0;
     }
 
     .fc-wrapper {
