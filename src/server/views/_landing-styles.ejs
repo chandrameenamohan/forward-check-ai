@@ -261,6 +261,238 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
+    /* ─── DEMO CARD ─── */
+    .fc-demo {
+      padding: 0 0 3rem;
+      display: flex;
+      justify-content: center;
+    }
+
+    .fc-demo-card {
+      width: 100%;
+      max-width: 480px;
+      background: rgba(18, 18, 26, 0.7);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--fc-border);
+      border-radius: 16px;
+      padding: 1.5rem;
+      box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.03),
+        0 8px 40px rgba(0, 0, 0, 0.4),
+        0 0 80px rgba(34, 197, 94, 0.03);
+    }
+
+    /* ─── FORWARDED MESSAGE BUBBLE ─── */
+    .fc-demo-message {
+      background: var(--fc-surface-raised);
+      border-radius: 12px;
+      border-left: 3px solid var(--fc-accent-blue);
+      padding: 1rem 1.1rem;
+      margin-bottom: 1.25rem;
+      animation: demo-msg-in 12s ease-out infinite;
+    }
+
+    .fc-demo-message-fwd {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--fc-accent-blue);
+      margin-bottom: 0.5rem;
+    }
+
+    .fc-demo-message-text {
+      font-family: 'Satoshi', sans-serif;
+      font-size: 0.88rem;
+      line-height: 1.55;
+      color: var(--fc-text);
+    }
+
+    @keyframes demo-msg-in {
+      0% { opacity: 0; transform: translateY(8px); }
+      4% { opacity: 1; transform: translateY(0); }
+      85% { opacity: 1; }
+      92% { opacity: 0; }
+      100% { opacity: 0; }
+    }
+
+    /* ─── PIPELINE STEPS ─── */
+    .fc-demo-pipeline {
+      display: flex;
+      flex-direction: column;
+      gap: 0.1rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .fc-demo-step {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.5rem 0.6rem;
+      border-radius: 8px;
+      opacity: 0;
+      animation: demo-step-lifecycle 12s ease-out infinite;
+    }
+
+    .fc-demo-step-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 26px;
+      height: 26px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--fc-text-dim);
+      flex-shrink: 0;
+    }
+
+    .fc-demo-step-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.04em;
+      color: var(--fc-text-muted);
+      flex: 1;
+    }
+
+    .fc-demo-step-status {
+      display: flex;
+      align-items: center;
+      width: 16px;
+      height: 16px;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    /* Spinner (visible during loading phase of step) */
+    .fc-demo-spinner {
+      position: absolute;
+      inset: 0;
+      width: 13px;
+      height: 13px;
+      border: 2px solid rgba(136, 136, 160, 0.2);
+      border-top-color: var(--fc-text-dim);
+      border-radius: 50%;
+      opacity: 0;
+      animation: demo-spinner-vis 12s linear infinite, demo-spin 0.7s linear infinite;
+    }
+
+    /* Checkmark (appears after spinner) */
+    .fc-demo-check {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      animation: demo-check-vis 12s ease-out infinite;
+    }
+
+    /* Step 1: offset 5% = 0.6s */
+    .fc-demo-step--1 { animation-delay: 0.6s; }
+    .fc-demo-step--1 .fc-demo-spinner { animation-delay: 0.6s, 0s; }
+    .fc-demo-step--1 .fc-demo-check { animation-delay: 0.6s; }
+
+    /* Step 2: offset 15% = 1.8s */
+    .fc-demo-step--2 { animation-delay: 1.8s; }
+    .fc-demo-step--2 .fc-demo-spinner { animation-delay: 1.8s, 0s; }
+    .fc-demo-step--2 .fc-demo-check { animation-delay: 1.8s; }
+
+    /* Step 3: offset 25% = 3.0s */
+    .fc-demo-step--3 { animation-delay: 3.0s; }
+    .fc-demo-step--3 .fc-demo-spinner { animation-delay: 3.0s, 0s; }
+    .fc-demo-step--3 .fc-demo-check { animation-delay: 3.0s; }
+
+    /* Step 4: offset 38% = 4.56s */
+    .fc-demo-step--4 { animation-delay: 4.56s; }
+    .fc-demo-step--4 .fc-demo-spinner { animation-delay: 4.56s, 0s; }
+    .fc-demo-step--4 .fc-demo-check { animation-delay: 4.56s; }
+
+    /* Step 5: offset 48% = 5.76s */
+    .fc-demo-step--5 { animation-delay: 5.76s; }
+    .fc-demo-step--5 .fc-demo-spinner { animation-delay: 5.76s, 0s; }
+    .fc-demo-step--5 .fc-demo-check { animation-delay: 5.76s; }
+
+    /* Step lifecycle: fade in -> visible -> fade out */
+    @keyframes demo-step-lifecycle {
+      0% { opacity: 0; transform: translateX(-6px); }
+      5% { opacity: 1; transform: translateX(0); }
+      85% { opacity: 1; }
+      92% { opacity: 0; }
+      100% { opacity: 0; }
+    }
+
+    /* Spinner visible for the first ~10% of step life, then hidden */
+    @keyframes demo-spinner-vis {
+      0% { opacity: 0; }
+      2% { opacity: 1; }
+      10% { opacity: 1; }
+      12% { opacity: 0; }
+      100% { opacity: 0; }
+    }
+
+    @keyframes demo-spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Check appears after spinner disappears */
+    @keyframes demo-check-vis {
+      0% { opacity: 0; transform: scale(0.5); }
+      10% { opacity: 0; transform: scale(0.5); }
+      14% { opacity: 1; transform: scale(1); }
+      85% { opacity: 1; }
+      92% { opacity: 0; }
+      100% { opacity: 0; }
+    }
+
+    /* ─── VERDICT BADGE ─── */
+    .fc-demo-verdict {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1rem;
+      background: rgba(239, 68, 68, 0.06);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      border-radius: 10px;
+      opacity: 0;
+      animation: demo-verdict-in 12s ease-out 6.8s infinite;
+    }
+
+    .fc-demo-verdict-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--fc-accent-red);
+    }
+
+    .fc-demo-verdict-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--fc-accent-red);
+      box-shadow: 0 0 8px var(--fc-accent-red);
+    }
+
+    .fc-demo-verdict-conf {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.68rem;
+      color: var(--fc-text-dim);
+      letter-spacing: 0.04em;
+    }
+
+    @keyframes demo-verdict-in {
+      0% { opacity: 0; transform: translateY(6px) scale(0.97); }
+      5% { opacity: 1; transform: translateY(0) scale(1); }
+      78% { opacity: 1; }
+      85% { opacity: 0; }
+      100% { opacity: 0; }
+    }
+
     @media (max-width: 640px) {
       .fc-landing-wrapper { padding: 1.25rem 1rem 3rem; }
 
@@ -273,6 +505,9 @@
       .fc-cta-secondary { width: 100%; justify-content: center; }
 
       .fc-hero-proof { flex-direction: column; gap: 0.6rem; }
+
+      .fc-demo-card { padding: 1.1rem; }
+      .fc-demo-message { padding: 0.85rem 0.9rem; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -283,9 +518,15 @@
       .fc-hero-headline,
       .fc-hero-sub,
       .fc-hero-ctas,
-      .fc-hero-proof {
+      .fc-hero-proof,
+      .fc-demo-message,
+      .fc-demo-step,
+      .fc-demo-spinner,
+      .fc-demo-check,
+      .fc-demo-verdict {
         animation: none !important;
         opacity: 1 !important;
+        transform: none !important;
       }
     }
   </style>

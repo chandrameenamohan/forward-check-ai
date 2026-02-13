@@ -63,7 +63,7 @@
 - Test: `"GET / should contain hero headline text"`
 
 ### Task 1.2: Animated "investigation in progress" demo mockup
-- [ ]
+- [x]
 **Objective:** Add a visual demo element in the hero area showing a mock message being fact-checked in real-time — the "scroll-stopping" moment.
 **Details:**
 - Create a CSS-animated card that shows:

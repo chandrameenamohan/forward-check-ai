@@ -111,4 +111,42 @@ describe("Landing page routes", () => {
     expect(html).toContain("60 seconds");
   });
 
+  it("GET / should contain investigation demo element", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/`);
+    const html = await res.text();
+
+    expect(html).toContain("fc-demo");
+    expect(html).toContain("fc-demo-message");
+  });
+
+  it("GET / should contain demo forwarded message text", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/`);
+    const html = await res.text();
+
+    expect(html).toContain("NASA confirms Mars");
+  });
+
+  it("GET / should contain demo pipeline status steps", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/`);
+    const html = await res.text();
+
+    expect(html).toContain("Classifying");
+    expect(html).toContain("Planning investigation");
+    expect(html).toContain("Searching");
+    expect(html).toContain("Challenging findings");
+    expect(html).toContain("Rendering verdict");
+  });
+
+  it("GET / should contain demo verdict badge", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/`);
+    const html = await res.text();
+
+    expect(html).toContain("LIKELY FALSE");
+    expect(html).toContain("94%");
+  });
+
 });
