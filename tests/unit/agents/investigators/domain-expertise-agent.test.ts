@@ -266,7 +266,7 @@ describe("runDomainExpertise", () => {
     expect(system).toContain("geopolitics");
   });
 
-  it("should respect 4-turn limit", async () => {
+  it("should respect 6-turn limit", async () => {
     mockCreate.mockResolvedValueOnce(
       buildMockMessage({
         content: [
@@ -312,13 +312,39 @@ describe("runDomainExpertise", () => {
           {
             type: "tool_use" as const,
             id: "toolu_04",
+            name: "brave_web_search",
+            input: { query: "search query 4" },
+          },
+        ],
+        stop_reason: "tool_use",
+      }),
+    ); // turn 4
+    mockCreate.mockResolvedValueOnce(
+      buildMockMessage({
+        content: [
+          {
+            type: "tool_use" as const,
+            id: "toolu_05",
+            name: "brave_web_search",
+            input: { query: "search query 5" },
+          },
+        ],
+        stop_reason: "tool_use",
+      }),
+    ); // turn 5
+    mockCreate.mockResolvedValueOnce(
+      buildMockMessage({
+        content: [
+          {
+            type: "tool_use" as const,
+            id: "toolu_06",
             name: "submit_report",
             input: VALID_REPORT,
           },
         ],
         stop_reason: "tool_use",
       }),
-    ); // turn 4 — maxTurns reached, loop exits
+    ); // turn 6 — maxTurns reached, loop exits
 
     const result = await runDomainExpertise(
       "WHO officially declares green tea cures cancer",
@@ -328,8 +354,8 @@ describe("runDomainExpertise", () => {
       toolRegistry,
     );
 
-    // Should have called API exactly 4 times (maxTurns)
-    expect(mockCreate.mock.calls.length).toBe(4);
+    // Should have called API exactly 6 times (maxTurns)
+    expect(mockCreate.mock.calls.length).toBe(6);
     expect(result.report.agentRole).toBe("domain_expertise");
   });
 

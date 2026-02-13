@@ -60,7 +60,7 @@ Pattern matching and domain expertise investigators sometimes exhaust their 4-tu
 - "Investigator failed, continuing with remaining reports" (only 2 of 3 succeed)
 
 ### Task B2.1: Increase investigator max turns from 4 to 6
-- [ ]
+- [x]
 **Objective:** Give investigators more room to search AND submit their report, reducing submit_report failures.
 **Details:**
 - Edit `src/agents/investigators/source-verification-agent.ts` — change `MAX_TURNS` from 4 to 6

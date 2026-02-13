@@ -261,8 +261,8 @@ describe("runSourceVerification", () => {
     expect(system).toContain("Official government press releases");
   });
 
-  it("should respect 4-turn limit", async () => {
-    // Simulate model calling tools for all 4 turns (maxTurns)
+  it("should respect 6-turn limit", async () => {
+    // Simulate model calling tools for all 6 turns (maxTurns)
     // The loop stops after maxTurns regardless of stop_reason
     mockCreate.mockResolvedValueOnce(
       buildMockMessage({
@@ -309,13 +309,39 @@ describe("runSourceVerification", () => {
           {
             type: "tool_use" as const,
             id: "toolu_04",
+            name: "brave_web_search",
+            input: { query: "additional query" },
+          },
+        ],
+        stop_reason: "tool_use",
+      }),
+    ); // turn 4
+    mockCreate.mockResolvedValueOnce(
+      buildMockMessage({
+        content: [
+          {
+            type: "tool_use" as const,
+            id: "toolu_05",
+            name: "google_fact_check_search",
+            input: { query: "another fact check" },
+          },
+        ],
+        stop_reason: "tool_use",
+      }),
+    ); // turn 5
+    mockCreate.mockResolvedValueOnce(
+      buildMockMessage({
+        content: [
+          {
+            type: "tool_use" as const,
+            id: "toolu_06",
             name: "submit_report",
             input: VALID_REPORT,
           },
         ],
         stop_reason: "tool_use",
       }),
-    ); // turn 4 — maxTurns reached, loop exits
+    ); // turn 6 — maxTurns reached, loop exits
 
     const result = await runSourceVerification(
       "PM Modi announced Rs 5000 direct transfer to all citizens",
@@ -324,8 +350,8 @@ describe("runSourceVerification", () => {
       toolRegistry,
     );
 
-    // Should have called API exactly 4 times (maxTurns)
-    expect(mockCreate.mock.calls.length).toBe(4);
+    // Should have called API exactly 6 times (maxTurns)
+    expect(mockCreate.mock.calls.length).toBe(6);
     expect(result.report.agentRole).toBe("source_verification");
   });
 

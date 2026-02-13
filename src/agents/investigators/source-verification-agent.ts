@@ -10,7 +10,7 @@ import { createLogger } from "../../config/logger.js";
 const logger = createLogger({ level: "info" });
 
 /** Max turns for the investigator agent loop */
-const MAX_TURNS = 4;
+const MAX_TURNS = 6;
 
 /** Result returned by runSourceVerification */
 export interface SourceVerificationOutput {
@@ -50,7 +50,7 @@ Claim: "${claim}"
 - Make up sources or URLs
 - Speculate beyond what the evidence supports
 - Duplicate effort with other investigators (domain expertise or pattern matching)
-- Exceed 4 search tool calls total
+- Exceed 5 search tool calls total
 
 When you have completed your investigation, call the submit_report tool with your findings.`;
 }
@@ -144,7 +144,7 @@ const SUBMIT_REPORT_TOOL: Tool = {
 
 /**
  * Run the Source Verification investigator agent using Sonnet 4.5.
- * 4 turns max, tools: brave_web_search + google_fact_check_search + submit_report.
+ * 6 turns max, tools: brave_web_search + google_fact_check_search + submit_report.
  * Returns AgentReport with agentRole: "source_verification".
  */
 export async function runSourceVerification(
