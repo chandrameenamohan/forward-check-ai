@@ -288,4 +288,41 @@ describe("Landing page routes", () => {
     expect(html).toContain("Anthropic SDK");
   });
 
+  it("GET / should contain Telegram CTA button", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/`);
+    const html = await res.text();
+
+    expect(html).toContain("fc-final-cta");
+    expect(html).toContain("Open in Telegram");
+    expect(html).toContain("t.me/ForwardCheckBot");
+  });
+
+  it("GET / should contain final CTA headline", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/`);
+    const html = await res.text();
+
+    expect(html).toContain("Know Before You Share");
+  });
+
+  it("GET / should contain footer with hackathon attribution", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/`);
+    const html = await res.text();
+
+    expect(html).toContain("fc-footer");
+    expect(html).toContain("Cerebral Valley");
+    expect(html).toContain("Anthropic");
+    expect(html).toContain("Claude Opus 4.6");
+  });
+
+  it("GET / should contain GitHub link in footer", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/`);
+    const html = await res.text();
+
+    expect(html).toContain("View on GitHub");
+  });
+
 });

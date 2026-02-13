@@ -1489,4 +1489,117 @@
         justify-content: center;
       }
     }
+
+    /* ─── FINAL CTA SECTION ─── */
+    .fc-final-cta {
+      position: relative;
+      text-align: center;
+      padding: 5rem 0 4rem;
+      overflow: hidden;
+    }
+
+    .fc-final-cta-glow {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 500px;
+      height: 400px;
+      background: radial-gradient(
+        ellipse at center,
+        rgba(34, 197, 94, 0.06) 0%,
+        rgba(34, 197, 94, 0.02) 40%,
+        transparent 70%
+      );
+      pointer-events: none;
+    }
+
+    .fc-final-cta-headline {
+      position: relative;
+      font-family: 'Instrument Serif', serif;
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 400;
+      line-height: 1.15;
+      color: var(--fc-text);
+      margin-bottom: 1.25rem;
+    }
+
+    .fc-final-cta-sub {
+      position: relative;
+      font-family: 'Satoshi', sans-serif;
+      font-size: clamp(0.92rem, 2vw, 1.08rem);
+      color: var(--fc-text-muted);
+      line-height: 1.7;
+      max-width: 520px;
+      margin: 0 auto 2.5rem;
+    }
+
+    .fc-final-cta-buttons {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+    }
+
+    /* Larger primary CTA for the finale */
+    .fc-final-cta-btn {
+      padding: 1rem 2.2rem;
+      font-size: 1rem;
+      animation: cta-pulse 3s ease-in-out infinite;
+    }
+
+    @keyframes cta-pulse {
+      0%, 100% {
+        box-shadow: 0 0 20px rgba(34, 197, 94, 0.25), 0 0 60px rgba(34, 197, 94, 0.08);
+      }
+      50% {
+        box-shadow: 0 0 30px rgba(34, 197, 94, 0.4), 0 0 80px rgba(34, 197, 94, 0.15);
+      }
+    }
+
+    /* ─── FOOTER ─── */
+    .fc-footer {
+      border-top: 1px solid var(--fc-border);
+      padding: 2rem 0 1.5rem;
+      text-align: center;
+    }
+
+    .fc-footer-line {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.08em;
+      color: var(--fc-text-dim);
+      line-height: 2;
+    }
+
+    /* ─── FINAL CTA + FOOTER MOBILE ─── */
+    @media (max-width: 640px) {
+      .fc-final-cta {
+        padding: 3.5rem 0 3rem;
+      }
+
+      .fc-final-cta-buttons {
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+      .fc-final-cta-btn,
+      .fc-final-cta-buttons .fc-cta-secondary {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .fc-final-cta-glow {
+        width: 300px;
+        height: 250px;
+      }
+    }
+
+    /* ─── ADD PULSE TO REDUCED MOTION ─── */
+    @media (prefers-reduced-motion: reduce) {
+      .fc-final-cta-btn {
+        animation: none !important;
+      }
+    }
   </style>
