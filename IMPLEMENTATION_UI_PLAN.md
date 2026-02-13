@@ -131,7 +131,7 @@
 ## Phase 4: Live Example Section
 
 ### Task 4.1: Embedded verdict preview
-- [ ]
+- [x]
 **Objective:** Show a real verdict inline on the landing page as proof the system works — the "trust builder."
 **Details:**
 - Section title: "See It In Action"

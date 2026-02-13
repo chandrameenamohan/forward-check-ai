@@ -209,4 +209,40 @@ describe("Landing page routes", () => {
     expect(html).toContain("evidence strength");
   });
 
+  it("GET / should contain verdict preview section", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/`);
+    const html = await res.text();
+
+    expect(html).toContain("fc-verdict-preview");
+    expect(html).toContain("Don't Take Our Word For It");
+  });
+
+  it("GET / should contain verdict preview with badge and confidence", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/`);
+    const html = await res.text();
+
+    expect(html).toContain("LIKELY FALSE");
+    expect(html).toContain("92%");
+    expect(html).toContain("fc-verdict-preview-badge");
+  });
+
+  it("GET / should contain verdict preview summary text", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/`);
+    const html = await res.text();
+
+    expect(html).toContain("No official government source confirms");
+  });
+
+  it("GET / should contain verdict preview CTA link", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/`);
+    const html = await res.text();
+
+    expect(html).toContain("Read the full analysis");
+    expect(html).toContain("/v/demo");
+  });
+
 });
