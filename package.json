@@ -7,7 +7,8 @@
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "typecheck": "tsc --noEmit",
-    "dev": "tsx src/index.ts"
+    "dev": "tsx src/index.ts",
+    "quality": "bash scripts/quality-gate.sh"
   },
   "keywords": [],
   "author": "",

@@ -172,7 +172,7 @@
 ## Phase T6: Quality Gate Script
 
 ### Task T6.1: Create `scripts/quality-gate.sh` all-in-one check
-- [ ]
+- [x]
 **Objective:** Build a single shell script that runs typecheck, lint, tests, and coverage — exiting non-zero on any failure.
 **Details:**
 - Create `scripts/quality-gate.sh`
