@@ -119,7 +119,7 @@
 ## Phase T4: Error Resilience Tests
 
 ### Task T4.1: Agent failure and timeout resilience tests
-- [ ]
+- [x]
 **Objective:** Verify the pipeline degrades gracefully when individual agents fail, time out, or return malformed data.
 **Details:**
 - Create `tests/unit/orchestrator/pipeline-resilience.test.ts`
