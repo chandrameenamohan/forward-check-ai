@@ -52,7 +52,7 @@ The "See Live Verdict" page shows users the 6-agent pipeline working on their cl
 - Test: `"should handle multiple subscribers for same investigation"`
 
 ### Task 0.2: Integrate event bus into pipeline orchestrator
-- [ ]
+- [x]
 **Objective:** Modify `InvestigationPipeline` to emit granular events via `PipelineEventBus` at every sub-step, in addition to the existing `onStatusUpdate` callback.
 **Details:**
 - Update `src/orchestrator/pipeline.ts`:
