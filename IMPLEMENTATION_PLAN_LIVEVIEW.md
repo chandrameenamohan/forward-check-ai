@@ -368,7 +368,7 @@ The "See Live Verdict" page shows users the 6-agent pipeline working on their cl
 - Test: `"GET /live/:id should respect prefers-reduced-motion"`
 
 ### Task 6.2: Mobile responsive layout
-- [ ]
+- [x]
 **Objective:** Ensure the live verdict page works well on mobile (375px) for users clicking the Telegram bot link on their phones.
 **Details:**
 - Investigator cards: stack vertically on mobile (≤768px)

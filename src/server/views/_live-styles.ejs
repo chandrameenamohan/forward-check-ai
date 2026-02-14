@@ -927,31 +927,215 @@
       flex-shrink: 0;
     }
 
-    /* ─── Responsive ─── */
+    /* ─── Responsive: tablet / mobile (≤768px) ─── */
     @media (max-width: 768px) {
-      .fc-live-headline {
-        font-size: 1.5rem;
-      }
       .fc-live-wrapper {
         padding: 0 1rem 2rem;
       }
+      .fc-live-headline {
+        font-size: 1.5rem;
+      }
+      .fc-live-subtitle {
+        font-size: 0.85rem;
+      }
+
+      /* Agent cards: full width, reduced padding */
+      .fc-agent-card {
+        padding: 1rem 1.15rem;
+      }
+      .fc-agent-icon {
+        width: 32px;
+        height: 32px;
+      }
+      .fc-agent-icon svg {
+        width: 16px;
+        height: 16px;
+      }
+      .fc-agent-name {
+        font-size: 0.82rem;
+      }
+      .fc-agent-status {
+        font-size: 0.7rem;
+      }
+
+      /* Investigators: stack vertically */
       .fc-investigator-row {
         grid-template-columns: 1fr;
       }
+      .fc-investigator-row .fc-agent-card {
+        padding: 1rem 1.15rem;
+      }
+      .fc-investigator-row .fc-agent-name {
+        font-size: 0.82rem;
+      }
+
+      /* Message card */
+      .fc-live-message {
+        padding: 1rem 1.15rem;
+      }
+
+      /* Progress header */
+      .fc-progress-header {
+        padding: 1rem 1.15rem 0.75rem;
+      }
+      .fc-progress-header-title {
+        font-size: 0.82rem;
+      }
+
+      /* Thinking excerpts: tighter */
+      .fc-agent-thinking {
+        padding: 0.6rem 0.8rem;
+      }
+      .fc-da-thinking {
+        padding: 0.6rem 0.8rem;
+      }
+
+      /* Verdict reveal: smaller ring */
+      .fc-verdict-reveal-ring {
+        width: 130px;
+        height: 130px;
+      }
+      .fc-verdict-reveal-ring svg {
+        width: 130px;
+        height: 130px;
+      }
+      .fc-verdict-reveal-confidence {
+        font-size: 2.6rem;
+      }
+      .fc-verdict-reveal-badge {
+        font-size: 0.78rem;
+        padding: 0.55rem 1.5rem;
+      }
+      .fc-verdict-reveal-summary {
+        font-size: 1rem;
+      }
+
+      /* Decomposition bar labels: narrower */
+      .fc-reveal-bar-label {
+        width: 90px;
+        font-size: 0.6rem;
+      }
+
+      /* CTA button */
+      .fc-verdict-reveal-cta {
+        padding: 0.65rem 1.5rem;
+        font-size: 0.88rem;
+      }
+
+      /* QR code: hidden on mobile (user is already on their phone) */
       .fc-try-it-qr {
         display: none;
       }
+
+      /* Try-it section */
+      .fc-try-it-content {
+        padding: 1rem 1.15rem;
+      }
     }
 
+    /* ─── Responsive: small mobile (≤375px) ─── */
     @media (max-width: 375px) {
       .fc-live-headline {
         font-size: 1.3rem;
       }
+      .fc-live-subtitle {
+        font-size: 0.8rem;
+      }
+
+      /* Progress: labels hidden, tighter */
       .fc-progress-labels {
         display: none;
       }
       .fc-progress-header {
-        padding: 1rem;
+        padding: 0.85rem 1rem 0.65rem;
+      }
+      .fc-progress-header-title {
+        font-size: 0.78rem;
+      }
+      .fc-elapsed {
+        font-size: 0.78rem;
+      }
+
+      /* Agent cards: even tighter */
+      .fc-agent-card {
+        padding: 0.85rem 1rem;
+      }
+      .fc-agent-card-header {
+        gap: 0.5rem;
+      }
+      .fc-agent-name {
+        font-size: 0.78rem;
+      }
+      .fc-model-badge {
+        font-size: 0.5rem;
+        padding: 0.1rem 0.4rem;
+      }
+      .fc-agent-status {
+        font-size: 0.65rem;
+        margin-top: 0.4rem;
+      }
+
+      /* Investigator cards */
+      .fc-investigator-row .fc-agent-card {
+        padding: 0.85rem 1rem;
+      }
+
+      /* Message card */
+      .fc-live-message {
+        padding: 0.85rem 1rem;
+      }
+      .fc-live-message-text {
+        font-size: 0.9rem;
+      }
+
+      /* Verdict reveal: even smaller ring */
+      .fc-verdict-reveal-ring {
+        width: 110px;
+        height: 110px;
+      }
+      .fc-verdict-reveal-ring svg {
+        width: 110px;
+        height: 110px;
+      }
+      .fc-verdict-reveal-confidence {
+        font-size: 2.2rem;
+      }
+      .fc-verdict-reveal-pct {
+        font-size: 0.6rem;
+      }
+      .fc-verdict-reveal-badge {
+        font-size: 0.7rem;
+        padding: 0.5rem 1.2rem;
+        letter-spacing: 0.1em;
+      }
+      .fc-verdict-reveal-summary {
+        font-size: 0.9rem;
+      }
+
+      /* Decomposition bar labels: stack or abbreviate */
+      .fc-reveal-bar-label {
+        width: 75px;
+        font-size: 0.55rem;
+      }
+      .fc-reveal-bar-row {
+        gap: 0.5rem;
+      }
+
+      /* CTA */
+      .fc-verdict-reveal-cta {
+        padding: 0.6rem 1.2rem;
+        font-size: 0.82rem;
+      }
+
+      /* Try-it section */
+      .fc-try-it-content {
+        padding: 0.85rem 1rem;
+      }
+      .fc-try-it-heading {
+        font-size: 0.9rem;
+      }
+      .fc-try-it-body {
+        font-size: 0.72rem;
       }
     }
 
