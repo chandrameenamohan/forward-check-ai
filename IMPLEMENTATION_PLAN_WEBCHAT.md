@@ -203,7 +203,7 @@
 - Visually verify: timeline renders with correct stage names and icons
 
 ### Task 3.3: Real-time agent cards — show findings as investigators complete
-- [ ]
+- [x]
 **Objective:** Update timeline cards in real-time as SSE events arrive: show classifier result, strategist falsification criteria, investigator confidence scores, DA outcome, and Judge thinking excerpts.
 **Details:**
 - In `_chat-script.ejs`: wire SSE events to timeline DOM updates

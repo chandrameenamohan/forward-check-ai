@@ -209,4 +209,34 @@ describe("Chat page — GET /chat", () => {
     expect(html).toContain("Sonnet");
     expect(html).toContain("Opus 4.6");
   });
+
+  // ── Task 3.3: Real-time agent cards — show findings as investigators complete ──
+
+  it("GET /chat should contain setCardState helper function", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/chat`);
+    const html = await res.text();
+    expect(html).toContain("function setCardState(");
+    expect(html).toContain("fc-agent--idle");
+    expect(html).toContain("fc-agent--active");
+    expect(html).toContain("fc-agent--complete");
+    expect(html).toContain("fc-card-entering");
+  });
+
+  it("GET /chat should contain escapeHtml helper function", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/chat`);
+    const html = await res.text();
+    expect(html).toContain("function escapeHtml(");
+    expect(html).toContain("createTextNode");
+  });
+
+  it("GET /chat should contain status cycling functions", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/chat`);
+    const html = await res.text();
+    expect(html).toContain("function startStatusCycle(");
+    expect(html).toContain("function stopStatusCycle(");
+    expect(html).toContain("statusCyclers");
+  });
 });
