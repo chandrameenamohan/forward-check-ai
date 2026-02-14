@@ -1,6 +1,13 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { createApp } from "../../../../src/server/app.js";
+import { createDatabase } from "../../../../src/db/connection.js";
+import { runMigrations } from "../../../../src/db/migrations.js";
+import { InvestigationRepository } from "../../../../src/db/investigation-repository.js";
 import type { Server } from "node:http";
+import { randomUUID } from "node:crypto";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { unlinkSync } from "node:fs";
 
 describe("Landing page routes", () => {
   let server: Server | undefined;
@@ -413,6 +420,43 @@ describe("Landing page routes", () => {
     const html = await res.text();
 
     expect(html).toContain('rel="canonical"');
+  });
+
+  it("GET / should contain live verdict link when recent investigation exists", async () => {
+    const dbPath = join(tmpdir(), `fc-landing-live-${randomUUID()}.db`);
+    const db = createDatabase(dbPath);
+    runMigrations(db);
+    const repo = new InvestigationRepository(db);
+    const id = repo.create("Test claim for landing page");
+
+    const app = createApp(repo);
+    const port = await new Promise<number>((resolve) => {
+      server = app.listen(0, () => {
+        const addr = server!.address();
+        if (typeof addr === "object" && addr !== null) {
+          resolve(addr.port);
+        }
+      });
+    });
+
+    const res = await fetch(`http://127.0.0.1:${port}/`);
+    const html = await res.text();
+
+    expect(html).toContain(`/live/${id}`);
+
+    db.close();
+    try { unlinkSync(dbPath); } catch { /* ignore */ }
+    try { unlinkSync(`${dbPath}-wal`); } catch { /* ignore */ }
+    try { unlinkSync(`${dbPath}-shm`); } catch { /* ignore */ }
+  });
+
+  it("GET / should fallback to /v/demo when no recent investigation", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/`);
+    const html = await res.text();
+
+    // Secondary CTA should point to /v/demo as fallback
+    expect(html).toContain("/v/demo");
   });
 
 });

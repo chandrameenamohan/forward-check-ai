@@ -350,6 +350,76 @@ describe("runStrategist", () => {
     ).rejects.toThrow();
   });
 
+  it("should handle investigatorGuidance returned as a JSON string", async () => {
+    // Simulate the LLM returning nested objects as stringified JSON (common flaky behavior)
+    const stringifiedInput = {
+      ...VALID_STRATEGY,
+      investigatorGuidance: JSON.stringify(VALID_STRATEGY.investigatorGuidance),
+    };
+
+    const response = buildMockMessage({
+      content: [
+        {
+          type: "thinking" as const,
+          thinking: "Analyzing the claim...",
+        },
+        {
+          type: "tool_use" as const,
+          id: "toolu_01",
+          name: "submit_strategy",
+          input: stringifiedInput,
+        },
+      ],
+      stop_reason: "tool_use",
+    });
+
+    mockCreate.mockResolvedValueOnce(response);
+
+    const result = await runStrategist(
+      "PM Modi announced Rs 5000 direct transfer",
+      CLASSIFIER_RESULT,
+      client,
+    );
+
+    const parsed = SearchStrategySchema.safeParse(result.strategy);
+    expect(parsed.success).toBe(true);
+    expect(result.strategy.investigatorGuidance.sourceVerification.targetQueries.length).toBeGreaterThanOrEqual(2);
+  });
+
+  it("should handle frozen input objects from the SDK", async () => {
+    const frozenInput = Object.freeze({
+      ...VALID_STRATEGY,
+      investigatorGuidance: JSON.stringify(VALID_STRATEGY.investigatorGuidance),
+    });
+
+    const response = buildMockMessage({
+      content: [
+        {
+          type: "thinking" as const,
+          thinking: "Analyzing...",
+        },
+        {
+          type: "tool_use" as const,
+          id: "toolu_01",
+          name: "submit_strategy",
+          input: frozenInput,
+        },
+      ],
+      stop_reason: "tool_use",
+    });
+
+    mockCreate.mockResolvedValueOnce(response);
+
+    const result = await runStrategist(
+      "PM Modi announced Rs 5000 direct transfer",
+      CLASSIFIER_RESULT,
+      client,
+    );
+
+    const parsed = SearchStrategySchema.safeParse(result.strategy);
+    expect(parsed.success).toBe(true);
+  });
+
   it("should throw when tool output fails Zod validation", async () => {
     const response = buildMockMessage({
       content: [

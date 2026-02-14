@@ -4,6 +4,7 @@ import type { InvestigationRepository } from "../db/investigation-repository.js"
 import type { FinalVerdict } from "../schemas/final-verdict.js";
 import type { AgentReport } from "../schemas/agent-report.js";
 import type { PipelineStage } from "../bot/status-updater.js";
+import type { PipelineEventBus } from "./pipeline-events.js";
 import { ClaimCache } from "../services/claim-cache.js";
 import { runClassifier } from "../agents/classifier-agent.js";
 import { handleNonFactual } from "../agents/non-factual-handler.js";
@@ -18,17 +19,15 @@ import { createLogger } from "../config/logger.js";
 
 const logger = createLogger({ level: "info" });
 
-/** Threshold for detecting investigator disagreement */
 const DISAGREEMENT_SPREAD_THRESHOLD = 30;
 
-/** Options for pipeline.investigate() */
 export interface InvestigateOptions {
   onStatusUpdate?: (stage: PipelineStage) => void | Promise<void>;
+  onInvestigationCreated?: (investigationId: string) => void | Promise<void>;
   telegramChatId?: string;
   telegramMessageId?: string;
 }
 
-/** Result from a completed investigation */
 export interface InvestigateResult {
   verdict: FinalVerdict | null;
   investigationId: string;
@@ -38,25 +37,25 @@ export interface InvestigateResult {
   cached?: boolean;
 }
 
-/**
- * Orchestrates the full fact-checking pipeline from message to verdict.
- */
 export class InvestigationPipeline {
   private client: ClaudeClient;
   private toolRegistry: ToolRegistry;
   private repo: InvestigationRepository;
   private cache: ClaimCache;
+  private eventBus?: PipelineEventBus;
 
   constructor(
     client: ClaudeClient,
     toolRegistry: ToolRegistry,
     repo: InvestigationRepository,
     cache?: ClaimCache,
+    eventBus?: PipelineEventBus,
   ) {
     this.client = client;
     this.toolRegistry = toolRegistry;
     this.repo = repo;
     this.cache = cache ?? new ClaimCache();
+    this.eventBus = eventBus;
   }
 
   async investigate(
@@ -65,13 +64,9 @@ export class InvestigationPipeline {
   ): Promise<InvestigateResult> {
     const startTime = Date.now();
 
-    // ── Check cache for repeated claims ──────────────────────
     const cached = this.cache.get(message);
     if (cached) {
-      logger.info(
-        { investigationId: cached.investigationId },
-        "Returning cached result for repeated claim",
-      );
+      logger.info({ investigationId: cached.investigationId }, "Returning cached result");
       return {
         verdict: cached.result,
         investigationId: cached.investigationId,
@@ -81,206 +76,230 @@ export class InvestigationPipeline {
       };
     }
 
-    let totalCostUsd = 0;
-
-    // Create investigation record in DB
     const investigationId = this.repo.create(
-      message,
-      options?.telegramChatId,
-      options?.telegramMessageId,
+      message, options?.telegramChatId, options?.telegramMessageId,
     );
 
-    // ── Step 1: Classify ────────────────────────────────────
+    try {
+      await options?.onInvestigationCreated?.(investigationId);
+    } catch (err) {
+      logger.warn({ err, investigationId }, "onInvestigationCreated callback failed, continuing");
+    }
+
+    this.emitEvent({ kind: "pipeline:start", investigationId, message, timestamp: Date.now() });
+
+    try {
+      return await this.runPipeline(message, investigationId, startTime, options);
+    } catch (err) {
+      this.emitEvent({
+        kind: "pipeline:error",
+        investigationId,
+        error: err instanceof Error ? err.message : String(err),
+        stage: this.inferFailedStage(err),
+        timestamp: Date.now(),
+      });
+      throw err;
+    }
+  }
+
+  private async runPipeline(
+    message: string,
+    investigationId: string,
+    startTime: number,
+    options?: InvestigateOptions,
+  ): Promise<InvestigateResult> {
+    let totalCostUsd = 0;
+
+    // ── Classify ─────────────────────────────────────────────
+    this.emitEvent({ kind: "classifier:start", investigationId, timestamp: Date.now() });
+
     const { result: classifierResult, costUsd: classifierCost } =
       await runClassifier(message, this.client);
     totalCostUsd += classifierCost;
 
+    this.emitEvent({
+      kind: "classifier:complete", investigationId,
+      result: classifierResult, costUsd: classifierCost, timestamp: Date.now(),
+    });
     this.repo.updateClassifierResult(investigationId, classifierResult);
 
-    // ── Step 2: Short-circuit for non-factual messages ──────
+    // ── Short-circuit non-factual ────────────────────────────
     if (classifierResult.category !== "factual_claim") {
       const nonFactual = handleNonFactual(classifierResult);
       this.repo.updateStatus(investigationId, "completed_non_factual");
-
       return {
-        verdict: null,
-        investigationId,
+        verdict: null, investigationId,
         nonFactualResponse: nonFactual.text,
-        totalCostUsd,
-        durationMs: Date.now() - startTime,
+        totalCostUsd, durationMs: Date.now() - startTime,
       };
     }
 
     this.repo.updateStatus(investigationId, "investigating");
 
-    // ── Step 3: Run Claim Strategist ────────────────────────
+    // ── Strategist ───────────────────────────────────────────
     await this.emitStatus(options?.onStatusUpdate, "planning");
+    this.emitEvent({
+      kind: "strategist:start", investigationId,
+      claim: classifierResult.extractedClaim, timestamp: Date.now(),
+    });
 
     const { strategy: searchStrategy, costUsd: strategistCost } =
-      await runStrategist(
-        classifierResult.extractedClaim,
-        classifierResult,
-        this.client,
-      );
+      await runStrategist(classifierResult.extractedClaim, classifierResult, this.client);
     totalCostUsd += strategistCost;
 
+    this.emitEvent({
+      kind: "strategist:complete", investigationId,
+      costUsd: strategistCost, thinkingExcerpt: searchStrategy.thinkingExcerpt,
+      timestamp: Date.now(),
+    });
     this.repo.updateSearchStrategy(investigationId, searchStrategy);
 
-    // ── Step 4: Run Investigators in parallel ───────────────
+    // ── Investigators (parallel) ─────────────────────────────
     await this.emitStatus(options?.onStatusUpdate, "searching");
-
-    const investigatorResults = await Promise.allSettled([
-      runSourceVerification(
-        classifierResult.extractedClaim,
-        searchStrategy,
-        this.client,
-        this.toolRegistry,
-      ),
-      runDomainExpertise(
-        classifierResult.extractedClaim,
-        classifierResult.domain,
-        searchStrategy,
-        this.client,
-        this.toolRegistry,
-      ),
-      runPatternMatching(
-        classifierResult.extractedClaim,
-        searchStrategy,
-        this.client,
-        this.toolRegistry,
-      ),
-    ]);
-
-    // Collect successful reports — map indices to roles for error identification
     const investigatorRoles = ["source_verification", "domain_expertise", "pattern_matching"] as const;
-    const agentReports: AgentReport[] = [];
-    for (let i = 0; i < investigatorResults.length; i++) {
-      const result = investigatorResults[i]!;
-      const role = investigatorRoles[i]!;
-      if (result.status === "fulfilled") {
-        agentReports.push(result.value.report);
-        totalCostUsd += result.value.costUsd;
-      } else {
-        logger.error(
-          { error: result.reason, agent: role },
-          `Investigator ${role} failed, continuing with remaining reports`,
-        );
-      }
-    }
+    this.emitEvent({
+      kind: "investigators:start", investigationId,
+      roles: [...investigatorRoles], timestamp: Date.now(),
+    });
 
-    logger.info(
-      { successfulAgents: agentReports.map((r) => r.agentRole) },
-      "Investigators completed",
+    const { agentReports, investigatorCost } = await this.runInvestigators(
+      classifierResult.extractedClaim, classifierResult.domain,
+      searchStrategy, investigationId, investigatorRoles,
     );
-
-    if (agentReports.length === 0) {
-      throw new Error("All investigators failed — cannot proceed with pipeline");
-    }
-
+    totalCostUsd += investigatorCost;
     this.repo.updateAgentReports(investigationId, agentReports);
 
-    // ── Step 5: Detect disagreement ─────────────────────────
+    // ── Disagreement detection ───────────────────────────────
     await this.emitStatus(options?.onStatusUpdate, "analyzing");
-
     const confidenceScores = agentReports.map((r) => r.confidenceScore);
     const spread = Math.max(...confidenceScores) - Math.min(...confidenceScores);
     const deepReasoningActivated = spread > DISAGREEMENT_SPREAD_THRESHOLD;
 
     if (deepReasoningActivated) {
-      logger.info(
-        { spread, confidenceScores },
-        "Investigator disagreement detected — escalating DA effort to max",
-      );
+      logger.info({ spread, confidenceScores }, "Disagreement detected — escalating DA to max");
+      this.emitEvent({
+        kind: "disagreement:detected", investigationId,
+        spread, confidenceScores, timestamp: Date.now(),
+      });
     }
 
-    // ── Step 6: Run Devil's Advocate ────────────────────────
+    // ── Devil's Advocate ─────────────────────────────────────
     await this.emitStatus(options?.onStatusUpdate, "challenging");
-
     const falsificationCriteria = [
       ...searchStrategy.falsificationCriteria.whatWouldProveTrue,
       ...searchStrategy.falsificationCriteria.whatWouldProveFalse,
     ];
     const daEffort = deepReasoningActivated ? "max" as const : "high" as const;
+    this.emitEvent({ kind: "da:start", investigationId, effortLevel: daEffort, timestamp: Date.now() });
 
     const { report: challengeReport, costUsd: daCost } =
       await runDevilsAdvocate(
-        classifierResult.extractedClaim,
-        agentReports,
-        falsificationCriteria,
-        this.client,
-        daEffort,
+        classifierResult.extractedClaim, agentReports, falsificationCriteria, this.client, daEffort,
       );
     totalCostUsd += daCost;
 
+    this.emitEvent({
+      kind: "da:complete", investigationId,
+      report: challengeReport, costUsd: daCost,
+      thinkingExcerpt: challengeReport.thinkingExcerpt, timestamp: Date.now(),
+    });
     this.repo.updateChallengeReport(investigationId, challengeReport);
 
-    // ── Step 7: Run Judge ───────────────────────────────────
+    // ── Judge ────────────────────────────────────────────────
     await this.emitStatus(options?.onStatusUpdate, "judging");
+    this.emitEvent({ kind: "judge:start", investigationId, timestamp: Date.now() });
 
     const { verdict: rawVerdict, costUsd: judgeCost } = await runJudge(
-      classifierResult.extractedClaim,
-      agentReports,
-      challengeReport,
-      searchStrategy,
-      this.client,
-      this.toolRegistry,
+      classifierResult.extractedClaim, agentReports, challengeReport,
+      searchStrategy, this.client, this.toolRegistry,
     );
     totalCostUsd += judgeCost;
 
-    // ── Step 8: Apply confidence gates + set deep reasoning flag
-    const verdictWithFlag: FinalVerdict = {
-      ...rawVerdict,
-      deepReasoningActivated,
-    };
+    this.emitEvent({
+      kind: "judge:complete", investigationId,
+      verdict: rawVerdict, costUsd: judgeCost,
+      thinkingExcerpt: rawVerdict.thinkingSummary, timestamp: Date.now(),
+    });
 
+    // ── Confidence gates + finalize ──────────────────────────
+    const verdictWithFlag: FinalVerdict = { ...rawVerdict, deepReasoningActivated };
     if (detectConfidenceMismatch(verdictWithFlag)) {
       logger.warn(
-        {
-          category: verdictWithFlag.category,
-          confidence: verdictWithFlag.confidence,
-        },
-        "Judge confidence/category mismatch detected — gate will override",
+        { category: verdictWithFlag.category, confidence: verdictWithFlag.confidence },
+        "Confidence/category mismatch — gate will override",
       );
     }
-
     const finalVerdict = enforceConfidenceGates(verdictWithFlag);
 
-    // ── Step 9: Save to DB ──────────────────────────────────
     const durationMs = Date.now() - startTime;
-    this.repo.updateFinalVerdict(
-      investigationId,
-      finalVerdict,
-      durationMs,
-      totalCostUsd,
-    );
+    this.repo.updateFinalVerdict(investigationId, finalVerdict, durationMs, totalCostUsd);
 
-    logger.info(
-      {
-        investigationId,
-        category: finalVerdict.category,
-        confidence: finalVerdict.confidence,
-        deepReasoningActivated,
-        totalCostUsd: totalCostUsd.toFixed(4),
-        durationMs,
-        agentCount: agentReports.length,
-      },
-      "Pipeline completed",
-    );
+    logger.info({
+      investigationId, category: finalVerdict.category, confidence: finalVerdict.confidence,
+      deepReasoningActivated, totalCostUsd: totalCostUsd.toFixed(4), durationMs,
+      agentCount: agentReports.length,
+    }, "Pipeline completed");
 
-    // ── Cache the result for repeated claims ─────────────────
     this.cache.set(message, finalVerdict, investigationId);
 
-    return {
-      verdict: finalVerdict,
-      investigationId,
-      totalCostUsd,
-      durationMs,
-    };
+    this.emitEvent({
+      kind: "pipeline:complete", investigationId,
+      verdict: finalVerdict, totalCostUsd, durationMs, timestamp: Date.now(),
+    });
+
+    return { verdict: finalVerdict, investigationId, totalCostUsd, durationMs };
   }
 
-  /**
-   * Safely emit a status update, catching errors so they don't crash the pipeline.
-   */
+  private async runInvestigators(
+    claim: string,
+    domain: string,
+    searchStrategy: Awaited<ReturnType<typeof runStrategist>>["strategy"],
+    investigationId: string,
+    roles: readonly ["source_verification", "domain_expertise", "pattern_matching"],
+  ): Promise<{ agentReports: AgentReport[]; investigatorCost: number }> {
+    const results = await Promise.allSettled([
+      runSourceVerification(claim, searchStrategy, this.client, this.toolRegistry),
+      runDomainExpertise(claim, domain, searchStrategy, this.client, this.toolRegistry),
+      runPatternMatching(claim, searchStrategy, this.client, this.toolRegistry),
+    ]);
+
+    const agentReports: AgentReport[] = [];
+    let investigatorCost = 0;
+
+    for (let i = 0; i < results.length; i++) {
+      const result = results[i]!;
+      const role = roles[i]!;
+      if (result.status === "fulfilled") {
+        agentReports.push(result.value.report);
+        investigatorCost += result.value.costUsd;
+        this.emitEvent({
+          kind: "investigator:complete", investigationId,
+          role, report: result.value.report, costUsd: result.value.costUsd,
+          timestamp: Date.now(),
+        });
+      } else {
+        logger.error({ error: result.reason, agent: role }, `Investigator ${role} failed`);
+      }
+    }
+
+    logger.info({ successfulAgents: agentReports.map((r) => r.agentRole) }, "Investigators completed");
+
+    if (agentReports.length === 0) {
+      throw new Error("All investigators failed — cannot proceed with pipeline");
+    }
+
+    return { agentReports, investigatorCost };
+  }
+
+  private emitEvent(event: Parameters<PipelineEventBus["emit"]>[0]): void {
+    if (!this.eventBus) return;
+    try {
+      this.eventBus.emit(event);
+    } catch (err) {
+      logger.warn({ kind: event.kind, error: err }, "Event bus emit failed, continuing");
+    }
+  }
+
   private async emitStatus(
     callback: InvestigateOptions["onStatusUpdate"],
     stage: PipelineStage,
@@ -289,10 +308,17 @@ export class InvestigationPipeline {
     try {
       await callback(stage);
     } catch (err) {
-      logger.warn(
-        { stage, error: err },
-        "Status update callback failed, continuing pipeline",
-      );
+      logger.warn({ stage, error: err }, "Status update callback failed, continuing");
     }
+  }
+
+  private inferFailedStage(err: unknown): string {
+    const msg = err instanceof Error ? err.message : String(err);
+    if (msg.includes("Classifier") || msg.includes("classifier")) return "classifier";
+    if (msg.includes("Strategist") || msg.includes("strategist")) return "strategist";
+    if (msg.includes("investigators") || msg.includes("All investigators")) return "investigators";
+    if (msg.includes("Devil") || msg.includes("DA") || msg.includes("advocate")) return "da";
+    if (msg.includes("Judge") || msg.includes("judge")) return "judge";
+    return "unknown";
   }
 }

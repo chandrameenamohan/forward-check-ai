@@ -294,4 +294,179 @@ describe("createMessageHandler", () => {
     // The pipeline should have received an onStatusUpdate callback
     expect(capturedCallback).toBeDefined();
   });
+
+  it("should send live verdict URL before starting pipeline", async () => {
+    const sentMessages: Array<{ text: string; order: number }> = [];
+    let msgOrder = 0;
+
+    const mockPipeline = {
+      investigate: vi.fn().mockImplementation((_msg, options) => {
+        // Call onInvestigationCreated to simulate pipeline behavior
+        options?.onInvestigationCreated?.("live-inv-001");
+        return Promise.resolve({
+          verdict: makeFakeVerdict(),
+          investigationId: "live-inv-001",
+          totalCostUsd: 0.25,
+          durationMs: 5000,
+        } satisfies InvestigateResult);
+      }),
+    } as unknown as InvestigationPipeline;
+
+    // Track message order
+    bot.api.config.use((_prev, method, payload) => {
+      const p = payload as Record<string, unknown>;
+      if (method === "sendMessage") {
+        msgOrder++;
+        sentMessages.push({ text: p["text"] as string, order: msgOrder });
+      }
+      apiCalls.push({ method, payload: p });
+      if (method === "sendMessage") {
+        return {
+          ok: true,
+          result: {
+            message_id: 42 + msgOrder,
+            date: Math.floor(Date.now() / 1000),
+            chat: { id: p["chat_id"], type: "private" },
+            text: p["text"],
+          },
+        } as never;
+      }
+      if (method === "editMessageText") {
+        return {
+          ok: true,
+          result: {
+            message_id: p["message_id"],
+            date: Math.floor(Date.now() / 1000),
+            chat: { id: p["chat_id"], type: "private" },
+            text: p["text"],
+          },
+        } as never;
+      }
+      return { ok: true, result: true } as never;
+    });
+
+    createMessageHandler(bot, mockPipeline, BASE_URL);
+
+    const update = makeMessageUpdate({
+      text: "PM Modi gives Rs 5000 to all citizens",
+    });
+
+    await bot.handleUpdate(update);
+
+    // Should have sent a message containing the live URL
+    const liveLinkSend = sentMessages.find(
+      (m) => m.text.includes("/live/live-inv-001"),
+    );
+    expect(liveLinkSend).toBeDefined();
+
+    // The pipeline should have received onInvestigationCreated callback
+    const callArgs = mockPipeline.investigate.mock.calls[0]!;
+    const options = callArgs[1] as Record<string, unknown>;
+    expect(options["onInvestigationCreated"]).toBeDefined();
+  });
+
+  it("should send live verdict URL with HTTPS inline keyboard", async () => {
+    const httpsUrl = "https://forwardcheck.ai";
+    const mockPipeline = {
+      investigate: vi.fn().mockImplementation((_msg, options) => {
+        options?.onInvestigationCreated?.("live-inv-https");
+        return Promise.resolve({
+          verdict: makeFakeVerdict(),
+          investigationId: "live-inv-https",
+          totalCostUsd: 0.50,
+          durationMs: 10000,
+        } satisfies InvestigateResult);
+      }),
+    } as unknown as InvestigationPipeline;
+
+    createMessageHandler(bot, mockPipeline, httpsUrl);
+
+    const update = makeMessageUpdate({
+      text: "WHO declares green tea cures cancer",
+    });
+
+    await bot.handleUpdate(update);
+
+    // Should send a message with inline keyboard containing live URL
+    const liveSend = apiCalls.find(
+      (c) =>
+        c.method === "sendMessage" &&
+        c.payload["reply_markup"] !== undefined &&
+        (c.payload["text"] as string).includes("Watch"),
+    );
+    expect(liveSend).toBeDefined();
+
+    const markup = liveSend!.payload["reply_markup"] as {
+      inline_keyboard: Array<Array<{ text: string; url: string }>>;
+    };
+    const buttons = markup.inline_keyboard.flat();
+    const liveButton = buttons.find((b) => b.url.includes("/live/"));
+    expect(liveButton).toBeDefined();
+    expect(liveButton!.url).toBe(`${httpsUrl}/live/live-inv-https`);
+  });
+
+  it("should still send final verdict after pipeline completes", async () => {
+    const mockPipeline = {
+      investigate: vi.fn().mockImplementation((_msg, options) => {
+        options?.onInvestigationCreated?.("live-inv-final");
+        return Promise.resolve({
+          verdict: makeFakeVerdict(),
+          investigationId: "live-inv-final",
+          totalCostUsd: 0.30,
+          durationMs: 8000,
+        } satisfies InvestigateResult);
+      }),
+    } as unknown as InvestigationPipeline;
+
+    createMessageHandler(bot, mockPipeline, BASE_URL);
+
+    const update = makeMessageUpdate({
+      text: "Some claim to verify",
+    });
+
+    await bot.handleUpdate(update);
+
+    // Should have sent both a live link AND a verdict message
+    const liveSend = apiCalls.find(
+      (c) =>
+        c.method === "sendMessage" &&
+        (c.payload["text"] as string).includes("/live/"),
+    );
+    expect(liveSend).toBeDefined();
+
+    const verdictSend = apiCalls.find(
+      (c) =>
+        c.method === "sendMessage" &&
+        c.payload["parse_mode"] === "HTML",
+    );
+    expect(verdictSend).toBeDefined();
+  });
+
+  it("should not send live link for non-factual messages", async () => {
+    const mockPipeline = {
+      investigate: vi.fn().mockResolvedValue({
+        verdict: null,
+        investigationId: "inv-nonfact-live",
+        nonFactualResponse: "This looks like a greeting!",
+        totalCostUsd: 0.01,
+        durationMs: 500,
+      } satisfies InvestigateResult),
+    } as unknown as InvestigationPipeline;
+
+    createMessageHandler(bot, mockPipeline, BASE_URL);
+
+    const update = makeMessageUpdate({
+      text: "Hello!",
+    });
+
+    await bot.handleUpdate(update);
+
+    // Should NOT have sent any live link
+    const liveSend = apiCalls.find(
+      (c) =>
+        c.method === "sendMessage" &&
+        (c.payload["text"] as string).includes("/live/"),
+    );
+    expect(liveSend).toBeUndefined();
+  });
 });

@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Watch Your Claim Get Investigated — ForwardCheck</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Instrument+Serif:ital@0;1&family=Satoshi:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 2l12 7v9c0 7-5 13-12 16C9 31 4 25 4 18V9l12-7z' fill='%230a0a0f' stroke='%2322c55e' stroke-width='2'/%3E%3Cpath d='M11 16l3 3 7-7' fill='none' stroke='%2322c55e' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <%- include('_live-styles') %>
+</head>
+<body>
+  <div class="fc-live-wrapper">
+
+    <div class="fc-topbar">
+      <span class="fc-topbar-brand">ForwardCheck</span>
+      <span class="fc-topbar-id">#<%= id.slice(0, 8) %></span>
+    </div>
+
+    <!-- ═══ STATUS HEADER ═══ -->
+    <div class="fc-live-status">
+      <div class="fc-live-status-badge">
+        <span class="fc-live-status-dot"></span>
+        <span>Live Investigation</span>
+      </div>
+      <h1 class="fc-live-headline">Your Claim, Under the Microscope</h1>
+      <p class="fc-live-subtitle">Six AI agents are about to tear this apart. Watch them work.</p>
+    </div>
+
+    <!-- ═══ ORIGINAL MESSAGE ═══ -->
+    <div class="fc-live-message">
+      <div class="fc-live-message-label">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 17 20 12 15 7"/><path d="M4 18v-2a4 4 0 0 1 4-4h12"/></svg>
+        Forwarded claim
+      </div>
+      <p class="fc-live-message-text"><%= originalMessage %></p>
+    </div>
+
+    <!-- ═══ PROGRESS HEADER ═══ -->
+    <div class="fc-progress-header">
+      <div class="fc-progress-header-top">
+        <span class="fc-progress-header-title" id="fc-progress-title">Investigating your claim...</span>
+        <span class="fc-elapsed" id="fc-elapsed">0:00</span>
+      </div>
+
+      <div class="fc-progress-bar" id="fc-progress-bar">
+        <div class="fc-progress-segment" data-step="0" id="fc-seg-classify"><div class="fc-progress-segment-fill"></div></div>
+        <div class="fc-progress-segment" data-step="1" id="fc-seg-strategize"><div class="fc-progress-segment-fill"></div></div>
+        <div class="fc-progress-segment" data-step="2" id="fc-seg-investigate"><div class="fc-progress-segment-fill"></div></div>
+        <div class="fc-progress-segment" data-step="3" id="fc-seg-challenge"><div class="fc-progress-segment-fill"></div></div>
+        <div class="fc-progress-segment" data-step="4" id="fc-seg-judge"><div class="fc-progress-segment-fill"></div></div>
+        <div class="fc-progress-segment" data-step="5" id="fc-seg-verdict"><div class="fc-progress-segment-fill"></div></div>
+      </div>
+
+      <div class="fc-progress-labels">
+        <span class="fc-progress-label">Classify</span>
+        <span class="fc-progress-label">Strategize</span>
+        <span class="fc-progress-label">Investigate</span>
+        <span class="fc-progress-label">Challenge</span>
+        <span class="fc-progress-label">Judge</span>
+        <span class="fc-progress-label">Verdict</span>
+      </div>
+
+      <div class="fc-cost-tracker" id="fc-cost-tracker">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v12M9 9.5a2.5 2.5 0 0 1 5 0c0 1.5-2.5 2-2.5 4M9 14.5a2.5 2.5 0 0 0 5 0"/></svg>
+        API cost: <span id="fc-cost-value">$0.00</span>
+      </div>
+    </div>
+
+    <!-- ═══ PIPELINE VISUALIZATION AREA ═══ -->
+    <div class="fc-live-pipeline" id="fc-pipeline-area">
+      <div class="fc-connecting-spinner" id="fc-connecting-spinner">
+        <div class="fc-connecting-spinner-ring"></div>
+        <span>Tapping into your investigation...</span>
+      </div>
+
+      <!-- ═══ AGENT CARDS ═══ -->
+      <div id="fc-agent-cards" class="fc-agent-cards">
+        <%- include('_live-agent-cards') %>
+      </div>
+
+      <!-- Error / status messages -->
+      <div id="fc-pipeline-status" class="fc-pipeline-status" style="display:none;"></div>
+    </div>
+
+    <!-- ═══ TRY IT YOURSELF — QR + Telegram link ═══ -->
+    <div class="fc-try-it" id="fc-try-it">
+      <div class="fc-try-it-content">
+        <div class="fc-try-it-qr" id="fc-try-it-qr">
+          <img src="/static/telegram-bot-qr-code.jpg" alt="Scan to open ForwardCheck on Telegram" class="fc-qr-code" width="140" height="140">
+        </div>
+        <div class="fc-try-it-text">
+          <h3 class="fc-try-it-heading">Try It Yourself</h3>
+          <p class="fc-try-it-body">Forward any suspicious message to the bot. Watch this page come alive.</p>
+          <a href="https://t.me/forward_check_beta_bot" target="_blank" rel="noopener" class="fc-try-it-link">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+            Open ForwardCheck on Telegram
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    (function() {
+      var investigationId = '<%= id %>';
+      var evtSource = new EventSource('/api/live/' + investigationId + '/stream');
+      var spinner = document.getElementById('fc-connecting-spinner');
+      var statusEl = document.getElementById('fc-pipeline-status');
+
+      // ── Hide spinner on first event ──
+      var spinnerHidden = false;
+      function hideSpinner() {
+        if (!spinnerHidden && spinner) {
+          spinner.style.display = 'none';
+          spinnerHidden = true;
+        }
+      }
+
+      function showStatus(text, type) {
+        if (statusEl) {
+          statusEl.textContent = text;
+          statusEl.className = 'fc-pipeline-status fc-pipeline-status--' + (type || 'info');
+          statusEl.style.display = 'block';
+        }
+      }
+
+      // ── Elapsed time counter ──
+      var elapsedSeconds = 0;
+      var elapsedEl = document.getElementById('fc-elapsed');
+      var elapsedTimer = setInterval(function() {
+        elapsedSeconds++;
+        var mins = Math.floor(elapsedSeconds / 60);
+        var secs = elapsedSeconds % 60;
+        if (elapsedEl) {
+          elapsedEl.textContent = mins + ':' + (secs < 10 ? '0' : '') + secs;
+        }
+      }, 1000);
+
+      // ── Cost tracker ──
+      var totalCost = 0;
+      var costEl = document.getElementById('fc-cost-value');
+      function addCost(costUsd) {
+        if (typeof costUsd === 'number') {
+          totalCost += costUsd;
+          if (costEl) {
+            costEl.textContent = '$' + totalCost.toFixed(2);
+          }
+        }
+      }
+
+      // ── Progress bar ──
+      var segments = ['classify', 'strategize', 'investigate', 'challenge', 'judge', 'verdict'];
+      function setSegmentActive(step) {
+        var seg = document.getElementById('fc-seg-' + step);
+        if (seg) {
+          seg.classList.add('fc-progress-segment--active');
+          seg.classList.remove('fc-progress-segment--complete');
+        }
+      }
+      function setSegmentComplete(step) {
+        var seg = document.getElementById('fc-seg-' + step);
+        if (seg) {
+          seg.classList.remove('fc-progress-segment--active');
+          seg.classList.add('fc-progress-segment--complete');
+        }
+      }
+
+<%- include('_live-agent-script') %>
+
+      // ── Pipeline lifecycle events ──
+
+      evtSource.addEventListener('pipeline:start', function(e) {
+        hideSpinner();
+      });
+
+      // ── Classifier events ──
+
+      evtSource.addEventListener('classifier:start', function(e) {
+        var data = JSON.parse(e.data);
+        updateClassifier('start', data);
+      });
+
+      evtSource.addEventListener('classifier:complete', function(e) {
+        var data = JSON.parse(e.data);
+        updateClassifier('complete', data);
+      });
+
+      // ── Strategist events ──
+
+      evtSource.addEventListener('strategist:start', function(e) {
+        var data = JSON.parse(e.data);
+        updateStrategist('start', data);
+      });
+
+      evtSource.addEventListener('strategist:complete', function(e) {
+        var data = JSON.parse(e.data);
+        updateStrategist('complete', data);
+      });
+
+      // ── Investigator events ──
+
+      evtSource.addEventListener('investigators:start', function(e) {
+        var data = JSON.parse(e.data);
+        updateInvestigators('start', data);
+      });
+
+      evtSource.addEventListener('investigator:searching', function(e) {
+        var data = JSON.parse(e.data);
+        updateInvestigators('searching', data);
+      });
+
+      evtSource.addEventListener('investigator:complete', function(e) {
+        var data = JSON.parse(e.data);
+        updateInvestigators('complete', data);
+      });
+
+      // ── Disagreement detection ──
+
+      evtSource.addEventListener('disagreement:detected', function(e) {
+        var data = JSON.parse(e.data);
+        updateInvestigators('disagreement', data);
+      });
+
+      // ── Devil's Advocate events ──
+
+      evtSource.addEventListener('da:start', function(e) {
+        var data = JSON.parse(e.data);
+        updateDA('start', data);
+      });
+
+      evtSource.addEventListener('da:complete', function(e) {
+        var data = JSON.parse(e.data);
+        updateDA('complete', data);
+      });
+
+      // ── Judge events ──
+
+      evtSource.addEventListener('judge:start', function(e) {
+        var data = JSON.parse(e.data);
+        updateJudge('start', data);
+      });
+
+      evtSource.addEventListener('judge:complete', function(e) {
+        var data = JSON.parse(e.data);
+        updateJudge('complete', data);
+      });
+
+      // ── Pipeline complete — verdict reveal + redirect ──
+
+      evtSource.addEventListener('pipeline:complete', function(e) {
+        var data = JSON.parse(e.data);
+        hideSpinner();
+        updateJudge('verdict', data);
+        evtSource.close();
+      });
+
+      // ── Pipeline error ──
+
+      evtSource.addEventListener('pipeline:error', function(e) {
+        var data = JSON.parse(e.data);
+        hideSpinner();
+        clearInterval(elapsedTimer);
+        showStatus('Something broke. Here\u2019s what happened: ' + (data.error || 'Unknown error'), 'error');
+        evtSource.close();
+      });
+
+      // ── Connection error — reconnect handled by EventSource ──
+
+      evtSource.onerror = function() {
+        showStatus('Connection dropped. Reconnecting...', 'warning');
+      };
+
+      // Restore status when connection reopens
+      evtSource.onopen = function() {
+        if (statusEl && statusEl.textContent === 'Connection dropped. Reconnecting...') {
+          statusEl.style.display = 'none';
+        }
+      };
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,299 @@
+      // ── Agent card state helpers ──
+
+      var cardEntered = {};
+
+      function setCardState(cardId, state) {
+        var card = document.getElementById(cardId);
+        if (!card) return;
+        var wasIdle = card.classList.contains('fc-agent--idle');
+        card.classList.remove('fc-agent--idle', 'fc-agent--active', 'fc-agent--complete', 'fc-agent--failed');
+        card.classList.add('fc-agent--' + state);
+
+        // Trigger entrance animation on first activation
+        if (wasIdle && state === 'active' && !cardEntered[cardId]) {
+          cardEntered[cardId] = true;
+          card.classList.add('fc-card-entering');
+          setTimeout(function() {
+            card.classList.remove('fc-card-entering');
+          }, 500);
+        }
+      }
+
+      // ── HTML escape helper ──
+      function escapeHtml(str) {
+        var div = document.createElement('div');
+        div.appendChild(document.createTextNode(str));
+        return div.innerHTML;
+      }
+
+      // ── Status text cycling (keeps demo video alive during long agent waits) ──
+      var statusCyclers = {};
+
+      function startStatusCycle(statusElId, messages, intervalMs) {
+        stopStatusCycle(statusElId);
+        var el = document.getElementById(statusElId);
+        if (!el || messages.length < 2) return;
+        var idx = 0;
+        el.textContent = messages[0];
+        statusCyclers[statusElId] = setInterval(function() {
+          idx = (idx + 1) % messages.length;
+          el.style.opacity = '0';
+          setTimeout(function() {
+            el.textContent = messages[idx];
+            el.style.opacity = '1';
+          }, 200);
+        }, intervalMs || 4000);
+      }
+
+      function stopStatusCycle(statusElId) {
+        if (statusCyclers[statusElId]) {
+          clearInterval(statusCyclers[statusElId]);
+          delete statusCyclers[statusElId];
+        }
+        var el = document.getElementById(statusElId);
+        if (el) el.style.opacity = '1';
+      }
+
+      // ── Classifier card ──
+
+      function updateClassifier(kind, data) {
+        hideSpinner();
+        var statusEl2 = document.getElementById('fc-classifier-status');
+        var resultEl = document.getElementById('fc-classifier-result');
+        var checkEl = document.getElementById('fc-classifier-check');
+
+        if (kind === 'start') {
+          setSegmentActive('classify');
+          setCardState('fc-card-classifier', 'active');
+          if (statusEl2) statusEl2.textContent = 'Checking your message against 47 known tricks...';
+        }
+        if (kind === 'complete') {
+          setSegmentComplete('classify');
+          setCardState('fc-card-classifier', 'complete');
+          addCost(data.costUsd);
+          if (statusEl2) statusEl2.textContent = 'Message scanned \u2014 here\u2019s what it found';
+          if (checkEl) checkEl.style.display = 'flex';
+          if (resultEl && data.result) {
+            var cat = data.result.category || '';
+            var claim = data.result.extractedClaim || '';
+            resultEl.innerHTML = '<span class="fc-agent-result-tag">' + escapeHtml(cat.replace(/_/g, ' ')) + '</span>' +
+              (claim ? '<span class="fc-agent-result-claim">' + escapeHtml(claim) + '</span>' : '');
+            resultEl.style.display = 'block';
+          }
+        }
+      }
+
+      // ── Strategist card ──
+
+      function updateStrategist(kind, data) {
+        hideSpinner();
+        var statusEl2 = document.getElementById('fc-strategist-status');
+        var resultEl = document.getElementById('fc-strategist-result');
+        var checkEl = document.getElementById('fc-strategist-check');
+        var thinkingEl = document.getElementById('fc-strategist-thinking');
+        var thinkingText = document.getElementById('fc-strategist-thinking-text');
+
+        if (kind === 'start') {
+          setSegmentActive('strategize');
+          setCardState('fc-card-strategist', 'active');
+          startStatusCycle('fc-strategist-status', [
+            'Deciding what to search, where to look, and what would prove it wrong...',
+            'Mapping the claim against known fact patterns...',
+            'Building search queries for three investigators...',
+            'Setting the bar: what evidence would flip this verdict?'
+          ], 3500);
+        }
+        if (kind === 'complete') {
+          stopStatusCycle('fc-strategist-status');
+          setSegmentComplete('strategize');
+          setCardState('fc-card-strategist', 'complete');
+          addCost(data.costUsd);
+          if (statusEl2) statusEl2.textContent = 'Playbook locked \u2014 investigators have their orders';
+          if (checkEl) checkEl.style.display = 'flex';
+          if (resultEl && data.strategy) {
+            var criteria = data.strategy.falsificationCriteria;
+            if (criteria) {
+              var items = [];
+              if (criteria.whatWouldProveTrue) items = items.concat(criteria.whatWouldProveTrue);
+              if (criteria.whatWouldProveFalse) items = items.concat(criteria.whatWouldProveFalse);
+              var text = items.length > 0 ? items.slice(0, 2).map(function(s) { return escapeHtml(s); }).join(' · ') : '';
+              if (text) {
+                resultEl.innerHTML = '<span class="fc-agent-result-criteria">' + text + '</span>';
+                resultEl.style.display = 'block';
+              }
+            }
+          }
+          if (thinkingEl && thinkingText && data.thinkingExcerpt) {
+            thinkingText.textContent = data.thinkingExcerpt;
+            thinkingEl.style.display = 'block';
+          }
+        }
+      }
+
+      // ── Investigator cards ──
+
+      var invRoleMap = {
+        'source_verification': 'source',
+        'domain_expertise': 'domain',
+        'pattern_matching': 'pattern'
+      };
+      var invCompletedCount = 0;
+
+      function updateInvestigators(kind, data) {
+        hideSpinner();
+        if (kind === 'start') {
+          setSegmentActive('investigate');
+          // Activate all 3 cards at once
+          ['source', 'domain', 'pattern'].forEach(function(key) {
+            setCardState('fc-card-inv-' + key, 'active');
+            var st = document.getElementById('fc-inv-' + key + '-status');
+            if (st) st.textContent = 'Searching the web right now...';
+          });
+        }
+        if (kind === 'searching') {
+          var key = invRoleMap[data.role] || '';
+          if (key) {
+            var searchEl = document.getElementById('fc-inv-' + key + '-search');
+            if (searchEl) {
+              searchEl.textContent = 'Searching: ' + (data.query || '');
+              searchEl.style.display = 'block';
+            }
+          }
+        }
+        if (kind === 'complete') {
+          addCost(data.costUsd);
+          invCompletedCount++;
+          var key2 = invRoleMap[data.role] || '';
+          if (key2) {
+            setCardState('fc-card-inv-' + key2, 'complete');
+            var st2 = document.getElementById('fc-inv-' + key2 + '-status');
+            if (st2) st2.textContent = 'Report filed';
+            var chk = document.getElementById('fc-inv-' + key2 + '-check');
+            if (chk) chk.style.display = 'flex';
+            if (data.report) {
+              var confEl = document.getElementById('fc-inv-' + key2 + '-confidence');
+              if (confEl) {
+                var score = data.report.confidenceScore || 0;
+                var summary = data.report.summary || '';
+                confEl.innerHTML = '<span class="fc-investigator-confidence-badge">' + score + '%</span>' +
+                  (summary ? '<span class="fc-investigator-summary">' + escapeHtml(summary) + '</span>' : '');
+                confEl.style.display = 'flex';
+              }
+            }
+          }
+          if (invCompletedCount >= 3) { setSegmentComplete('investigate'); }
+        }
+        if (kind === 'disagreement') {
+          setSegmentComplete('investigate');
+          var alert = document.getElementById('fc-disagreement-alert');
+          if (alert) alert.style.display = 'flex';
+        }
+      }
+
+      // ── DA card ──
+
+      function updateDA(kind, data) {
+        hideSpinner();
+        setSegmentComplete('investigate');
+        var statusEl3 = document.getElementById('fc-da-status');
+        var checkEl = document.getElementById('fc-da-check');
+        var deepBadge = document.getElementById('fc-da-deep-reasoning');
+        var outcomeEl = document.getElementById('fc-da-outcome');
+        var thinkingEl = document.getElementById('fc-da-thinking');
+        var thinkingText = document.getElementById('fc-da-thinking-text');
+        var daCard = document.getElementById('fc-card-da');
+
+        if (kind === 'start') {
+          setSegmentActive('challenge');
+          setCardState('fc-card-da', 'active');
+
+          // Dramatic entrance animation
+          if (daCard) {
+            daCard.classList.add('fc-da-entering');
+            setTimeout(function() {
+              daCard.classList.remove('fc-da-entering');
+            }, 600);
+          }
+
+          startStatusCycle('fc-da-status', [
+            'The Devil\u2019s Advocate just entered the room...',
+            'Attacking the strongest evidence first...',
+            'Looking for holes in the investigators\u2019 reports...',
+            'Testing every conclusion against the counter-argument...'
+          ], 3000);
+
+          // Show deep reasoning badge if effort is elevated
+          if (data.effortLevel === 'max' && deepBadge) {
+            deepBadge.style.display = 'inline-flex';
+          }
+        }
+
+        if (kind === 'complete') {
+          stopStatusCycle('fc-da-status');
+          setSegmentComplete('challenge');
+          setCardState('fc-card-da', 'complete');
+          addCost(data.costUsd);
+
+          if (statusEl3) statusEl3.textContent = 'Cross-examination finished';
+          if (checkEl) checkEl.style.display = 'flex';
+
+          // Outcome badge: did the counter-argument hold or fail?
+          if (outcomeEl && data.report) {
+            var succeeded = data.report.overallAssessment === 'counter_argument_succeeded' ||
+                            data.report.challengeSucceeded === true;
+            if (succeeded) {
+              outcomeEl.innerHTML = '<span class="fc-da-outcome-badge fc-da-outcome-badge--held">Counter-argument held up</span>';
+            } else {
+              outcomeEl.innerHTML = '<span class="fc-da-outcome-badge fc-da-outcome-badge--defeated">Counter-argument defeated</span>';
+            }
+            outcomeEl.style.display = 'flex';
+          }
+
+          // Thinking excerpt (monologue-style)
+          if (thinkingEl && thinkingText && data.thinkingExcerpt) {
+            thinkingText.textContent = data.thinkingExcerpt;
+            thinkingEl.style.display = 'block';
+          }
+        }
+      }
+
+      // ── Judge card ──
+
+      function updateJudge(kind, data) {
+        hideSpinner();
+        var statusEl4 = document.getElementById('fc-judge-status');
+        var checkEl = document.getElementById('fc-judge-check');
+        var thinkingEl = document.getElementById('fc-judge-thinking');
+        var thinkingText = document.getElementById('fc-judge-thinking-text');
+
+        if (kind === 'start') {
+          setSegmentActive('judge');
+          setCardState('fc-card-judge', 'active');
+          startStatusCycle('fc-judge-status', [
+            'All evidence weighed. The Judge is deciding your verdict...',
+            'Cross-referencing the DA\u2019s challenge against the evidence...',
+            'Running one final search to confirm key facts...',
+            'Scoring your claim across four confidence dimensions...'
+          ], 3500);
+        }
+        if (kind === 'complete') {
+          stopStatusCycle('fc-judge-status');
+          setSegmentComplete('judge');
+          setCardState('fc-card-judge', 'complete');
+          addCost(data.costUsd);
+          if (statusEl4) statusEl4.textContent = 'The gavel drops';
+          if (checkEl) checkEl.style.display = 'flex';
+
+          if (thinkingEl && thinkingText && data.thinkingExcerpt) {
+            thinkingText.textContent = data.thinkingExcerpt;
+            thinkingEl.style.display = 'block';
+          }
+        }
+        if (kind === 'verdict') {
+          setSegmentComplete('verdict');
+          clearInterval(elapsedTimer);
+          showVerdictReveal(data);
+        }
+      }
+
+<%- include('_live-verdict-reveal') %>

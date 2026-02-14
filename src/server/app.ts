@@ -6,6 +6,8 @@ import { createLogger } from "../config/logger.js";
 import type { InvestigationRepository } from "../db/investigation-repository.js";
 import { createInvestigateRouter } from "./routes/investigate.js";
 import { createVerdictRouter } from "./routes/verdict.js";
+import { createLiveStreamRouter } from "./routes/live-stream.js";
+import type { PipelineEventBus } from "../orchestrator/pipeline-events.js";
 
 const logger = createLogger({ level: "info" });
 
@@ -17,8 +19,10 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
  *
  * @param repo - Optional InvestigationRepository for API routes.
  *               When provided, mounts /api/investigate and /api/investigation/:id routes.
+ * @param eventBus - Optional PipelineEventBus for SSE live-stream routes.
+ *                   When provided with repo, mounts /api/live/:id/stream route.
  */
-export function createApp(repo?: InvestigationRepository): express.Express {
+export function createApp(repo?: InvestigationRepository, eventBus?: PipelineEventBus): express.Express {
   const app = express();
 
   // JSON body parsing
@@ -28,9 +32,23 @@ export function createApp(repo?: InvestigationRepository): express.Express {
   app.set("view engine", "ejs");
   app.set("views", join(__dirname, "views"));
 
+  // Serve static files from /public directory under /static path
+  app.use("/static", express.static(join(__dirname, "..", "..", "public")));
+
   // Landing page
   app.get("/", (_req: Request, res: Response) => {
-    res.render("landing");
+    let recentInvestigationId: string | null = null;
+    if (repo) {
+      try {
+        const recent = repo.getRecent(1);
+        if (recent.length > 0) {
+          recentInvestigationId = recent[0]!.id;
+        }
+      } catch {
+        // DB query failed — fall back to no recent investigation
+      }
+    }
+    res.render("landing", { recentInvestigationId });
   });
 
   // Health endpoint
@@ -46,6 +64,11 @@ export function createApp(repo?: InvestigationRepository): express.Express {
   if (repo) {
     app.use(createInvestigateRouter(repo));
     app.use(createVerdictRouter(repo));
+
+    // SSE live-stream route (requires both repo and event bus)
+    if (eventBus) {
+      app.use(createLiveStreamRouter(repo, eventBus));
+    }
   }
 
   // 404 handler
