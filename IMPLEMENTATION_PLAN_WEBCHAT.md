@@ -425,7 +425,7 @@
 - Visually verify: animations are smooth, no layout shifts
 
 ### Task 7.2: Landing page CTA update — add "Check in Browser" button linking to /chat
-- [ ]
+- [x]
 **Objective:** Add a secondary CTA on the landing page that links to the web chat, giving users a browser-based option alongside Telegram.
 **Details:**
 - In `landing.ejs` hero section: add "Check in Your Browser" secondary CTA button next to the Telegram CTA
