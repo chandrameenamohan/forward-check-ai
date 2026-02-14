@@ -186,7 +186,7 @@ The "See Live Verdict" page shows users the 6-agent pipeline working on their cl
 - Manual: verify message displays, timer counts up
 
 ### Task 3.2: Classifier and Strategist agent cards
-- [ ]
+- [x]
 **Objective:** Build the visual cards for Classifier and Strategist agents that activate and show results in real-time via SSE events.
 **Details:**
 - Add to `live.ejs`:

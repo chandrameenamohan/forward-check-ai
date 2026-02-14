@@ -253,6 +253,185 @@
       color: var(--fc-text-muted);
     }
 
+    /* ─── Agent cards ─── */
+    .fc-agent-card {
+      background: var(--fc-surface);
+      border: 1px solid var(--fc-border);
+      border-radius: 10px;
+      padding: 1.25rem 1.5rem;
+      backdrop-filter: blur(12px);
+      transition: border-color 0.5s ease, opacity 0.5s ease, box-shadow 0.5s ease;
+    }
+    .fc-agent-card-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .fc-agent-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--fc-surface-raised);
+      transition: background 0.4s ease, box-shadow 0.4s ease;
+      flex-shrink: 0;
+    }
+    .fc-agent-card-title {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex: 1;
+    }
+    .fc-agent-name {
+      font-family: 'Satoshi', sans-serif;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+    .fc-model-badge {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      border: 1px solid;
+    }
+    .fc-model-badge--haiku {
+      color: var(--fc-accent-gray);
+      border-color: var(--fc-accent-gray);
+      background: rgba(107, 114, 128, 0.08);
+    }
+    .fc-model-badge--sonnet {
+      color: var(--fc-accent-blue);
+      border-color: var(--fc-accent-blue);
+      background: rgba(59, 130, 246, 0.08);
+    }
+    .fc-model-badge--opus {
+      color: var(--fc-accent-green);
+      border-color: var(--fc-accent-green);
+      background: rgba(34, 197, 94, 0.08);
+    }
+    .fc-agent-check {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      color: var(--fc-accent-green);
+    }
+    .fc-agent-status {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--fc-text-dim);
+      margin-top: 0.6rem;
+      letter-spacing: 0.02em;
+      min-height: 1.2em;
+    }
+    .fc-agent-result {
+      margin-top: 0.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      align-items: center;
+    }
+    .fc-agent-result-tag {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      background: rgba(34, 197, 94, 0.1);
+      color: var(--fc-accent-green);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .fc-agent-result-claim {
+      font-size: 0.8rem;
+      color: var(--fc-text-muted);
+      font-style: italic;
+    }
+    .fc-agent-result-criteria {
+      font-size: 0.8rem;
+      color: var(--fc-text-muted);
+      line-height: 1.5;
+    }
+
+    /* ─── Agent card states ─── */
+    .fc-agent--idle {
+      opacity: 0.45;
+      border-color: var(--fc-border);
+    }
+    .fc-agent--active {
+      opacity: 1;
+      border-color: var(--fc-accent-amber);
+      box-shadow: 0 0 16px rgba(234, 179, 8, 0.1);
+      animation: fc-card-pulse 2s ease-in-out infinite;
+    }
+    .fc-agent--active .fc-agent-icon {
+      background: rgba(234, 179, 8, 0.12);
+      box-shadow: 0 0 8px rgba(234, 179, 8, 0.15);
+    }
+    .fc-agent--active .fc-agent-status {
+      color: var(--fc-accent-amber);
+    }
+    .fc-agent--complete {
+      opacity: 1;
+      border-color: var(--fc-accent-green);
+      box-shadow: 0 0 12px rgba(34, 197, 94, 0.06);
+    }
+    .fc-agent--complete .fc-agent-icon {
+      background: rgba(34, 197, 94, 0.12);
+    }
+    .fc-agent--complete .fc-agent-status {
+      color: var(--fc-accent-green);
+    }
+    .fc-agent--failed {
+      opacity: 1;
+      border-color: var(--fc-accent-red);
+    }
+    .fc-agent--failed .fc-agent-status {
+      color: var(--fc-accent-red);
+    }
+
+    /* ─── Opus badge glow on complete ─── */
+    .fc-agent--complete .fc-model-badge--opus {
+      box-shadow: 0 0 8px rgba(34, 197, 94, 0.3);
+    }
+
+    /* ─── Thinking excerpt ─── */
+    .fc-agent-thinking {
+      margin-top: 0.75rem;
+      padding: 0.75rem 1rem;
+      background: var(--fc-surface-raised);
+      border-radius: 6px;
+      border-left: 2px solid var(--fc-accent-purple);
+    }
+    .fc-agent-thinking-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      color: var(--fc-accent-purple);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      display: block;
+      margin-bottom: 0.4rem;
+    }
+    .fc-agent-thinking-text {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--fc-text-dim);
+      line-height: 1.5;
+      max-height: 4.5em;
+      overflow: hidden;
+    }
+
+    /* ─── Connector line ─── */
+    .fc-connector-line {
+      width: 1px;
+      height: 20px;
+      background: linear-gradient(to bottom, var(--fc-accent-green), var(--fc-border));
+      margin: 0 auto;
+      opacity: 0.4;
+    }
+
     /* ─── Animations ─── */
     @keyframes fc-pulse {
       0%, 100% { opacity: 1; }
@@ -264,6 +443,10 @@
     @keyframes fc-segment-pulse {
       0%, 100% { opacity: 1; }
       50% { opacity: 0.5; }
+    }
+    @keyframes fc-card-pulse {
+      0%, 100% { box-shadow: 0 0 16px rgba(234, 179, 8, 0.1); }
+      50% { box-shadow: 0 0 24px rgba(234, 179, 8, 0.2); }
     }
 
     /* ─── Responsive ─── */
@@ -292,10 +475,13 @@
     @media (prefers-reduced-motion: reduce) {
       .fc-live-status-dot,
       .fc-connecting-spinner-ring,
-      .fc-progress-segment--active .fc-progress-segment-fill {
+      .fc-progress-segment--active .fc-progress-segment-fill,
+      .fc-agent--active {
         animation: none;
       }
-      .fc-progress-segment-fill {
+      .fc-progress-segment-fill,
+      .fc-agent-card,
+      .fc-agent-icon {
         transition: none;
       }
     }

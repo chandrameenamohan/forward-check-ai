@@ -279,4 +279,83 @@ describe("Live verdict page routes", () => {
     expect(html).toContain("fc-cost-tracker");
     expect(html).toContain("totalCost");
   });
+
+  // ── Task 3.2: Classifier and Strategist agent cards ──
+
+  it("GET /live/:id should contain classifier agent card", async () => {
+    const port = await startServer();
+    const id = repo.create("Classifier card test");
+
+    const res = await fetch(`http://127.0.0.1:${port}/live/${id}`);
+    const html = await res.text();
+
+    expect(html).toContain("fc-agent-card--classifier");
+    expect(html).toContain("Classifier");
+    // Should have brain/scan icon area
+    expect(html).toContain("fc-agent-icon");
+    // Should have idle state by default
+    expect(html).toContain("fc-agent--idle");
+  });
+
+  it("GET /live/:id should contain strategist agent card", async () => {
+    const port = await startServer();
+    const id = repo.create("Strategist card test");
+
+    const res = await fetch(`http://127.0.0.1:${port}/live/${id}`);
+    const html = await res.text();
+
+    expect(html).toContain("fc-agent-card--strategist");
+    expect(html).toContain("Strategist");
+    // Should have idle state by default
+    expect(html).toContain("fc-agent--idle");
+  });
+
+  it("GET /live/:id should contain model tier badges", async () => {
+    const port = await startServer();
+    const id = repo.create("Model badge test");
+
+    const res = await fetch(`http://127.0.0.1:${port}/live/${id}`);
+    const html = await res.text();
+
+    expect(html).toContain("Haiku");
+    expect(html).toContain("Opus 4.6");
+    expect(html).toContain("fc-model-badge");
+  });
+
+  it("GET /live/:id should contain classifier status text placeholder", async () => {
+    const port = await startServer();
+    const id = repo.create("Classifier status text test");
+
+    const res = await fetch(`http://127.0.0.1:${port}/live/${id}`);
+    const html = await res.text();
+
+    // JS function to update classifier card exists
+    expect(html).toContain("updateClassifier");
+    // Classifier status text container
+    expect(html).toContain("fc-agent-status");
+    // Classifier result area for category + claim
+    expect(html).toContain("fc-agent-result");
+  });
+
+  it("GET /live/:id should contain strategist thinking excerpt area", async () => {
+    const port = await startServer();
+    const id = repo.create("Strategist thinking test");
+
+    const res = await fetch(`http://127.0.0.1:${port}/live/${id}`);
+    const html = await res.text();
+
+    // Should have thinking excerpt container
+    expect(html).toContain("fc-agent-thinking");
+    expect(html).toContain("AI Reasoning");
+  });
+
+  it("GET /live/:id should contain connecting line between cards", async () => {
+    const port = await startServer();
+    const id = repo.create("Connecting line test");
+
+    const res = await fetch(`http://127.0.0.1:${port}/live/${id}`);
+    const html = await res.text();
+
+    expect(html).toContain("fc-connector-line");
+  });
 });
