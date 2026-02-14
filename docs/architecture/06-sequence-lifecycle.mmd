@@ -1,0 +1,108 @@
+sequenceDiagram
+    actor User
+    participant TG as Telegram Bot
+    participant MH as Message Handler
+    participant SU as Status Updater
+    participant PL as Pipeline
+    participant Cache as ClaimCache
+    participant DB as SQLite
+    participant CL as Classifier<br/>(Haiku)
+    participant STR as Strategist<br/>(Opus)
+    participant INV as Investigators<br/>(Sonnet x3)
+    participant DA as Devil's Advocate<br/>(Opus)
+    participant JDG as Judge<br/>(Opus)
+    participant Brave as Brave Search
+    participant GFCA as Google FactCheck
+
+    User->>TG: Forward message
+    TG->>MH: on("message:text")
+    MH->>SU: create StatusUpdater
+    SU-->>User: "🔍 Analyzing your message..."
+
+    MH->>PL: investigate(message, chatId)
+    PL->>Cache: get(message)
+    alt Cache Hit
+        Cache-->>PL: cached verdict
+        PL-->>MH: InvestigateResult (cost: $0)
+    else Cache Miss
+        PL->>DB: create(message) → id
+
+        rect rgb(45, 106, 79)
+            Note over CL: STAGE 1 — Classification
+            PL->>CL: runClassifier(message)
+            CL-->>PL: ClassifierResult
+            PL->>DB: updateClassifierResult()
+        end
+
+        alt Non-factual
+            PL-->>MH: Quick response
+        else Factual claim
+            SU-->>User: "🧠 Planning investigation..."
+
+            rect rgb(106, 4, 15)
+                Note over STR: STAGE 2 — Strategy (Extended Thinking)
+                PL->>STR: runStrategist(claim, classifierResult)
+                Note right of STR: Thinking: adaptive<br/>Effort: medium
+                STR-->>PL: SearchStrategy
+                PL->>DB: updateSearchStrategy()
+            end
+
+            SU-->>User: "🔎 Searching for evidence..."
+
+            rect rgb(2, 62, 138)
+                Note over INV: STAGE 3 — Parallel Investigation
+                par Source Verification
+                    PL->>INV: runSourceVerification(claim, strategy)
+                    INV->>Brave: brave_web_search(queries)
+                    Brave-->>INV: results
+                    INV->>GFCA: google_fact_check_search(query)
+                    GFCA-->>INV: claims
+                and Domain Expertise
+                    PL->>INV: runDomainExpertise(claim, domain, strategy)
+                    INV->>Brave: brave_web_search(queries)
+                    Brave-->>INV: results
+                and Pattern Matching
+                    PL->>INV: runPatternMatching(claim, strategy)
+                    INV->>Brave: brave_web_search(queries)
+                    Brave-->>INV: results
+                    INV->>GFCA: google_fact_check_search(query)
+                    GFCA-->>INV: claims
+                end
+                INV-->>PL: AgentReport[] (3 reports)
+                PL->>DB: updateAgentReports()
+            end
+
+            Note over PL: Disagreement detection:<br/>spread = max(conf) - min(conf)<br/>If > 30 → deep reasoning
+
+            SU-->>User: "😈 Challenging findings..."
+
+            rect rgb(106, 4, 15)
+                Note over DA: STAGE 4 — Adversarial Challenge (Extended Thinking)
+                PL->>DA: runDevilsAdvocate(claim, reports, criteria)
+                Note right of DA: Thinking: adaptive<br/>Effort: high or max
+                DA-->>PL: ChallengeReport
+                PL->>DB: updateChallengeReport()
+            end
+
+            SU-->>User: "⚖️ Rendering final verdict..."
+
+            rect rgb(106, 4, 15)
+                Note over JDG: STAGE 5 — Final Judgment (Extended Thinking)
+                PL->>JDG: runJudge(claim, reports, challenge, strategy)
+                Note right of JDG: Thinking: max<br/>4-Phase Protocol
+                opt Critical verification needed
+                    JDG->>Brave: brave_web_search(query)
+                    Brave-->>JDG: results
+                end
+                JDG-->>PL: FinalVerdict
+            end
+
+            PL->>DB: updateFinalVerdict(verdict, duration, cost)
+            PL->>Cache: set(message, verdict)
+        end
+    end
+
+    PL-->>MH: InvestigateResult
+    MH-->>User: Verdict HTML + "View Full Analysis" button
+    User->>TG: Click "View Full Analysis"
+    TG-->>User: Link to /v/{id}

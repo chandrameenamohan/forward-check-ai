@@ -1,0 +1,99 @@
+graph TB
+    subgraph Ingress["Ingress Layer"]
+        TG["Telegram Bot<br/>src/bot/bot.ts"]
+        MH["Message Handler<br/>src/bot/message-handler.ts"]
+        SU["Status Updater<br/>src/bot/status-updater.ts"]
+        EX["Express Server<br/>src/server/app.ts"]
+        VR["Verdict Route<br/>src/server/routes/verdict.ts"]
+    end
+
+    subgraph Orchestration["Orchestration Layer"]
+        IP["InvestigationPipeline<br/>src/orchestrator/pipeline.ts"]
+        AR["AgentRunner<br/>src/orchestrator/agent-runner.ts"]
+    end
+
+    subgraph Agents["Agent Layer — 6-Stage Pipeline"]
+        CL["Classifier<br/>Haiku 4.5"]
+        ST["Strategist<br/>Opus 4.6"]
+        SV["Source Verifier<br/>Sonnet 4.5"]
+        DE["Domain Expert<br/>Sonnet 4.5"]
+        PM["Pattern Matcher<br/>Sonnet 4.5"]
+        DA["Devil's Advocate<br/>Opus 4.6"]
+        JG["Judge<br/>Opus 4.6"]
+    end
+
+    subgraph Services["Services Layer"]
+        CC["ClaudeClient<br/>src/services/claude-client.ts"]
+        CM["ClaimCache<br/>src/services/claim-cache.ts"]
+    end
+
+    subgraph Tools["Tool Layer"]
+        TR["ToolRegistry<br/>src/tools/tool-registry.ts"]
+        BS["BraveSearch<br/>src/tools/brave-search.ts"]
+        GF["GoogleFactCheck<br/>src/tools/google-factcheck.ts"]
+    end
+
+    subgraph Data["Data Layer"]
+        DB[("SQLite DB<br/>src/db/connection.ts")]
+        MG["Migrations<br/>src/db/migrations.ts"]
+        IR["InvestigationRepo<br/>src/db/investigation-repository.ts"]
+    end
+
+    subgraph Schemas["Validation Layer"]
+        ZC["ClassifierSchema"]
+        ZS["StrategySchema"]
+        ZR["ReportSchema"]
+        ZD["ChallengeSchema"]
+        ZV["VerdictSchema"]
+    end
+
+    TG --> MH
+    MH --> SU
+    MH --> IP
+    EX --> VR
+    EX --> IP
+
+    IP --> AR
+    IP --> CM
+    IP --> IR
+
+    AR --> CL
+    AR --> ST
+    AR --> SV
+    AR --> DE
+    AR --> PM
+    AR --> DA
+    AR --> JG
+
+    CL --> CC
+    ST --> CC
+    SV --> CC
+    DE --> CC
+    PM --> CC
+    DA --> CC
+    JG --> CC
+
+    SV --> TR
+    DE --> TR
+    PM --> TR
+    JG --> TR
+
+    TR --> BS
+    TR --> GF
+
+    IR --> DB
+    MG --> DB
+
+    CL -.->|validates| ZC
+    ST -.->|validates| ZS
+    SV -.->|validates| ZR
+    DE -.->|validates| ZR
+    PM -.->|validates| ZR
+    DA -.->|validates| ZD
+    JG -.->|validates| ZV
+
+    style Agents fill:#0f3460,stroke:#e94560,stroke-width:2px,color:#fff
+    style Orchestration fill:#1a1a2e,stroke:#53a8b6,stroke-width:2px,color:#fff
+    style Services fill:#16213e,stroke:#53a8b6,stroke-width:1px,color:#fff
+    style Tools fill:#16213e,stroke:#d4a574,stroke-width:1px,color:#fff
+    style Data fill:#16213e,stroke:#53a8b6,stroke-width:1px,color:#fff

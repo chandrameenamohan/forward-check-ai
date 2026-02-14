@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ForwardCheck-AI Process Diagram</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: #FFFFFF;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+    .diagram-wrapper {
+      width: 100%;
+      max-width: 1200px;
+    }
+    svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="diagram-wrapper">
+    <svg viewBox="0 0 1200 1320" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arrow-r" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+          <polygon points="0 0, 8 3, 0 6" fill="#444"/>
+        </marker>
+        <marker id="arrow-l" markerWidth="8" markerHeight="6" refX="0" refY="3" orient="auto">
+          <polygon points="8 0, 0 3, 8 6" fill="#444"/>
+        </marker>
+        <style>
+          text { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; }
+        </style>
+      </defs>
+
+      <!-- ============================================ -->
+      <!-- COLORS matching Anthropic's teal palette     -->
+      <!-- Teal primary: #5BBAA7                        -->
+      <!-- Teal light bg: #EAF5F0                       -->
+      <!-- ============================================ -->
+
+      <!-- ============================================ -->
+      <!-- TITLE                                        -->
+      <!-- ============================================ -->
+      <text x="600" y="48" text-anchor="middle" font-size="26" font-weight="700" fill="#1A1A1A" letter-spacing="-0.5">
+        ForwardCheck-AI Process Diagram
+      </text>
+
+      <!-- ============================================ -->
+      <!-- PARTICIPANT BOXES (top)                      -->
+      <!-- 7 participants spaced across 1200px          -->
+      <!-- Positions: 65, 215, 375, 535, 695, 860, 1020 -->
+      <!-- ============================================ -->
+
+      <!-- User (outlined) -->
+      <rect x="20" y="80" width="90" height="36" rx="6" fill="#FFF" stroke="#5BBAA7" stroke-width="1.5"/>
+      <text x="65" y="103" text-anchor="middle" font-size="12" font-weight="600" fill="#3A9585">User</text>
+
+      <!-- System (outlined) -->
+      <rect x="155" y="80" width="120" height="36" rx="6" fill="#FFF" stroke="#5BBAA7" stroke-width="1.5"/>
+      <text x="215" y="103" text-anchor="middle" font-size="12" font-weight="600" fill="#3A9585">System</text>
+
+      <!-- Classifier (outlined) -->
+      <rect x="310" y="80" width="130" height="36" rx="6" fill="#FFF" stroke="#5BBAA7" stroke-width="1.5"/>
+      <text x="375" y="98" text-anchor="middle" font-size="12" font-weight="600" fill="#3A9585">Classifier</text>
+      <text x="375" y="110" text-anchor="middle" font-size="9" fill="#888">(Haiku 4.5)</text>
+
+      <!-- Strategist (outlined) -->
+      <rect x="470" y="80" width="130" height="36" rx="6" fill="#FFF" stroke="#5BBAA7" stroke-width="1.5"/>
+      <text x="535" y="98" text-anchor="middle" font-size="12" font-weight="600" fill="#3A9585">Strategist</text>
+      <text x="535" y="110" text-anchor="middle" font-size="9" fill="#888">(Opus 4.6)</text>
+
+      <!-- Investigators (outlined) -->
+      <rect x="627" y="80" width="136" height="36" rx="6" fill="#FFF" stroke="#5BBAA7" stroke-width="1.5"/>
+      <text x="695" y="98" text-anchor="middle" font-size="12" font-weight="600" fill="#3A9585">Investigators</text>
+      <text x="695" y="110" text-anchor="middle" font-size="9" fill="#888">(Sonnet 4.5 &#215;3)</text>
+
+      <!-- Devil's Advocate (filled - critical reasoning role) -->
+      <rect x="790" y="80" width="140" height="36" rx="6" fill="#5BBAA7" stroke="#5BBAA7" stroke-width="1.5"/>
+      <text x="860" y="98" text-anchor="middle" font-size="12" font-weight="600" fill="#FFF">Devil's Advocate</text>
+      <text x="860" y="110" text-anchor="middle" font-size="9" fill="#E0F2ED">(Opus 4.6)</text>
+
+      <!-- Judge (filled - critical reasoning role) -->
+      <rect x="960" y="80" width="120" height="36" rx="6" fill="#5BBAA7" stroke="#5BBAA7" stroke-width="1.5"/>
+      <text x="1020" y="98" text-anchor="middle" font-size="12" font-weight="600" fill="#FFF">Judge</text>
+      <text x="1020" y="110" text-anchor="middle" font-size="9" fill="#E0F2ED">(Opus 4.6)</text>
+
+      <!-- ============================================ -->
+      <!-- LIFELINES (dashed vertical lines)            -->
+      <!-- ============================================ -->
+      <line x1="65" y1="116" x2="65" y2="1220" stroke="#D0D0D0" stroke-width="1" stroke-dasharray="5 4"/>
+      <line x1="215" y1="116" x2="215" y2="1220" stroke="#D0D0D0" stroke-width="1" stroke-dasharray="5 4"/>
+      <line x1="375" y1="116" x2="375" y2="1220" stroke="#D0D0D0" stroke-width="1" stroke-dasharray="5 4"/>
+      <line x1="535" y1="116" x2="535" y2="1220" stroke="#D0D0D0" stroke-width="1" stroke-dasharray="5 4"/>
+      <line x1="695" y1="116" x2="695" y2="1220" stroke="#D0D0D0" stroke-width="1" stroke-dasharray="5 4"/>
+      <line x1="860" y1="116" x2="860" y2="1220" stroke="#D0D0D0" stroke-width="1" stroke-dasharray="5 4"/>
+      <line x1="1020" y1="116" x2="1020" y2="1220" stroke="#D0D0D0" stroke-width="1" stroke-dasharray="5 4"/>
+
+      <!-- ============================================ -->
+      <!-- INITIAL MESSAGES (before loop)               -->
+      <!-- ============================================ -->
+
+      <!-- User → System: send forwarded message -->
+      <line x1="65" y1="155" x2="205" y2="155" stroke="#444" stroke-width="1.5" marker-end="url(#arrow-r)"/>
+      <text x="135" y="148" text-anchor="middle" font-size="11" fill="#555">send forwarded message</text>
+
+      <!-- System → Classifier: classify(message) -->
+      <line x1="215" y1="190" x2="365" y2="190" stroke="#444" stroke-width="1.5" marker-end="url(#arrow-r)"/>
+      <text x="290" y="183" text-anchor="middle" font-size="11" fill="#555">classify(message)</text>
+
+      <!-- Classifier → System: ClassifierResult -->
+      <line x1="375" y1="225" x2="225" y2="225" stroke="#444" stroke-width="1.5" marker-end="url(#arrow-l)"/>
+      <text x="300" y="218" text-anchor="middle" font-size="11" fill="#555">ClassifierResult {category: "factual_claim"}</text>
+
+      <!-- ============================================ -->
+      <!-- FACT-CHECKING PIPELINE LOOP (teal rectangle) -->
+      <!-- Equivalent to Anthropic's "Iterative Research Process" -->
+      <!-- ============================================ -->
+      <rect x="180" y="255" width="880" height="700" rx="10" fill="#EAF5F0" stroke="#5BBAA7" stroke-width="1.5"/>
+
+      <!-- Loop label -->
+      <rect x="410" y="243" width="310" height="25" rx="5" fill="#EAF5F0" stroke="#5BBAA7" stroke-width="1.5"/>
+      <text x="565" y="260" text-anchor="middle" font-size="12" font-weight="600" fill="#3A9585">Fact-Checking Pipeline</text>
+
+      <!-- ============================================ -->
+      <!-- STAGE 2: Strategist                          -->
+      <!-- ============================================ -->
+
+      <!-- System → Strategist: plan(claim, classifierResult) -->
+      <line x1="215" y1="295" x2="525" y2="295" stroke="#444" stroke-width="1.5" marker-end="url(#arrow-r)"/>
+      <text x="370" y="288" text-anchor="middle" font-size="11" fill="#555">plan(claim, classifierResult)</text>
+
+      <!-- Strategist: think (plan approach) - self arrow -->
+      <rect x="505" y="315" width="180" height="22" rx="4" fill="#FFF" stroke="#5BBAA7" stroke-width="1"/>
+      <text x="595" y="330" text-anchor="middle" font-size="10" fill="#3A9585" font-weight="500">think (plan approach)</text>
+
+      <!-- Strategist → System: SearchStrategy -->
+      <line x1="535" y1="358" x2="225" y2="358" stroke="#444" stroke-width="1.5" marker-end="url(#arrow-l)"/>
+      <text x="380" y="351" text-anchor="middle" font-size="11" fill="#555">SearchStrategy with falsification criteria</text>
+
+      <!-- ============================================ -->
+      <!-- STAGE 3: Parallel Investigation              -->
+      <!-- ============================================ -->
+
+      <!-- System → Investigators: create investigator for source verification -->
+      <line x1="215" y1="395" x2="685" y2="395" stroke="#444" stroke-width="1.5" marker-end="url(#arrow-r)"/>
+      <text x="450" y="388" text-anchor="middle" font-size="11" fill="#555">create investigator for source verification</text>
+
+      <!-- System → Investigators: create investigator for domain expertise -->
+      <line x1="215" y1="425" x2="685" y2="425" stroke="#444" stroke-width="1.5" marker-end="url(#arrow-r)"/>
+      <text x="450" y="418" text-anchor="middle" font-size="11" fill="#555">create investigator for domain expertise</text>
+
+      <!-- System → Investigators: create investigator for pattern matching -->
+      <line x1="215" y1="455" x2="685" y2="455" stroke="#444" stroke-width="1.5" marker-end="url(#arrow-r)"/>
+      <text x="450" y="448" text-anchor="middle" font-size="11" fill="#555">create investigator for pattern matching</text>
+
+      <!-- Investigators: web_search -->
+      <rect x="660" y="480" width="175" height="22" rx="4" fill="#FFF" stroke="#5BBAA7" stroke-width="1"/>
+      <text x="747" y="495" text-anchor="middle" font-size="10" fill="#3A9585" font-weight="500">web_search (brave, google_fc)</text>
+
+      <!-- Investigators: think (evaluate evidence) -->
+      <rect x="660" y="515" width="175" height="22" rx="4" fill="#FFF" stroke="#5BBAA7" stroke-width="1"/>
+      <text x="747" y="530" text-anchor="middle" font-size="10" fill="#3A9585" font-weight="500">think (evaluate evidence)</text>
+
+      <!-- Investigators → System: complete_task (AgentReports) -->
+      <line x1="695" y1="558" x2="225" y2="558" stroke="#444" stroke-width="1.5" marker-end="url(#arrow-l)"/>
+      <text x="460" y="551" text-anchor="middle" font-size="11" fill="#555">complete_task (AgentReport &#215;3)</text>
+
+      <!-- System: think (detect disagreement) -->
+      <rect x="190" y="578" width="195" height="22" rx="4" fill="#FFF" stroke="#5BBAA7" stroke-width="1"/>
+      <text x="287" y="593" text-anchor="middle" font-size="10" fill="#3A9585" font-weight="500">think (detect disagreement)</text>
+
+      <!-- ============================================ -->
+      <!-- DECISION: Disagreement Detected?             -->
+      <!-- Equivalent to Anthropic's "More research needed?" -->
+      <!-- ============================================ -->
+      <rect x="375" y="618" width="220" height="30" rx="15" fill="#EAF5F0" stroke="#5BBAA7" stroke-width="1.5"/>
+      <text x="485" y="638" text-anchor="middle" font-size="11.5" font-weight="600" fill="#3A9585">Disagreement detected?</text>
+
+      <!-- X: Normal (DA effort: high) -->
+      <circle cx="435" cy="668" r="10" fill="#FFF" stroke="#5BBAA7" stroke-width="1.5"/>
+      <text x="435" y="672" text-anchor="middle" font-size="12" font-weight="700" fill="#E05555">&#10005;</text>
+      <text x="455" y="672" font-size="10" fill="#666">Normal path (DA effort: high)</text>
+
+      <!-- Checkmark: Deep reasoning (DA effort: max) -->
+      <circle cx="435" cy="694" r="10" fill="#FFF" stroke="#5BBAA7" stroke-width="1.5"/>
+      <text x="435" y="698" text-anchor="middle" font-size="12" font-weight="700" fill="#5BBAA7">&#10003;</text>
+      <text x="455" y="698" font-size="10" fill="#666">Deep reasoning (DA effort: max)</text>
+
+      <!-- ============================================ -->
+      <!-- STAGE 4: Devil's Advocate                    -->
+      <!-- ============================================ -->
+
+      <!-- System → DA: challenge(reports, falsification_criteria) -->
+      <line x1="215" y1="730" x2="850" y2="730" stroke="#444" stroke-width="1.5" marker-end="url(#arrow-r)"/>
+      <text x="532" y="723" text-anchor="middle" font-size="11" fill="#555">challenge(reports, falsification_criteria)</text>
+
+      <!-- DA: think (adversarial review) -->
+      <rect x="810" y="748" width="195" height="22" rx="4" fill="#FFF" stroke="#5BBAA7" stroke-width="1"/>
+      <text x="907" y="763" text-anchor="middle" font-size="10" fill="#3A9585" font-weight="500">think (adversarial review)</text>
+
+      <!-- DA → System: ChallengeReport -->
+      <line x1="860" y1="790" x2="225" y2="790" stroke="#444" stroke-width="1.5" marker-end="url(#arrow-l)"/>
+      <text x="542" y="783" text-anchor="middle" font-size="11" fill="#555">ChallengeReport {counterArgumentSucceeded: false}</text>
+
+      <!-- ============================================ -->
+      <!-- STAGE 5: Judge                               -->
+      <!-- ============================================ -->
+
+      <!-- System → Judge: synthesize(all evidence) -->
+      <line x1="215" y1="830" x2="1010" y2="830" stroke="#444" stroke-width="1.5" marker-end="url(#arrow-r)"/>
+      <text x="612" y="823" text-anchor="middle" font-size="11" fill="#555">synthesize(reports, challenge, strategy)</text>
+
+      <!-- Judge: web_search (critical verification) -->
+      <rect x="965" y="848" width="195" height="22" rx="4" fill="#FFF" stroke="#5BBAA7" stroke-width="1"/>
+      <text x="1062" y="863" text-anchor="middle" font-size="10" fill="#3A9585" font-weight="500">web_search (critical verify)</text>
+
+      <!-- Judge: think (render verdict) -->
+      <rect x="965" y="883" width="195" height="22" rx="4" fill="#FFF" stroke="#5BBAA7" stroke-width="1"/>
+      <text x="1062" y="898" text-anchor="middle" font-size="10" fill="#3A9585" font-weight="500">think (render verdict)</text>
+
+      <!-- Judge → System: complete_task (FinalVerdict) -->
+      <line x1="1020" y1="925" x2="225" y2="925" stroke="#444" stroke-width="1.5" marker-end="url(#arrow-l)"/>
+      <text x="622" y="918" text-anchor="middle" font-size="11" fill="#555">complete_task (FinalVerdict)</text>
+
+      <!-- ============================================ -->
+      <!-- POST-PIPELINE                                -->
+      <!-- ============================================ -->
+
+      <!-- System: persist results + cache -->
+      <rect x="190" y="955" width="170" height="22" rx="4" fill="#FFF" stroke="#C8C8C8" stroke-width="1"/>
+      <text x="275" y="970" text-anchor="middle" font-size="10" fill="#666" font-weight="500">persist to SQLite + cache</text>
+
+      <!-- System → User: return verdict with analysis link -->
+      <line x1="215" y1="1005" x2="75" y2="1005" stroke="#444" stroke-width="1.5" marker-end="url(#arrow-l)"/>
+      <text x="145" y="998" text-anchor="middle" font-size="11" fill="#555">verdict with analysis link</text>
+
+      <!-- ============================================ -->
+      <!-- TIMING / COST ANNOTATIONS                    -->
+      <!-- ============================================ -->
+
+      <!-- Stage timing annotations (right side) -->
+      <text x="1085" y="190" font-size="9" fill="#BBB" text-anchor="start">~1s</text>
+      <text x="1085" y="358" font-size="9" fill="#BBB" text-anchor="start">~5&#8211;10s</text>
+      <text x="1085" y="558" font-size="9" fill="#BBB" text-anchor="start">~15&#8211;30s</text>
+      <text x="1085" y="790" font-size="9" fill="#BBB" text-anchor="start">~5&#8211;15s</text>
+      <text x="1085" y="925" font-size="9" fill="#BBB" text-anchor="start">~10&#8211;20s</text>
+
+      <!-- ============================================ -->
+      <!-- PARTICIPANT BOXES (bottom, mirrored)         -->
+      <!-- ============================================ -->
+
+      <!-- User -->
+      <rect x="20" y="1230" width="90" height="36" rx="6" fill="#FFF" stroke="#5BBAA7" stroke-width="1.5"/>
+      <text x="65" y="1253" text-anchor="middle" font-size="12" font-weight="600" fill="#3A9585">User</text>
+
+      <!-- System -->
+      <rect x="155" y="1230" width="120" height="36" rx="6" fill="#FFF" stroke="#5BBAA7" stroke-width="1.5"/>
+      <text x="215" y="1253" text-anchor="middle" font-size="12" font-weight="600" fill="#3A9585">System</text>
+
+      <!-- Classifier -->
+      <rect x="310" y="1230" width="130" height="36" rx="6" fill="#FFF" stroke="#5BBAA7" stroke-width="1.5"/>
+      <text x="375" y="1248" text-anchor="middle" font-size="12" font-weight="600" fill="#3A9585">Classifier</text>
+      <text x="375" y="1260" text-anchor="middle" font-size="9" fill="#888">(Haiku 4.5)</text>
+
+      <!-- Strategist -->
+      <rect x="470" y="1230" width="130" height="36" rx="6" fill="#FFF" stroke="#5BBAA7" stroke-width="1.5"/>
+      <text x="535" y="1248" text-anchor="middle" font-size="12" font-weight="600" fill="#3A9585">Strategist</text>
+      <text x="535" y="1260" text-anchor="middle" font-size="9" fill="#888">(Opus 4.6)</text>
+
+      <!-- Investigators -->
+      <rect x="627" y="1230" width="136" height="36" rx="6" fill="#FFF" stroke="#5BBAA7" stroke-width="1.5"/>
+      <text x="695" y="1248" text-anchor="middle" font-size="12" font-weight="600" fill="#3A9585">Investigators</text>
+      <text x="695" y="1260" text-anchor="middle" font-size="9" fill="#888">(Sonnet 4.5 &#215;3)</text>
+
+      <!-- Devil's Advocate (filled) -->
+      <rect x="790" y="1230" width="140" height="36" rx="6" fill="#5BBAA7" stroke="#5BBAA7" stroke-width="1.5"/>
+      <text x="860" y="1248" text-anchor="middle" font-size="12" font-weight="600" fill="#FFF">Devil's Advocate</text>
+      <text x="860" y="1260" text-anchor="middle" font-size="9" fill="#E0F2ED">(Opus 4.6)</text>
+
+      <!-- Judge (filled) -->
+      <rect x="960" y="1230" width="120" height="36" rx="6" fill="#5BBAA7" stroke="#5BBAA7" stroke-width="1.5"/>
+      <text x="1020" y="1248" text-anchor="middle" font-size="12" font-weight="600" fill="#FFF">Judge</text>
+      <text x="1020" y="1260" text-anchor="middle" font-size="9" fill="#E0F2ED">(Opus 4.6)</text>
+
+      <!-- ============================================ -->
+      <!-- TOTAL COST / TIME ANNOTATION (bottom)        -->
+      <!-- ============================================ -->
+      <text x="600" y="1300" text-anchor="middle" font-size="11" fill="#AAA">
+        Total: ~$2&#8211;5 per investigation &#183; 30&#8211;70 seconds end-to-end &#183; 6 agents &#183; 3 model tiers
+      </text>
+
+    </svg>
+  </div>
+</body>
+</html>
