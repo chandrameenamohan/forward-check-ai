@@ -542,4 +542,34 @@ describe("Chat page — GET /chat", () => {
     // Progress bar should have progressbar role
     expect(html).toContain('role="progressbar"');
   });
+
+  // ── Task 7.1: Scroll animations and micro-interactions ──
+
+  it("GET /chat should include animation keyframes", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/chat`);
+    const html = await res.text();
+    // Chat page entrance animations
+    expect(html).toContain("fc-chat-entrance");
+    expect(html).toContain("@keyframes fc-chat-entrance");
+    // Existing animation keyframes from live-styles and chat-styles
+    expect(html).toContain("@keyframes fc-chat-shake");
+    expect(html).toContain("@keyframes fc-card-entrance");
+    expect(html).toContain("@keyframes fc-reveal-badge-in");
+  });
+
+  it("GET /chat should respect prefers-reduced-motion for all animations", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/chat`);
+    const html = await res.text();
+    // Must have prefers-reduced-motion that disables chat entrance animations
+    expect(html).toContain("prefers-reduced-motion: reduce");
+    expect(html).toContain("fc-chat-entrance");
+    // All entrance animations should be disabled in reduced motion
+    expect(html).toContain("animation: none");
+    expect(html).toContain("transition: none");
+    // Elements should be immediately visible
+    expect(html).toContain("opacity: 1");
+    expect(html).toContain("transform: none");
+  });
 });

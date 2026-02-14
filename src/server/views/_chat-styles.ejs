@@ -40,6 +40,26 @@
       border-radius: 4px;
     }
 
+    /* ═══ ENTRANCE ANIMATIONS ═══ */
+
+    @keyframes fc-chat-entrance {
+      from {
+        opacity: 0;
+        transform: translateY(18px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .fc-chat-header {
+      animation: fc-chat-entrance 0.6s ease-out both;
+    }
+    .fc-chat-input-area {
+      animation: fc-chat-entrance 0.6s ease-out 0.15s both;
+    }
+
     /* ═══ CHAT PAGE LAYOUT ═══ */
 
     .fc-chat-wrapper {
@@ -601,6 +621,12 @@
     @media (prefers-reduced-motion: reduce) {
       .fc-skip-link {
         transition: none;
+      }
+      .fc-chat-header,
+      .fc-chat-input-area {
+        animation: none;
+        opacity: 1;
+        transform: none;
       }
       .fc-chat-card,
       .fc-chat-input-area,
