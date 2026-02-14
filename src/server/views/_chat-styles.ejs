@@ -1,5 +1,127 @@
 <%- include('_design-tokens') %>
 <style>
-    /* ─── Chat page styles ─── */
-    /* Placeholder — populated in Task 1.2 */
+    /* ═══ CHAT PAGE LAYOUT ═══ */
+
+    .fc-chat-wrapper {
+      position: relative;
+      z-index: 1;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 1.25rem 3rem;
+      min-height: 100vh;
+    }
+
+    /* ─── Topbar ─── */
+    .fc-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 0;
+      border-bottom: 1px solid var(--fc-border);
+      margin-bottom: 2rem;
+    }
+    .fc-topbar-brand {
+      font-family: 'DM Mono', monospace;
+      font-weight: 500;
+      font-size: 0.85rem;
+      letter-spacing: 0.04em;
+      color: var(--fc-accent-green);
+      text-decoration: none;
+    }
+    .fc-topbar-link {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--fc-text-dim);
+      text-decoration: none;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      transition: color 0.2s ease;
+    }
+    .fc-topbar-link:hover {
+      color: var(--fc-text-muted);
+    }
+
+    /* ─── Main content area ─── */
+    .fc-chat-main {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    /* ─── Chat header (headline + subtitle) ─── */
+    .fc-chat-header {
+      text-align: center;
+      padding: 3rem 0 1rem;
+    }
+    .fc-chat-headline {
+      font-family: 'Instrument Serif', serif;
+      font-size: 2.4rem;
+      font-weight: 400;
+      line-height: 1.15;
+      color: var(--fc-text);
+      margin-bottom: 0.75rem;
+    }
+    .fc-chat-subtitle {
+      font-size: 1rem;
+      color: var(--fc-text-muted);
+      max-width: 540px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    /* ─── Glass-morphism card (reusable) ─── */
+    .fc-chat-card {
+      background: rgba(18, 18, 26, 0.7);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--fc-border);
+      border-radius: 10px;
+      padding: 1.5rem;
+    }
+
+    /* ─── Responsive: tablet (≤768px) ─── */
+    @media (max-width: 768px) {
+      .fc-chat-wrapper {
+        padding: 0 1rem 2rem;
+      }
+      .fc-chat-header {
+        padding: 2rem 0 0.75rem;
+      }
+      .fc-chat-headline {
+        font-size: 1.8rem;
+      }
+      .fc-chat-subtitle {
+        font-size: 0.9rem;
+      }
+      .fc-chat-card {
+        padding: 1.15rem;
+      }
+    }
+
+    /* ─── Responsive: small mobile (≤375px) ─── */
+    @media (max-width: 375px) {
+      .fc-chat-wrapper {
+        padding: 0 0.75rem 1.5rem;
+      }
+      .fc-chat-header {
+        padding: 1.5rem 0 0.5rem;
+      }
+      .fc-chat-headline {
+        font-size: 1.5rem;
+      }
+      .fc-chat-subtitle {
+        font-size: 0.85rem;
+      }
+      .fc-chat-card {
+        padding: 1rem;
+        border-radius: 8px;
+      }
+    }
+
+    /* ─── Reduced motion ─── */
+    @media (prefers-reduced-motion: reduce) {
+      .fc-chat-card {
+        transition: none;
+      }
+    }
 </style>

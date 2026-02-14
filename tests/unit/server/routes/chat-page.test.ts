@@ -46,4 +46,19 @@ describe("Chat page — GET /chat", () => {
     expect(html).toContain("--fc-border");
     expect(html).toContain("--fc-text");
   });
+
+  it("GET /chat should include fc-chat-wrapper class", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/chat`);
+    const html = await res.text();
+    expect(html).toContain("fc-chat-wrapper");
+  });
+
+  it("GET /chat should include glass-morphism backdrop-filter styles", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/chat`);
+    const html = await res.text();
+    expect(html).toContain("backdrop-filter");
+    expect(html).toContain("blur(");
+  });
 });

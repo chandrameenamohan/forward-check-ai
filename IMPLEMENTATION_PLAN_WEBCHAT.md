@@ -87,7 +87,7 @@
 - Test: `"GET /chat should include design token CSS variables"`
 
 ### Task 1.2: Chat design tokens and styles partial
-- [ ]
+- [x]
 **Objective:** Create `_chat-styles.ejs` with the foundational layout styles for the chat page, following the live page's glass-morphism dark theme.
 **Details:**
 - Create `src/server/views/_chat-styles.ejs`
