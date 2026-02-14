@@ -29,7 +29,7 @@
 - Cleanup: test database cleaned after each test
 
 ### Task 0.2: Per-IP rate limiting middleware
-- [ ]
+- [x]
 **Objective:** Create rate limiting middleware that restricts each IP address to 10 investigation requests per 60-second sliding window.
 **Details:**
 - Create `src/server/middleware/rate-limit.ts` — exports `createRateLimiter(maxRequests, windowMs)`
