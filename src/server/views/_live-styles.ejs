@@ -95,6 +95,100 @@
       color: var(--fc-text);
     }
 
+    /* ─── Progress header ─── */
+    .fc-progress-header {
+      background: var(--fc-surface);
+      border: 1px solid var(--fc-border);
+      border-radius: 10px;
+      padding: 1.25rem 1.5rem 1rem;
+      margin-bottom: 1.5rem;
+      backdrop-filter: blur(16px);
+    }
+    .fc-progress-header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+    .fc-progress-header-title {
+      font-family: 'Satoshi', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--fc-text);
+    }
+    .fc-elapsed {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.85rem;
+      font-weight: 400;
+      color: var(--fc-text-muted);
+      letter-spacing: 0.03em;
+      min-width: 3.2em;
+      text-align: right;
+    }
+
+    /* ─── Segmented progress bar ─── */
+    .fc-progress-bar {
+      display: flex;
+      gap: 3px;
+      margin-bottom: 0.5rem;
+    }
+    .fc-progress-segment {
+      flex: 1;
+      height: 6px;
+      background: var(--fc-surface-raised);
+      border-radius: 3px;
+      overflow: hidden;
+      position: relative;
+    }
+    .fc-progress-segment-fill {
+      position: absolute;
+      inset: 0;
+      border-radius: 3px;
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s ease;
+    }
+    .fc-progress-segment--active .fc-progress-segment-fill {
+      background: var(--fc-accent-amber);
+      transform: scaleX(1);
+      animation: fc-segment-pulse 1.5s ease-in-out infinite;
+    }
+    .fc-progress-segment--complete .fc-progress-segment-fill {
+      background: var(--fc-accent-green);
+      transform: scaleX(1);
+      animation: none;
+    }
+
+    /* ─── Progress labels ─── */
+    .fc-progress-labels {
+      display: flex;
+      gap: 3px;
+      margin-bottom: 0.75rem;
+    }
+    .fc-progress-label {
+      flex: 1;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      color: var(--fc-text-dim);
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    /* ─── Cost tracker ─── */
+    .fc-cost-tracker {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--fc-text-dim);
+      letter-spacing: 0.03em;
+    }
+    .fc-cost-tracker svg {
+      opacity: 0.5;
+    }
+
     /* ─── Pipeline visualization area ─── */
     .fc-live-pipeline {
       display: flex;
@@ -167,6 +261,10 @@
     @keyframes fc-spin {
       to { transform: rotate(360deg); }
     }
+    @keyframes fc-segment-pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
 
     /* ─── Responsive ─── */
     @media (max-width: 768px) {
@@ -182,13 +280,23 @@
       .fc-live-headline {
         font-size: 1.3rem;
       }
+      .fc-progress-labels {
+        display: none;
+      }
+      .fc-progress-header {
+        padding: 1rem;
+      }
     }
 
     /* ─── Reduced motion ─── */
     @media (prefers-reduced-motion: reduce) {
       .fc-live-status-dot,
-      .fc-connecting-spinner-ring {
+      .fc-connecting-spinner-ring,
+      .fc-progress-segment--active .fc-progress-segment-fill {
         animation: none;
+      }
+      .fc-progress-segment-fill {
+        transition: none;
       }
     }
 </style>

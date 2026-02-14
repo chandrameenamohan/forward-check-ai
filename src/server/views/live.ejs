@@ -36,6 +36,37 @@
       <p class="fc-live-message-text"><%= originalMessage %></p>
     </div>
 
+    <!-- ═══ PROGRESS HEADER ═══ -->
+    <div class="fc-progress-header">
+      <div class="fc-progress-header-top">
+        <span class="fc-progress-header-title" id="fc-progress-title">Investigating your claim...</span>
+        <span class="fc-elapsed" id="fc-elapsed">0:00</span>
+      </div>
+
+      <div class="fc-progress-bar" id="fc-progress-bar">
+        <div class="fc-progress-segment" data-step="0" id="fc-seg-classify"><div class="fc-progress-segment-fill"></div></div>
+        <div class="fc-progress-segment" data-step="1" id="fc-seg-strategize"><div class="fc-progress-segment-fill"></div></div>
+        <div class="fc-progress-segment" data-step="2" id="fc-seg-investigate"><div class="fc-progress-segment-fill"></div></div>
+        <div class="fc-progress-segment" data-step="3" id="fc-seg-challenge"><div class="fc-progress-segment-fill"></div></div>
+        <div class="fc-progress-segment" data-step="4" id="fc-seg-judge"><div class="fc-progress-segment-fill"></div></div>
+        <div class="fc-progress-segment" data-step="5" id="fc-seg-verdict"><div class="fc-progress-segment-fill"></div></div>
+      </div>
+
+      <div class="fc-progress-labels">
+        <span class="fc-progress-label">Classify</span>
+        <span class="fc-progress-label">Strategize</span>
+        <span class="fc-progress-label">Investigate</span>
+        <span class="fc-progress-label">Challenge</span>
+        <span class="fc-progress-label">Judge</span>
+        <span class="fc-progress-label">Verdict</span>
+      </div>
+
+      <div class="fc-cost-tracker" id="fc-cost-tracker">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v12M9 9.5a2.5 2.5 0 0 1 5 0c0 1.5-2.5 2-2.5 4M9 14.5a2.5 2.5 0 0 0 5 0"/></svg>
+        API cost: <span id="fc-cost-value">$0.00</span>
+      </div>
+    </div>
+
     <!-- ═══ PIPELINE VISUALIZATION AREA ═══ -->
     <div class="fc-live-pipeline" id="fc-pipeline-area">
       <div class="fc-connecting-spinner" id="fc-connecting-spinner">
@@ -76,31 +107,80 @@
         }
       }
 
+      // ── Elapsed time counter ──
+      var elapsedSeconds = 0;
+      var elapsedEl = document.getElementById('fc-elapsed');
+      var elapsedTimer = setInterval(function() {
+        elapsedSeconds++;
+        var mins = Math.floor(elapsedSeconds / 60);
+        var secs = elapsedSeconds % 60;
+        if (elapsedEl) {
+          elapsedEl.textContent = mins + ':' + (secs < 10 ? '0' : '') + secs;
+        }
+      }, 1000);
+
+      // ── Cost tracker ──
+      var totalCost = 0;
+      var costEl = document.getElementById('fc-cost-value');
+      function addCost(costUsd) {
+        if (typeof costUsd === 'number') {
+          totalCost += costUsd;
+          if (costEl) {
+            costEl.textContent = '$' + totalCost.toFixed(2);
+          }
+        }
+      }
+
+      // ── Progress bar ──
+      var segments = ['classify', 'strategize', 'investigate', 'challenge', 'judge', 'verdict'];
+      function setSegmentActive(step) {
+        var seg = document.getElementById('fc-seg-' + step);
+        if (seg) {
+          seg.classList.add('fc-progress-segment--active');
+          seg.classList.remove('fc-progress-segment--complete');
+        }
+      }
+      function setSegmentComplete(step) {
+        var seg = document.getElementById('fc-seg-' + step);
+        if (seg) {
+          seg.classList.remove('fc-progress-segment--active');
+          seg.classList.add('fc-progress-segment--complete');
+        }
+      }
+
       // ── UI update stubs — Phase 3 will flesh these out ──
 
       function updateClassifier(kind, data) {
         hideSpinner();
-        // Stub: will render classifier agent card in Task 3.2
+        if (kind === 'start') { setSegmentActive('classify'); }
+        if (kind === 'complete') { setSegmentComplete('classify'); addCost(data.costUsd); }
       }
 
       function updateStrategist(kind, data) {
         hideSpinner();
-        // Stub: will render strategist agent card in Task 3.2
+        if (kind === 'start') { setSegmentActive('strategize'); }
+        if (kind === 'complete') { setSegmentComplete('strategize'); addCost(data.costUsd); }
       }
 
       function updateInvestigators(kind, data) {
         hideSpinner();
-        // Stub: will render investigator cards in Task 3.3
+        if (kind === 'start') { setSegmentActive('investigate'); }
+        if (kind === 'complete') { addCost(data.costUsd); }
+        if (kind === 'disagreement') { setSegmentComplete('investigate'); }
       }
 
       function updateDA(kind, data) {
         hideSpinner();
-        // Stub: will render DA card in Task 3.4
+        setSegmentComplete('investigate');
+        if (kind === 'start') { setSegmentActive('challenge'); }
+        if (kind === 'complete') { setSegmentComplete('challenge'); addCost(data.costUsd); }
       }
 
       function updateJudge(kind, data) {
         hideSpinner();
-        // Stub: will render judge card / verdict in Task 3.5
+        if (kind === 'start') { setSegmentActive('judge'); }
+        if (kind === 'complete') { setSegmentComplete('judge'); addCost(data.costUsd); }
+        if (kind === 'verdict') { setSegmentComplete('verdict'); clearInterval(elapsedTimer); }
       }
 
       // ── Pipeline lifecycle events ──
@@ -208,6 +288,7 @@
       evtSource.addEventListener('pipeline:error', function(e) {
         var data = JSON.parse(e.data);
         hideSpinner();
+        clearInterval(elapsedTimer);
         showStatus('Something went wrong: ' + (data.error || 'Unknown error'), 'error');
         evtSource.close();
       });

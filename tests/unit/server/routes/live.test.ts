@@ -229,4 +229,54 @@ describe("Live verdict page routes", () => {
     // EventSource should be closed in both complete and error handlers
     expect(html).toContain("evtSource.close()");
   });
+
+  // ── Task 3.1: Progress header and progress bar ──
+
+  it("GET /live/:id should contain original message card", async () => {
+    const port = await startServer();
+    const id = repo.create("Claim to display in card");
+
+    const res = await fetch(`http://127.0.0.1:${port}/live/${id}`);
+    const html = await res.text();
+
+    expect(html).toContain("fc-live-message");
+    expect(html).toContain("Forwarded claim");
+    expect(html).toContain("Claim to display in card");
+  });
+
+  it("GET /live/:id should contain progress bar with 6 segments", async () => {
+    const port = await startServer();
+    const id = repo.create("Progress bar test");
+
+    const res = await fetch(`http://127.0.0.1:${port}/live/${id}`);
+    const html = await res.text();
+
+    expect(html).toContain("fc-progress-bar");
+    expect(html).toContain("fc-progress-segment");
+    // 6 pipeline stages: classifier, strategist, investigators, DA, judge, verdict
+    const segmentCount = (html.match(/fc-progress-segment"/g) || []).length;
+    expect(segmentCount).toBe(6);
+  });
+
+  it("GET /live/:id should contain elapsed time counter", async () => {
+    const port = await startServer();
+    const id = repo.create("Timer test");
+
+    const res = await fetch(`http://127.0.0.1:${port}/live/${id}`);
+    const html = await res.text();
+
+    expect(html).toContain("fc-elapsed");
+    expect(html).toContain("elapsedTimer");
+  });
+
+  it("GET /live/:id should contain cost tracker", async () => {
+    const port = await startServer();
+    const id = repo.create("Cost tracker test");
+
+    const res = await fetch(`http://127.0.0.1:${port}/live/${id}`);
+    const html = await res.text();
+
+    expect(html).toContain("fc-cost-tracker");
+    expect(html).toContain("totalCost");
+  });
 });

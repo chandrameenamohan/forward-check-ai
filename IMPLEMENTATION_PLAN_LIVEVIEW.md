@@ -170,7 +170,7 @@ The "See Live Verdict" page shows users the 6-agent pipeline working on their cl
 ## Phase 3: Live Verdict Page — Agent Visualization
 
 ### Task 3.1: Original message card and pipeline progress header
-- [ ]
+- [x]
 **Objective:** Display the forwarded message being investigated and an overall progress indicator at the top of the live page.
 **Details:**
 - Add to `live.ejs`:
