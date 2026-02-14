@@ -1,0 +1,44 @@
+flowchart LR
+    subgraph Agents["Agent Layer"]
+        SV["Source Verifier"]
+        DE["Domain Expert"]
+        PM["Pattern Matcher"]
+        JG["Judge"]
+    end
+
+    subgraph Runner["Agent Runner Loop"]
+        LOOP["1. Call Claude API<br/>2. Parse tool_use blocks<br/>3. Execute via registry<br/>4. Append tool_result<br/>5. Loop until end_turn"]
+    end
+
+    subgraph Registry["Tool Registry"]
+        TR["ToolRegistry.execute()"]
+    end
+
+    subgraph Tools["External Tools"]
+        BS["brave_web_search<br/>━━━━━━━━━━━━━━<br/>Input: query, count<br/>Output: results[]<br/>API: api.search.brave.com"]
+        GF["google_fact_check_search<br/>━━━━━━━━━━━━━━<br/>Input: query<br/>Output: claims[]<br/>API: factchecktools.googleapis.com"]
+    end
+
+    subgraph Structured["Structured Output Tools"]
+        SS["submit_strategy<br/>(Strategist only)"]
+        SR["submit_report<br/>(Investigators only)"]
+        SC["submit_challenge<br/>(DA only)"]
+        SVD["submit_verdict<br/>(Judge only)"]
+    end
+
+    SV --> LOOP
+    DE --> LOOP
+    PM --> LOOP
+    JG --> LOOP
+
+    LOOP -->|"tool_use"| TR
+    TR --> BS
+    TR --> GF
+    TR --> SS
+    TR --> SR
+    TR --> SC
+    TR --> SVD
+
+    style Registry fill:#3c096c,stroke:#c77dff,stroke-width:2px,color:#fff
+    style Tools fill:#023e8a,stroke:#48cae4,stroke-width:2px,color:#fff
+    style Structured fill:#2d6a4f,stroke:#95d5b2,stroke-width:2px,color:#fff

@@ -1,0 +1,58 @@
+graph TB
+    subgraph Process["Node.js Process (Single)"]
+        subgraph Boot["Bootstrap — src/index.ts"]
+            ENV["loadEnv()"]
+            LOG["Pino Logger"]
+            MIG["Run Migrations"]
+        end
+
+        subgraph Runtime["Runtime Components"]
+            BOT["Grammy Bot<br/>(Long Polling)"]
+            SRV["Express 5 Server<br/>:3000"]
+            PIPE["InvestigationPipeline<br/>(singleton)"]
+        end
+
+        subgraph Shared["Shared Services"]
+            CLIENT["ClaudeClient"]
+            TOOLS["ToolRegistry"]
+            REPO["InvestigationRepository"]
+            CCACHE["ClaimCache"]
+        end
+    end
+
+    subgraph Storage["Persistence"]
+        SQLITE[("SQLite<br/>./data/forwardcheck.db")]
+    end
+
+    subgraph External["External APIs"]
+        TGAPI["Telegram Bot API<br/>getUpdates (polling)"]
+        CLAUDE["Anthropic API<br/>messages.create()"]
+        BAPI["Brave Search API"]
+        GAPI["Google Fact Check API"]
+    end
+
+    ENV --> LOG --> MIG
+    MIG --> Runtime
+
+    BOT <-->|"Long polling"| TGAPI
+    CLIENT -->|"HTTPS"| CLAUDE
+    TOOLS -->|"HTTPS"| BAPI
+    TOOLS -->|"HTTPS"| GAPI
+
+    BOT --> PIPE
+    SRV --> PIPE
+    PIPE --> CLIENT
+    PIPE --> TOOLS
+    PIPE --> REPO
+    PIPE --> CCACHE
+    REPO --> SQLITE
+
+    subgraph Graceful["Graceful Shutdown"]
+        SIG["SIGINT / SIGTERM"]
+        SIG --> BOT
+        SIG --> SRV
+    end
+
+    style Process fill:#1a1a2e,stroke:#e94560,stroke-width:2px,color:#fff
+    style Storage fill:#16213e,stroke:#53a8b6,stroke-width:2px,color:#fff
+    style External fill:#0f3460,stroke:#d4a574,stroke-width:1px,color:#fff

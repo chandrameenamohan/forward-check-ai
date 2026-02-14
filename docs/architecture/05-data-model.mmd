@@ -1,0 +1,75 @@
+erDiagram
+    INVESTIGATION {
+        text id PK "nanoid()"
+        text original_message "Raw user input"
+        text extracted_claim "From Classifier"
+        text status "pending|investigating|completed|completed_non_factual"
+        json classifier_result "ClassifierResult"
+        json search_strategy "SearchStrategy"
+        json agent_reports "AgentReport[]"
+        json challenge_report "ChallengeReport"
+        json final_verdict "FinalVerdict"
+        text telegram_chat_id FK "nullable"
+        text telegram_message_id FK "nullable"
+        text created_at "ISO datetime"
+        text completed_at "nullable"
+        real total_cost_usd "Accumulated API cost"
+        integer pipeline_duration_ms "End-to-end latency"
+    }
+
+    CLASSIFIER_RESULT {
+        text category "factual_claim|opinion|scam|greeting|other"
+        text extractedClaim
+        boolean isCompound
+        text domain "public_health|geopolitics|economics|science|technology|general"
+        text language "ISO 639-1"
+        text urgency "low|medium|high"
+        text reasoning
+    }
+
+    SEARCH_STRATEGY {
+        json claimCharacteristics "type, pattern, assessment"
+        json investigatorGuidance "3 role-specific plans"
+        json falsificationCriteria "proveTrue[], proveFalse[]"
+        text thinkingExcerpt "Strategist reasoning visible to user"
+    }
+
+    AGENT_REPORT {
+        text agentRole "source_verification|domain_expertise|pattern_matching"
+        text summary "max 800 chars"
+        json findings "Finding[] with sources"
+        json manipulationIndicators "string[]"
+        text overallAssessment
+        integer confidenceScore "0-100"
+    }
+
+    CHALLENGE_REPORT {
+        json challenges "Challenge[] targeting agents"
+        boolean counterArgumentSucceeded
+        integer suggestedConfidenceAdjustment "-30 to +30"
+        text counterArgumentSummary
+        text overallAssessment
+        text thinkingExcerpt "DA reasoning visible to user"
+    }
+
+    FINAL_VERDICT {
+        text category "likely-true|partially-true|unverified|likely-false|satire|opinion"
+        text nuanceTag "misleading|out-of-context|exaggerated|fabricated|recirculated|scam"
+        integer confidence "0-100 truthfulness"
+        json confidenceDecomposition "4 sub-scores"
+        json manipulationTechniques "technique, severity, quote"
+        json keyFindings "string[]"
+        json sources "url, title, relevance"
+        text summary "max 500 chars"
+        text reasoning
+        text whatWouldChangeMyMind
+        text devilsAdvocateOutcome "failed|partially_succeeded|succeeded"
+        boolean deepReasoningActivated
+        text thinkingSummary "Judge reasoning visible to user"
+    }
+
+    INVESTIGATION ||--o| CLASSIFIER_RESULT : "stage 1"
+    INVESTIGATION ||--o| SEARCH_STRATEGY : "stage 2"
+    INVESTIGATION ||--o{ AGENT_REPORT : "stage 3 (x3)"
+    INVESTIGATION ||--o| CHALLENGE_REPORT : "stage 4"
+    INVESTIGATION ||--o| FINAL_VERDICT : "stage 5"

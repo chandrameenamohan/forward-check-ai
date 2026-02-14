@@ -1,0 +1,31 @@
+graph TB
+    subgraph Tier1["TIER 1 — Routing (Haiku 4.5)"]
+        H1["Classifier Agent<br/>~$0.01/call · 1 turn · No tools<br/>Purpose: Fast categorization gate"]
+    end
+
+    subgraph Tier2["TIER 2 — Investigation (Sonnet 4.5)"]
+        S1["Source Verification"]
+        S2["Domain Expertise"]
+        S3["Pattern Matching"]
+        NOTE2["~$0.30–0.40/call · 6 turns · Web search tools<br/>Purpose: Parallel evidence gathering"]
+    end
+
+    subgraph Tier3["TIER 3 — Reasoning (Opus 4.6)"]
+        O1["Strategist<br/>effort: medium"]
+        O2["Devil's Advocate<br/>effort: high/max"]
+        O3["Judge<br/>effort: max"]
+        NOTE3["~$0.20–2.00/call · Extended thinking<br/>Purpose: Planning, adversarial analysis, final judgment"]
+    end
+
+    H1 -->|"factual_claim"| O1
+    O1 -->|"guidance"| S1
+    O1 -->|"guidance"| S2
+    O1 -->|"guidance"| S3
+    S1 -->|"report"| O2
+    S2 -->|"report"| O2
+    S3 -->|"report"| O2
+    O2 -->|"challenge"| O3
+
+    style Tier1 fill:#2d6a4f,stroke:#95d5b2,stroke-width:2px,color:#fff
+    style Tier2 fill:#023e8a,stroke:#48cae4,stroke-width:2px,color:#fff
+    style Tier3 fill:#6a040f,stroke:#e85d04,stroke-width:2px,color:#fff

@@ -1,0 +1,27 @@
+flowchart TD
+    subgraph CostPath["Per-Investigation Cost Breakdown"]
+        C1["Classifier — Haiku 4.5<br/>~$0.01"]
+        C2["Strategist — Opus 4.6<br/>~$0.20–0.50"]
+        C3["3× Investigators — Sonnet 4.5<br/>~$0.90–1.20"]
+        C4["Devil's Advocate — Opus 4.6<br/>~$0.50–1.00"]
+        C5["Judge — Opus 4.6<br/>~$1.00–2.00"]
+        TOTAL["TOTAL: ~$2.60–4.70 per investigation"]
+    end
+
+    C1 --> C2 --> C3 --> C4 --> C5 --> TOTAL
+
+    subgraph Escalation["Dynamic Escalation"]
+        SPREAD{"Confidence<br/>Spread > 30?"}
+        NORM["Standard Path<br/>DA effort: high"]
+        ESCA["Escalated Path<br/>DA effort: max<br/>deepReasoningActivated: true<br/>+$0.50–1.00 additional"]
+    end
+
+    C3 --> SPREAD
+    SPREAD -->|"No"| NORM
+    SPREAD -->|"Yes"| ESCA
+    NORM --> C4
+    ESCA --> C4
+
+    style CostPath fill:#1a1a2e,stroke:#e94560,stroke-width:1px,color:#fff
+    style TOTAL fill:#3c096c,stroke:#c77dff,stroke-width:2px,color:#fff
+    style ESCA fill:#9d0208,stroke:#e85d04,stroke-width:2px,color:#fff

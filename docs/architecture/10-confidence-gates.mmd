@@ -1,0 +1,40 @@
+graph LR
+    subgraph Categories["Verdict Categories"]
+        LT["likely-true<br/>Confidence: 70–100"]
+        PT["partially-true<br/>Confidence: 40–80"]
+        UV["unverified<br/>Confidence: 20–60"]
+        LF["likely-false<br/>Confidence: 60–100"]
+        SAT["satire<br/>Any confidence"]
+        OP["opinion<br/>Any confidence"]
+    end
+
+    subgraph Nuance["Nuance Tags (optional overlay)"]
+        N1["misleading"]
+        N2["out-of-context"]
+        N3["exaggerated"]
+        N4["fabricated"]
+        N5["recirculated"]
+        N6["scam"]
+    end
+
+    subgraph Decomposition["Confidence Decomposition"]
+        D1["evidenceStrength<br/>0–100"]
+        D2["sourceReliability<br/>0–100"]
+        D3["claimComplexity<br/>0–100 (higher = easier)"]
+        D4["counterArgumentResilience<br/>0–100"]
+    end
+
+    subgraph Gate["enforceConfidenceGates()"]
+        CHECK["Validate category ↔<br/>confidence alignment<br/>Detect mismatches<br/>Log warnings"]
+    end
+
+    D1 --> CHECK
+    D2 --> CHECK
+    D3 --> CHECK
+    D4 --> CHECK
+    CHECK --> Categories
+    Categories -.-> Nuance
+
+    style Gate fill:#3c096c,stroke:#c77dff,stroke-width:2px,color:#fff
+    style Categories fill:#0f3460,stroke:#48cae4,stroke-width:1px,color:#fff
+    style Nuance fill:#2d6a4f,stroke:#95d5b2,stroke-width:1px,color:#fff
