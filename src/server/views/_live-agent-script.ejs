@@ -25,13 +25,13 @@
         if (kind === 'start') {
           setSegmentActive('classify');
           setCardState('fc-card-classifier', 'active');
-          if (statusEl2) statusEl2.textContent = 'Scanning for manipulation patterns...';
+          if (statusEl2) statusEl2.textContent = 'Checking your message against 47 known tricks...';
         }
         if (kind === 'complete') {
           setSegmentComplete('classify');
           setCardState('fc-card-classifier', 'complete');
           addCost(data.costUsd);
-          if (statusEl2) statusEl2.textContent = 'Scan complete';
+          if (statusEl2) statusEl2.textContent = 'Message scanned \u2014 here\u2019s what it found';
           if (checkEl) checkEl.style.display = 'flex';
           if (resultEl && data.result) {
             var cat = data.result.category || '';
@@ -56,13 +56,13 @@
         if (kind === 'start') {
           setSegmentActive('strategize');
           setCardState('fc-card-strategist', 'active');
-          if (statusEl2) statusEl2.textContent = 'Building your investigation playbook...';
+          if (statusEl2) statusEl2.textContent = 'Deciding what to search, where to look, and what would prove it wrong...';
         }
         if (kind === 'complete') {
           setSegmentComplete('strategize');
           setCardState('fc-card-strategist', 'complete');
           addCost(data.costUsd);
-          if (statusEl2) statusEl2.textContent = 'Strategy locked in';
+          if (statusEl2) statusEl2.textContent = 'Playbook locked \u2014 investigators have their orders';
           if (checkEl) checkEl.style.display = 'flex';
           if (resultEl && data.strategy) {
             var criteria = data.strategy.falsificationCriteria;
@@ -101,7 +101,7 @@
           ['source', 'domain', 'pattern'].forEach(function(key) {
             setCardState('fc-card-inv-' + key, 'active');
             var st = document.getElementById('fc-inv-' + key + '-status');
-            if (st) st.textContent = 'Searching the web...';
+            if (st) st.textContent = 'Searching the web right now...';
           });
         }
         if (kind === 'searching') {
@@ -182,7 +182,7 @@
           setCardState('fc-card-da', 'complete');
           addCost(data.costUsd);
 
-          if (statusEl3) statusEl3.textContent = 'Cross-examination complete';
+          if (statusEl3) statusEl3.textContent = 'Cross-examination finished';
           if (checkEl) checkEl.style.display = 'flex';
 
           // Outcome badge: did the counter-argument hold or fail?
@@ -232,7 +232,7 @@
           setSegmentComplete('judge');
           setCardState('fc-card-judge', 'complete');
           addCost(data.costUsd);
-          if (statusEl4) statusEl4.textContent = 'Verdict rendered';
+          if (statusEl4) statusEl4.textContent = 'The gavel drops';
           if (checkEl) checkEl.style.display = 'flex';
 
           if (thinkingEl && thinkingText && data.thinkingExcerpt) {
@@ -367,7 +367,7 @@
               clearInterval(redirectTimer);
               window.location.href = '/v/' + investigationId;
             } else if (countdownText) {
-              countdownText.textContent = 'Full analysis ready in ' + countdown + '...';
+              countdownText.textContent = 'Your full breakdown drops in ' + countdown + '...';
             }
           }, 1000);
         }, 3400);

@@ -216,7 +216,7 @@ describe("Live verdict page routes", () => {
     const html = await res.text();
 
     expect(html).toContain("fc-connecting-spinner");
-    expect(html).toContain("Connecting to investigation");
+    expect(html).toContain("Tapping into your investigation");
   });
 
   it("GET /live/:id should close EventSource on pipeline completion", async () => {
