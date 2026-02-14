@@ -558,6 +558,40 @@ describe("Chat page — GET /chat", () => {
     expect(html).toContain("@keyframes fc-reveal-badge-in");
   });
 
+  // ── Task 7.3: Meta tags and OG tags for /chat page ──
+
+  it("GET /chat should contain og:title meta tag", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/chat`);
+    const html = await res.text();
+    expect(html).toContain('og:title');
+    expect(html).toContain('Check Any Claim');
+    expect(html).toContain('og:description');
+    expect(html).toContain('og:type');
+    expect(html).toContain('og:url');
+    expect(html).toContain('og:image');
+  });
+
+  it("GET /chat should contain meta description", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/chat`);
+    const html = await res.text();
+    expect(html).toContain('<meta name="description"');
+    expect(html).toContain("Six AI agents investigate it in 60 seconds");
+    expect(html).toContain('rel="canonical"');
+    expect(html).toContain("/chat");
+  });
+
+  it("GET /chat should contain twitter:card meta tag", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/chat`);
+    const html = await res.text();
+    expect(html).toContain('twitter:card');
+    expect(html).toContain('summary_large_image');
+    expect(html).toContain('twitter:title');
+    expect(html).toContain('twitter:description');
+  });
+
   it("GET /chat should respect prefers-reduced-motion for all animations", async () => {
     const port = await startServer();
     const res = await fetch(`http://127.0.0.1:${port}/chat`);
