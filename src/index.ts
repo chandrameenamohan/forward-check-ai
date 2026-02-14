@@ -14,6 +14,7 @@ import {
   googleFactCheckToolDefinition,
 } from "./tools/google-factcheck.js";
 import { InvestigationPipeline } from "./orchestrator/pipeline.js";
+import { PipelineEventBus } from "./orchestrator/pipeline-events.js";
 import { createApp } from "./server/app.js";
 import { createBot } from "./bot/bot.js";
 import { createMessageHandler } from "./bot/message-handler.js";
@@ -69,20 +70,23 @@ toolRegistry.register(
   googleFactCheckToolDefinition,
 );
 
-// 7. Create investigation pipeline
-const pipeline = new InvestigationPipeline(client, toolRegistry, repo);
+// 7. Create pipeline event bus for real-time SSE streaming
+const eventBus = new PipelineEventBus();
 
-// 8. Create Express app with routes
-const app = createApp(repo);
+// 8. Create investigation pipeline (with event bus for live streaming)
+const pipeline = new InvestigationPipeline(client, toolRegistry, repo, undefined, eventBus);
 
-// 9. Create Telegram bot and wire message handler
+// 9. Create Express app with routes (with event bus for SSE endpoint)
+const app = createApp(repo, eventBus);
+
+// 10. Create Telegram bot and wire message handler
 const bot = createBot(config.TELEGRAM_BOT_TOKEN);
 const baseUrl = config.NODE_ENV === "production"
   ? `https://forwardcheck.ai`
   : `http://localhost:${config.PORT}`;
 createMessageHandler(bot, pipeline, baseUrl);
 
-// 10. Start Express server
+// 11. Start Express server
 let server: Server;
 server = app.listen(config.PORT, () => {
   logger.info(
@@ -91,7 +95,7 @@ server = app.listen(config.PORT, () => {
   );
 });
 
-// 11. Start bot long polling
+// 12. Start bot long polling
 bot.start({
   onStart: (botInfo) => {
     logger.info(
@@ -101,7 +105,7 @@ bot.start({
   },
 });
 
-// 12. Graceful shutdown
+// 13. Graceful shutdown
 function shutdown(signal: string): void {
   logger.info({ signal }, "Received shutdown signal");
 
@@ -110,6 +114,8 @@ function shutdown(signal: string): void {
 
   server.close(() => {
     logger.info("Express server stopped");
+    eventBus.destroy();
+    logger.info("Pipeline event bus destroyed");
     db.close();
     logger.info("Database connection closed");
     process.exit(0);

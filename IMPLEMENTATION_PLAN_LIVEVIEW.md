@@ -104,7 +104,7 @@ The "See Live Verdict" page shows users the 6-agent pipeline working on their cl
 - Test: `"should clean up subscription on disconnect"`
 
 ### Task 1.2: Wire event bus into application entry point
-- [ ]
+- [x]
 **Objective:** Create and inject the `PipelineEventBus` singleton into the pipeline and SSE route.
 **Details:**
 - Update `src/index.ts`:
