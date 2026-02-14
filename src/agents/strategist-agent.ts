@@ -6,6 +6,36 @@ import { createLogger } from "../config/logger.js";
 
 const logger = createLogger({ level: "info" });
 
+/**
+ * Recursively parse JSON strings in an object tree.
+ * LLMs sometimes return nested objects as stringified JSON within tool_use input,
+ * and the SDK may freeze the input object preventing in-place mutation.
+ */
+function deepParseJsonStrings(obj: unknown): unknown {
+  if (typeof obj === "string") {
+    const trimmed = obj.trim();
+    if (trimmed.startsWith("{") || trimmed.startsWith("[")) {
+      try {
+        return deepParseJsonStrings(JSON.parse(trimmed));
+      } catch {
+        return obj;
+      }
+    }
+    return obj;
+  }
+  if (Array.isArray(obj)) {
+    return obj.map(deepParseJsonStrings);
+  }
+  if (obj !== null && typeof obj === "object") {
+    const result: Record<string, unknown> = {};
+    for (const [key, val] of Object.entries(obj as Record<string, unknown>)) {
+      result[key] = deepParseJsonStrings(val);
+    }
+    return result;
+  }
+  return obj;
+}
+
 const STRATEGIST_SYSTEM_PROMPT = `You are a Claim Strategist — an assignment editor at an investigative newsroom. Your job is to PLAN an investigation before any searching begins.
 
 You will receive a factual claim and its classification. Using your extended thinking, develop a comprehensive investigation strategy.
@@ -199,23 +229,13 @@ export async function runStrategist(
     throw new Error("Strategist did not call submit_strategy tool");
   }
 
+  // Deep-parse any stringified JSON in the tool output (the SDK may freeze the input object,
+  // so we build a new object tree instead of mutating in place).
+  const strategyInput = deepParseJsonStrings(toolUseBlock.input) as Record<string, unknown>;
+
   // Inject thinking excerpt from actual thinking block (overrides what the model may have put)
-  const strategyInput = toolUseBlock.input as Record<string, unknown>;
   if (thinkingExcerpt) {
     strategyInput["thinkingExcerpt"] = thinkingExcerpt;
-  }
-
-  // Sometimes the model returns nested objects as JSON strings within tool_use input.
-  // Parse them back to objects before Zod validation.
-  for (const key of Object.keys(strategyInput)) {
-    const val = strategyInput[key];
-    if (typeof val === "string" && val.startsWith("{")) {
-      try {
-        strategyInput[key] = JSON.parse(val) as unknown;
-      } catch {
-        // Not valid JSON — leave as-is for Zod to catch
-      }
-    }
   }
 
   // Validate with Zod schema
