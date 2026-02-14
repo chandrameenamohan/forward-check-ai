@@ -177,7 +177,7 @@
 - Test: `"GET /chat should include elapsed time counter"`
 
 ### Task 3.2: Investigation timeline component — 6 stages with status indicators
-- [ ]
+- [x]
 **Objective:** Build the investigation timeline that appears after submission, showing 6 pipeline stages with real-time status updates (idle, active, complete).
 **Details:**
 - Add timeline section to `chat.ejs` (hidden by default, shown after POST success)

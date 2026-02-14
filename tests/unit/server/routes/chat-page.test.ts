@@ -158,4 +158,55 @@ describe("Chat page — GET /chat", () => {
     expect(html).toContain("elapsedTimer");
     expect(html).toContain("elapsedSeconds");
   });
+
+  // ── Task 3.2: Investigation timeline component ──
+
+  it("GET /chat should contain timeline stage elements", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/chat`);
+    const html = await res.text();
+    // All 6 agent cards present (Classifier, Strategist, 3 Investigators, DA, Judge)
+    expect(html).toContain("fc-card-classifier");
+    expect(html).toContain("fc-card-strategist");
+    expect(html).toContain("fc-card-inv-source");
+    expect(html).toContain("fc-card-inv-domain");
+    expect(html).toContain("fc-card-inv-pattern");
+    expect(html).toContain("fc-card-da");
+    expect(html).toContain("fc-card-judge");
+    // Original claim quote card
+    expect(html).toContain("fc-chat-claim-text");
+    expect(html).toContain("fc-live-message");
+  });
+
+  it("GET /chat should contain progress bar segments", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/chat`);
+    const html = await res.text();
+    // 6 progress segments
+    expect(html).toContain("fc-seg-classify");
+    expect(html).toContain("fc-seg-strategize");
+    expect(html).toContain("fc-seg-investigate");
+    expect(html).toContain("fc-seg-challenge");
+    expect(html).toContain("fc-seg-judge");
+    expect(html).toContain("fc-seg-verdict");
+    // Progress label text
+    expect(html).toContain("Classify");
+    expect(html).toContain("Strategize");
+    expect(html).toContain("Investigate");
+    expect(html).toContain("Challenge");
+    expect(html).toContain("Verdict");
+  });
+
+  it("GET /chat should contain model tier badges", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/chat`);
+    const html = await res.text();
+    // Model badges for all 3 tiers
+    expect(html).toContain("fc-model-badge--haiku");
+    expect(html).toContain("fc-model-badge--sonnet");
+    expect(html).toContain("fc-model-badge--opus");
+    expect(html).toContain("Haiku");
+    expect(html).toContain("Sonnet");
+    expect(html).toContain("Opus 4.6");
+  });
 });
