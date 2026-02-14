@@ -382,7 +382,7 @@ The "See Live Verdict" page shows users the 6-agent pipeline working on their cl
 - Test: `"GET /live/:id should have responsive meta tag"`
 
 ### Task 6.3: Demo video timing optimization
-- [ ]
+- [x]
 **Objective:** Fine-tune animation timing so the full live verdict flow looks cinematic in a 60-90 second screen recording.
 **Details:**
 - Ensure each agent step has enough "screen time" for viewer comprehension:
