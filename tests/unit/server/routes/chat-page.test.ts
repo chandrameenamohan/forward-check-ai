@@ -61,4 +61,54 @@ describe("Chat page — GET /chat", () => {
     expect(html).toContain("backdrop-filter");
     expect(html).toContain("blur(");
   });
+
+  it("GET /chat should contain textarea with placeholder text", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/chat`);
+    const html = await res.text();
+    expect(html).toContain("<textarea");
+    expect(html).toContain("Paste a message that seems off");
+  });
+
+  it("GET /chat should contain Investigate This submit button", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/chat`);
+    const html = await res.text();
+    expect(html).toContain("Investigate This");
+    expect(html).toContain('type="submit"');
+  });
+
+  it("GET /chat should contain character counter element", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/chat`);
+    const html = await res.text();
+    expect(html).toContain("fc-chat-counter");
+    expect(html).toContain("5,000");
+  });
+
+  // ── Task 2.2: Form submission handler ──
+
+  it("GET /chat should include _chat-script.ejs JavaScript", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/chat`);
+    const html = await res.text();
+    // Script should contain the submission handler function
+    expect(html).toContain("handleSubmit");
+    expect(html).toContain("fc-chat-error");
+  });
+
+  it("GET /chat should contain fetch call to /api/chat/message", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/chat`);
+    const html = await res.text();
+    expect(html).toContain("/api/chat/message");
+    expect(html).toContain("fetch(");
+  });
+
+  it("GET /chat should contain error display elements", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/chat`);
+    const html = await res.text();
+    expect(html).toContain("fc-chat-error");
+  });
 });

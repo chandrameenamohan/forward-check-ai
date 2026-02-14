@@ -18,9 +18,115 @@
     </nav>
 
     <main class="fc-chat-main">
-      <!-- Content sections added in subsequent tasks -->
+
+      <!-- ═══ HEADER ═══ -->
+      <div class="fc-chat-header">
+        <h1 class="fc-chat-headline">Paste. Investigate. Share the verdict.</h1>
+        <p class="fc-chat-subtitle">Six AI agents spend 60 seconds tearing your message apart. You get the truth, the tricks, and the confidence score &mdash; ready to share.</p>
+      </div>
+
+      <!-- ═══ INPUT AREA ═══ -->
+      <div class="fc-chat-input-area fc-chat-card" id="fc-chat-input-area">
+        <div class="fc-chat-textarea-wrap">
+          <textarea
+            id="fc-chat-textarea"
+            class="fc-chat-textarea"
+            placeholder="Paste a message that seems off... or type a claim you want checked"
+            aria-label="Enter a claim to fact-check"
+            rows="3"
+          ></textarea>
+          <button
+            type="button"
+            class="fc-chat-clear"
+            id="fc-chat-clear"
+            aria-label="Clear input"
+            style="display: none;"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+        <div class="fc-chat-input-footer">
+          <span class="fc-chat-counter" id="fc-chat-counter" aria-live="polite">0 / 5,000</span>
+          <button
+            type="submit"
+            class="fc-chat-submit"
+            id="fc-chat-submit"
+            disabled
+            aria-label="Submit claim for investigation"
+          >
+            <svg class="fc-chat-submit-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            Investigate This
+          </button>
+        </div>
+      </div>
+
+      <!-- ═══ ERROR DISPLAY ═══ -->
+      <div class="fc-chat-error" id="fc-chat-error" role="alert" style="display: none;"></div>
+
     </main>
 
   </div>
+
+  <script>
+  (function() {
+    var textarea = document.getElementById('fc-chat-textarea');
+    var counter = document.getElementById('fc-chat-counter');
+    var submit = document.getElementById('fc-chat-submit');
+    var clear = document.getElementById('fc-chat-clear');
+    var inputArea = document.getElementById('fc-chat-input-area');
+
+    var MIN = 10;
+    var MAX = 5000;
+
+    function formatCount(n) {
+      return n.toLocaleString();
+    }
+
+    function updateState() {
+      var text = textarea.value;
+      var len = text.trim().length;
+      var rawLen = text.length;
+
+      counter.textContent = formatCount(rawLen) + ' / 5,000';
+
+      if (rawLen > 0 && len < MIN) {
+        counter.classList.add('fc-chat-counter--warn');
+        counter.classList.remove('fc-chat-counter--over');
+      } else if (rawLen > MAX) {
+        counter.classList.remove('fc-chat-counter--warn');
+        counter.classList.add('fc-chat-counter--over');
+      } else {
+        counter.classList.remove('fc-chat-counter--warn');
+        counter.classList.remove('fc-chat-counter--over');
+      }
+
+      submit.disabled = len < MIN || rawLen > MAX;
+
+      clear.style.display = rawLen > 0 ? 'flex' : 'none';
+
+      textarea.style.height = 'auto';
+      var scrollH = textarea.scrollHeight;
+      textarea.style.height = Math.min(scrollH, 200) + 'px';
+    }
+
+    textarea.addEventListener('input', updateState);
+
+    clear.addEventListener('click', function() {
+      textarea.value = '';
+      updateState();
+      textarea.focus();
+    });
+
+    textarea.addEventListener('focus', function() {
+      inputArea.classList.add('fc-chat-input-area--focus');
+    });
+
+    textarea.addEventListener('blur', function() {
+      inputArea.classList.remove('fc-chat-input-area--focus');
+    });
+
+<%- include('_chat-script') %>
+  })();
+  </script>
 </body>
 </html>

@@ -108,7 +108,7 @@
 ## Phase 2: Chat Input Component
 
 ### Task 2.1: Message input with character counter, submit button, clear button
-- [ ]
+- [x]
 **Objective:** Build the chat input area with a textarea, character counter (10-5000), submit button ("Investigate This"), and clear button.
 **Details:**
 - Add input section to `chat.ejs`:
@@ -129,7 +129,7 @@
 - Visually verify: input renders, counter updates, button enables/disables
 
 ### Task 2.2: Form submission handler — POST to API and handle response
-- [ ]
+- [x]
 **Objective:** Add JavaScript to handle form submission: POST the message to `/api/chat/message`, handle success (start SSE), and handle errors (display inline).
 **Details:**
 - Create `src/server/views/_chat-script.ejs` — all chat JavaScript

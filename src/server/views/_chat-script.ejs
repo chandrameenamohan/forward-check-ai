@@ -1,0 +1,95 @@
+      // ── Form submission handler ──
+
+      var submitting = false;
+
+      function handleSubmit() {
+        if (submitting) return;
+        var text = textarea.value.trim();
+        if (text.length < MIN || textarea.value.length > MAX) return;
+
+        submitting = true;
+        submit.disabled = true;
+        submit.innerHTML = '<span class="fc-chat-spinner"></span> Sending...';
+        clearError();
+
+        fetch('/api/chat/message', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: textarea.value })
+        })
+        .then(function(res) {
+          if (res.ok) return res.json().then(function(data) { return { ok: true, data: data }; });
+          if (res.status === 429) {
+            var retryAfter = res.headers.get('Retry-After');
+            var secs = retryAfter ? parseInt(retryAfter, 10) : 60;
+            return { ok: false, rateLimit: true, seconds: secs };
+          }
+          return res.json().then(function(data) { return { ok: false, error: data.error }; });
+        })
+        .then(function(result) {
+          submitting = false;
+          resetSubmitButton();
+
+          if (result.ok) {
+            // Redirect to live investigation page
+            window.location.href = '/live/' + result.data.id;
+            return;
+          }
+
+          if (result.rateLimit) {
+            showError("You've checked too many claims in the last minute. Try again in " + result.seconds + " seconds.");
+            return;
+          }
+
+          showError(result.error || 'Something went wrong. Try again.');
+        })
+        .catch(function() {
+          submitting = false;
+          resetSubmitButton();
+          showError('Lost connection. Check your internet and try again.');
+        });
+      }
+
+      function resetSubmitButton() {
+        submit.innerHTML = '<svg class="fc-chat-submit-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Investigate This';
+        updateState();
+      }
+
+      // ── Error display ──
+
+      var errorEl = document.getElementById('fc-chat-error');
+
+      function showError(msg) {
+        if (!errorEl) return;
+        errorEl.textContent = msg;
+        errorEl.style.display = 'block';
+        inputArea.classList.add('fc-chat-input-area--error');
+        // Shake animation
+        inputArea.classList.add('fc-chat-shake');
+        setTimeout(function() {
+          inputArea.classList.remove('fc-chat-shake');
+        }, 500);
+      }
+
+      function clearError() {
+        if (!errorEl) return;
+        errorEl.style.display = 'none';
+        errorEl.textContent = '';
+        inputArea.classList.remove('fc-chat-input-area--error');
+      }
+
+      // Clear error on new input
+      textarea.addEventListener('input', function() {
+        clearError();
+      });
+
+      // Submit on button click
+      submit.addEventListener('click', handleSubmit);
+
+      // Submit on Ctrl+Enter / Cmd+Enter
+      textarea.addEventListener('keydown', function(e) {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+          e.preventDefault();
+          if (!submit.disabled) handleSubmit();
+        }
+      });
