@@ -32,6 +32,9 @@ export function createApp(repo?: InvestigationRepository, eventBus?: PipelineEve
   app.set("view engine", "ejs");
   app.set("views", join(__dirname, "views"));
 
+  // Serve static files from /public directory under /static path
+  app.use("/static", express.static(join(__dirname, "..", "..", "public")));
+
   // Landing page
   app.get("/", (_req: Request, res: Response) => {
     let recentInvestigationId: string | null = null;

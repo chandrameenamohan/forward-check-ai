@@ -333,7 +333,7 @@ The "See Live Verdict" page shows users the 6-agent pipeline working on their cl
 - Existing landing page tests must still pass
 
 ### Task 5.3: QR code and Telegram bot link integration
-- [ ]
+- [x]
 **Objective:** Add the Telegram bot QR code and direct link to the live verdict page footer, so demo video viewers can try it themselves.
 **Details:**
 - Add to `live.ejs` footer area:

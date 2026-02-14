@@ -545,4 +545,50 @@ describe("Live verdict page routes", () => {
 
     expect(html).toContain("prefers-reduced-motion");
   });
+
+  // ── Task 5.3: QR code and Telegram bot link integration ──
+
+  it("GET /live/:id should contain Telegram bot link", async () => {
+    const port = await startServer();
+    const id = repo.create("Telegram link test");
+
+    const res = await fetch(`http://127.0.0.1:${port}/live/${id}`);
+    const html = await res.text();
+
+    expect(html).toContain("https://t.me/forward_check_beta_bot");
+    expect(html).toContain("fc-try-it");
+  });
+
+  it("GET /live/:id should contain QR code reference", async () => {
+    const port = await startServer();
+    const id = repo.create("QR code test");
+
+    const res = await fetch(`http://127.0.0.1:${port}/live/${id}`);
+    const html = await res.text();
+
+    expect(html).toContain("telegram-bot-qr-code");
+    expect(html).toContain("fc-qr-code");
+  });
+
+  it("GET /live/:id should hide QR code on mobile", async () => {
+    const port = await startServer();
+    const id = repo.create("Mobile QR test");
+
+    const res = await fetch(`http://127.0.0.1:${port}/live/${id}`);
+    const html = await res.text();
+
+    // QR section should be hidden on mobile via CSS
+    expect(html).toContain("fc-try-it-qr");
+    // Mobile media query should hide the QR code
+    expect(html).toMatch(/max-width.*768px/);
+  });
+
+  it("GET /static/telegram-bot-qr-code.jpg should serve the QR code image", async () => {
+    const port = await startServer();
+
+    const res = await fetch(`http://127.0.0.1:${port}/static/telegram-bot-qr-code.jpg`);
+
+    expect(res.status).toBe(200);
+    expect(res.headers.get("content-type")).toContain("image/jpeg");
+  });
 });
