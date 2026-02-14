@@ -420,6 +420,11 @@
       .fc-chat-submit {
         padding: 0.5rem 1.15rem;
         font-size: 0.82rem;
+        min-height: 44px;
+      }
+      .fc-chat-clear {
+        width: 44px;
+        height: 44px;
       }
       .fc-chat-actions-row {
         flex-direction: column;
@@ -427,6 +432,18 @@
       .fc-chat-action {
         font-size: 0.82rem;
         padding: 0.55rem 1.15rem;
+        min-height: 44px;
+      }
+      .fc-chat-nonfactual-btn {
+        min-height: 44px;
+      }
+      /* Input area: sticky at bottom on mobile */
+      .fc-chat-input-area {
+        position: sticky;
+        bottom: 0;
+        z-index: 10;
+        border-radius: 10px 10px 0 0;
+        padding-bottom: calc(1.15rem + env(safe-area-inset-bottom, 0px));
       }
     }
 
@@ -455,9 +472,24 @@
       .fc-chat-submit {
         padding: 0.5rem 1rem;
         font-size: 0.78rem;
+        min-height: 44px;
       }
       .fc-chat-counter {
         font-size: 0.6rem;
+      }
+      .fc-chat-error {
+        font-size: 0.72rem;
+        padding: 0.6rem 0.8rem;
+      }
+      .fc-chat-nonfactual-text {
+        font-size: 0.85rem;
+      }
+      .fc-chat-actions-meta {
+        font-size: 0.6rem;
+      }
+      .fc-technique-pill {
+        font-size: 0.6rem;
+        padding: 0.25rem 0.55rem;
       }
     }
 

@@ -347,7 +347,7 @@
 ## Phase 6: Responsive Design & Cross-Browser
 
 ### Task 6.1: Mobile layout (375px) — sticky input, vertical timeline
-- [ ]
+- [x]
 **Objective:** Optimize the chat page for mobile devices (375px width) with a sticky bottom input and vertical timeline.
 **Details:**
 - Input area: sticky at bottom of viewport on mobile (position: sticky, bottom: 0)

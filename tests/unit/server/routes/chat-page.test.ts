@@ -445,4 +445,28 @@ describe("Chat page — GET /chat", () => {
     // Polling timeout should be 3 minutes
     expect(html).toContain("POLL_TIMEOUT");
   });
+
+  // ── Task 6.1: Mobile layout (375px) — sticky input, vertical timeline ──
+
+  it("GET /chat should include mobile responsive styles", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/chat`);
+    const html = await res.text();
+    // Must have both mobile breakpoints
+    expect(html).toContain("max-width: 768px");
+    expect(html).toContain("max-width: 375px");
+    // iOS safe area inset for bottom input
+    expect(html).toContain("safe-area-inset-bottom");
+    // Touch-friendly minimum tap target
+    expect(html).toContain("min-height: 44px");
+  });
+
+  it("GET /chat should include sticky input position for mobile", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/chat`);
+    const html = await res.text();
+    // Sticky input at bottom on mobile
+    expect(html).toContain("position: sticky");
+    expect(html).toContain("bottom: 0");
+  });
 });
