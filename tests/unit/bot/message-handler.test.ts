@@ -172,7 +172,8 @@ describe("createMessageHandler", () => {
     expect(errorSend).toBeDefined();
   });
 
-  it("should include View Full Analysis button", async () => {
+  it("should include View Full Analysis button for HTTPS URLs", async () => {
+    const httpsUrl = "https://forwardcheck.ai";
     const mockPipeline = {
       investigate: vi.fn().mockResolvedValue({
         verdict: makeFakeVerdict(),
@@ -182,7 +183,7 @@ describe("createMessageHandler", () => {
       } satisfies InvestigateResult),
     } as unknown as InvestigationPipeline;
 
-    createMessageHandler(bot, mockPipeline, BASE_URL);
+    createMessageHandler(bot, mockPipeline, httpsUrl);
 
     const update = makeMessageUpdate({
       text: "WHO declares green tea cures cancer",
@@ -204,7 +205,36 @@ describe("createMessageHandler", () => {
     const buttons = markup.inline_keyboard.flat();
     const analysisButton = buttons.find((b) => b.text.includes("Full Analysis"));
     expect(analysisButton).toBeDefined();
-    expect(analysisButton!.url).toBe(`${BASE_URL}/v/inv-abc-789`);
+    expect(analysisButton!.url).toBe(`${httpsUrl}/v/inv-abc-789`);
+  });
+
+  it("should include analysis URL as plain text for non-HTTPS URLs", async () => {
+    const mockPipeline = {
+      investigate: vi.fn().mockResolvedValue({
+        verdict: makeFakeVerdict(),
+        investigationId: "inv-abc-789",
+        totalCostUsd: 0.50,
+        durationMs: 10000,
+      } satisfies InvestigateResult),
+    } as unknown as InvestigationPipeline;
+
+    createMessageHandler(bot, mockPipeline, BASE_URL);
+
+    const update = makeMessageUpdate({
+      text: "WHO declares green tea cures cancer",
+    });
+
+    await bot.handleUpdate(update);
+
+    // Should send verdict without inline keyboard (no reply_markup)
+    const verdictSend = apiCalls.find(
+      (c) =>
+        c.method === "sendMessage" &&
+        (c.payload["text"] as string).includes("Full analysis") &&
+        c.payload["reply_markup"] === undefined,
+    );
+    expect(verdictSend).toBeDefined();
+    expect(verdictSend!.payload["text"]).toContain(`${BASE_URL}/v/inv-abc-789`);
   });
 
   it("should handle non-factual pipeline result", async () => {

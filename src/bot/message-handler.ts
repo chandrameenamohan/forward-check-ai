@@ -53,16 +53,27 @@ export function createMessageHandler(
 
       // Factual claim with verdict
       if (result.verdict) {
+        const analysisUrl = `${baseUrl}/v/${result.investigationId}`;
+        const isPublicUrl = analysisUrl.startsWith("https://");
         const verdictHtml = formatTelegramVerdict(result.verdict);
-        const keyboard = new InlineKeyboard().url(
-          "View Full Analysis",
-          `${baseUrl}/v/${result.investigationId}`,
-        );
 
-        await ctx.api.sendMessage(chatId, verdictHtml, {
-          parse_mode: "HTML",
-          reply_markup: keyboard,
-        });
+        if (isPublicUrl) {
+          const keyboard = new InlineKeyboard().url(
+            "View Full Analysis",
+            analysisUrl,
+          );
+          await ctx.api.sendMessage(chatId, verdictHtml, {
+            parse_mode: "HTML",
+            reply_markup: keyboard,
+          });
+        } else {
+          // In dev, Telegram rejects non-HTTPS URLs in inline keyboards
+          await ctx.api.sendMessage(
+            chatId,
+            `${verdictHtml}\n\n🔗 Full analysis: ${analysisUrl}`,
+            { parse_mode: "HTML" },
+          );
+        }
       }
     } catch (err: unknown) {
       logger.error({ err, chatId }, "Pipeline failed for message");
