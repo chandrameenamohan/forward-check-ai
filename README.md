@@ -1,4 +1,4 @@
-# Truth Lens AI
+# ForwardCheck-AI
 
 > Built for the **"Built with Opus 4.6: a Claude Code Hackathon"** by Cerebral Valley x Anthropic
 
