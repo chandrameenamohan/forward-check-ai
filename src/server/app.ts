@@ -8,6 +8,7 @@ import { createInvestigateRouter } from "./routes/investigate.js";
 import { createVerdictRouter } from "./routes/verdict.js";
 import { createLiveStreamRouter } from "./routes/live-stream.js";
 import type { PipelineEventBus } from "../orchestrator/pipeline-events.js";
+import type { InvestigationPipeline } from "../orchestrator/pipeline.js";
 
 const logger = createLogger({ level: "info" });
 
@@ -22,7 +23,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
  * @param eventBus - Optional PipelineEventBus for SSE live-stream routes.
  *                   When provided with repo, mounts /api/live/:id/stream route.
  */
-export function createApp(repo?: InvestigationRepository, eventBus?: PipelineEventBus): express.Express {
+export function createApp(repo?: InvestigationRepository, eventBus?: PipelineEventBus, pipeline?: InvestigationPipeline): express.Express {
   const app = express();
 
   // JSON body parsing
@@ -69,6 +70,31 @@ export function createApp(repo?: InvestigationRepository, eventBus?: PipelineEve
     if (eventBus) {
       app.use(createLiveStreamRouter(repo, eventBus));
     }
+  }
+
+  // Dev-only: trigger pipeline from HTTP (no Telegram needed)
+  if (pipeline && process.env["NODE_ENV"] !== "production") {
+    app.post("/api/dev/trigger", (req: Request, res: Response) => {
+      const { message } = req.body as { message?: string };
+      if (!message) {
+        res.status(400).json({ error: "message is required" });
+        return;
+      }
+      let idResolve: (id: string) => void;
+      const idPromise = new Promise<string>((resolve) => { idResolve = resolve; });
+
+      pipeline.investigate(message, {
+        onInvestigationCreated: (id) => { idResolve(id); },
+      }).then((result) => {
+        logger.info({ id: result.investigationId, verdict: result.verdict?.category }, "Dev trigger completed");
+      }).catch((err: unknown) => {
+        logger.error({ err }, "Dev trigger failed");
+      });
+
+      idPromise.then((id) => {
+        res.json({ id, liveUrl: `/live/${id}`, streamUrl: `/api/live/${id}/stream` });
+      });
+    });
   }
 
   // 404 handler
