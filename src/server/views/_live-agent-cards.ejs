@@ -217,10 +217,20 @@
     <span>Deep Reasoning Mode</span>
   </div>
 
-  <!-- CTA + countdown -->
+  <!-- CTA + countdown (live page) -->
   <a class="fc-verdict-reveal-cta" id="fc-verdict-reveal-cta" href="#">Read the Full Analysis</a>
   <div class="fc-verdict-countdown" id="fc-verdict-countdown">
     <span id="fc-verdict-countdown-text">Your full breakdown drops in 8...</span>
     <button class="fc-verdict-countdown-cancel" id="fc-verdict-cancel-redirect" type="button">Stay on this page</button>
+  </div>
+
+  <!-- Chat action buttons (hidden on live page, shown by chat JS) -->
+  <div class="fc-chat-actions" id="fc-chat-actions" style="display:none;">
+    <div class="fc-chat-actions-meta" id="fc-chat-actions-meta"></div>
+    <div class="fc-chat-actions-row">
+      <a class="fc-chat-action fc-chat-action--primary" id="fc-chat-action-full" href="#">See the Full Breakdown</a>
+      <button class="fc-chat-action fc-chat-action--outline" id="fc-chat-action-reset" type="button">Check Another Claim</button>
+      <button class="fc-chat-action fc-chat-action--ghost" id="fc-chat-action-share" type="button">Share This Verdict</button>
+    </div>
   </div>
 </div>

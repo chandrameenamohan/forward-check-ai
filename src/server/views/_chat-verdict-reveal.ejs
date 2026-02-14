@@ -118,12 +118,116 @@
           }
         }, 3600);
 
-        // 6. CTA
+        // 6. Action buttons (chat page uses 3 buttons, not countdown)
         setTimeout(function() {
-          var ctaEl = document.getElementById('fc-verdict-reveal-cta');
-          if (ctaEl) {
-            ctaEl.href = '/v/' + investigationId;
-            ctaEl.classList.add('fc-reveal-cta-visible');
+          // Hide the live page CTA + countdown
+          var liveCta = document.getElementById('fc-verdict-reveal-cta');
+          if (liveCta) liveCta.style.display = 'none';
+          var liveCountdown = document.getElementById('fc-verdict-countdown');
+          if (liveCountdown) liveCountdown.style.display = 'none';
+
+          // Show chat action buttons
+          var actionsEl = document.getElementById('fc-chat-actions');
+          if (actionsEl) {
+            actionsEl.style.display = 'block';
+            actionsEl.classList.add('fc-reveal-actions-visible');
+          }
+
+          // Set "See the Full Breakdown" link
+          var fullLink = document.getElementById('fc-chat-action-full');
+          if (fullLink) fullLink.href = '/v/' + investigationId;
+
+          // Pipeline metadata
+          var metaEl = document.getElementById('fc-chat-actions-meta');
+          if (metaEl) {
+            metaEl.textContent = 'Investigated in ' + elapsedSeconds + ' seconds | API cost: $' + totalCost.toFixed(2);
           }
         }, 4000);
       }
+
+      // ── Reset chat (Check Another Claim) ──
+
+      function resetChat() {
+        // Hide investigation area
+        var invArea = document.getElementById('fc-chat-investigation');
+        if (invArea) invArea.style.display = 'none';
+
+        // Show header + input
+        var chatHeader = document.querySelector('.fc-chat-header');
+        if (chatHeader) chatHeader.style.display = '';
+        var inputArea = document.getElementById('fc-chat-input-area');
+        if (inputArea) inputArea.style.display = '';
+
+        // Clear textarea
+        var ta = document.getElementById('fc-chat-textarea');
+        if (ta) {
+          ta.value = '';
+          ta.style.height = 'auto';
+        }
+
+        // Reset verdict reveal
+        var reveal = document.getElementById('fc-verdict-reveal');
+        if (reveal) reveal.style.display = 'none';
+        var actions = document.getElementById('fc-chat-actions');
+        if (actions) { actions.style.display = 'none'; actions.classList.remove('fc-reveal-actions-visible'); }
+
+        // Reset progress bar
+        ['classify','strategize','investigate','challenge','judge','verdict'].forEach(function(s) {
+          var seg = document.getElementById('fc-seg-' + s);
+          if (seg) { seg.classList.remove('fc-progress-segment--active', 'fc-progress-segment--complete'); }
+        });
+
+        // Reset agent cards
+        ['fc-card-classifier','fc-card-strategist','fc-card-inv-source','fc-card-inv-domain','fc-card-inv-pattern','fc-card-da','fc-card-judge'].forEach(function(id) {
+          var card = document.getElementById(id);
+          if (card) {
+            card.classList.remove('fc-agent--active','fc-agent--complete','fc-agent--failed');
+            card.classList.add('fc-agent--idle');
+          }
+        });
+
+        // Reset state variables
+        elapsedSeconds = 0;
+        totalCost = 0;
+        invCompletedCount = 0;
+        investigationId = null;
+        cardEntered = {};
+        if (elapsedTimer) { clearInterval(elapsedTimer); elapsedTimer = null; }
+        if (evtSource) { evtSource.close(); evtSource = null; }
+
+        // Focus textarea
+        if (ta) ta.focus();
+      }
+
+      // ── Share verdict URL ──
+
+      function shareVerdict() {
+        var url = window.location.origin + '/v/' + investigationId;
+        var shareBtn = document.getElementById('fc-chat-action-share');
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(url).then(function() {
+            if (shareBtn) {
+              shareBtn.textContent = 'Copied!';
+              setTimeout(function() { shareBtn.textContent = 'Share This Verdict'; }, 2000);
+            }
+          });
+        } else {
+          // Fallback: create temp input
+          var tmp = document.createElement('input');
+          tmp.value = url;
+          document.body.appendChild(tmp);
+          tmp.select();
+          document.execCommand('copy');
+          document.body.removeChild(tmp);
+          if (shareBtn) {
+            shareBtn.textContent = 'Copied!';
+            setTimeout(function() { shareBtn.textContent = 'Share This Verdict'; }, 2000);
+          }
+        }
+      }
+
+      // Wire action buttons
+      var resetBtn = document.getElementById('fc-chat-action-reset');
+      if (resetBtn) resetBtn.addEventListener('click', resetChat);
+      var shareBtn2 = document.getElementById('fc-chat-action-share');
+      if (shareBtn2) shareBtn2.addEventListener('click', shareVerdict);

@@ -265,7 +265,7 @@
 - Test: `"GET /chat should contain manipulation techniques section"`
 
 ### Task 4.3: Action buttons — View Full Analysis, Check Another Claim, Share
-- [ ]
+- [x]
 **Objective:** After verdict reveals, show action buttons that let the user dig deeper, check another claim, or share the result.
 **Details:**
 - 3 action buttons below the verdict:

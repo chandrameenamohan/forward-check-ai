@@ -268,6 +268,32 @@ describe("Chat page — GET /chat", () => {
     expect(html).toContain("manipulationTechniques");
   });
 
+  // ── Task 4.3: Action buttons — View Full Analysis, Check Another Claim, Share ──
+
+  it("GET /chat should contain See the Full Breakdown link", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/chat`);
+    const html = await res.text();
+    expect(html).toContain("fc-chat-action-full");
+    expect(html).toContain("See the Full Breakdown");
+  });
+
+  it("GET /chat should contain Check Another Claim button", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/chat`);
+    const html = await res.text();
+    expect(html).toContain("fc-chat-action-reset");
+    expect(html).toContain("Check Another Claim");
+  });
+
+  it("GET /chat should contain Share This Verdict button", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/chat`);
+    const html = await res.text();
+    expect(html).toContain("fc-chat-action-share");
+    expect(html).toContain("Share This Verdict");
+  });
+
   // ── Task 4.1: Verdict reveal animation and badge display ──
 
   it("GET /chat should contain verdict reveal section", async () => {

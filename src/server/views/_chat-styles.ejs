@@ -304,6 +304,80 @@
       animation: fc-reveal-fade-up 0.5s ease-out forwards;
     }
 
+    /* ═══ CHAT ACTION BUTTONS (post-verdict) ═══ */
+
+    .fc-chat-actions {
+      margin-top: 1.5rem;
+      text-align: center;
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    .fc-chat-actions.fc-reveal-actions-visible {
+      animation: fc-reveal-fade-up 0.5s ease-out forwards;
+    }
+    .fc-chat-actions-meta {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--fc-text-dim);
+      letter-spacing: 0.03em;
+      margin-bottom: 1rem;
+    }
+    .fc-chat-actions-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      justify-content: center;
+    }
+    .fc-chat-action {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.6rem 1.4rem;
+      font-family: 'Satoshi', sans-serif;
+      font-weight: 600;
+      font-size: 0.85rem;
+      border-radius: 8px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: box-shadow 0.3s ease, transform 0.15s ease, background 0.2s ease, color 0.2s ease;
+    }
+    .fc-chat-action:active {
+      transform: scale(0.97);
+    }
+
+    /* Primary — green fill */
+    .fc-chat-action--primary {
+      background: var(--fc-accent-green);
+      color: var(--fc-bg);
+      border: none;
+    }
+    .fc-chat-action--primary:hover {
+      box-shadow: 0 0 20px rgba(34, 197, 94, 0.35);
+      color: var(--fc-bg);
+    }
+
+    /* Outline — green border */
+    .fc-chat-action--outline {
+      background: transparent;
+      color: var(--fc-accent-green);
+      border: 1px solid var(--fc-accent-green);
+    }
+    .fc-chat-action--outline:hover {
+      background: rgba(34, 197, 94, 0.08);
+      box-shadow: 0 0 16px rgba(34, 197, 94, 0.15);
+    }
+
+    /* Ghost — subtle */
+    .fc-chat-action--ghost {
+      background: transparent;
+      color: var(--fc-text-muted);
+      border: 1px solid var(--fc-border);
+    }
+    .fc-chat-action--ghost:hover {
+      color: var(--fc-text);
+      border-color: var(--fc-text-dim);
+    }
+
     /* ─── Responsive: tablet (≤768px) ─── */
     @media (max-width: 768px) {
       .fc-chat-wrapper {
@@ -324,6 +398,13 @@
       .fc-chat-submit {
         padding: 0.5rem 1.15rem;
         font-size: 0.82rem;
+      }
+      .fc-chat-actions-row {
+        flex-direction: column;
+      }
+      .fc-chat-action {
+        font-size: 0.82rem;
+        padding: 0.55rem 1.15rem;
       }
     }
 
@@ -374,10 +455,14 @@
         animation: none;
       }
       .fc-verdict-techniques.fc-reveal-techniques-visible,
-      .fc-verdict-deep-reasoning.fc-reveal-techniques-visible {
+      .fc-verdict-deep-reasoning.fc-reveal-techniques-visible,
+      .fc-chat-actions.fc-reveal-actions-visible {
         animation: none;
         opacity: 1;
         transform: none;
+      }
+      .fc-chat-action {
+        transition: none;
       }
     }
 </style>
