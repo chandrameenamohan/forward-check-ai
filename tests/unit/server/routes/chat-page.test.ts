@@ -413,4 +413,36 @@ describe("Chat page — GET /chat", () => {
     expect(html).toContain("greeting");
     expect(html).toContain("Investigate This");
   });
+
+  // ── Task 5.3: SSE fallback — polling for browsers without EventSource ──
+
+  it("GET /chat should contain EventSource availability check", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/chat`);
+    const html = await res.text();
+    // Must check if EventSource is available before using it
+    expect(html).toContain("typeof EventSource");
+    expect(html).toContain("undefined");
+  });
+
+  it("GET /chat should contain polling fallback code", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/chat`);
+    const html = await res.text();
+    // Polling fallback with fetch to investigation status endpoint
+    expect(html).toContain("pollInvestigation");
+    expect(html).toContain("/api/investigation/");
+    // Should show a banner when falling back to polling
+    expect(html).toContain("Real-time updates unavailable");
+  });
+
+  it("GET /chat should contain polling interval of 3000ms", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/chat`);
+    const html = await res.text();
+    // Polling interval should be 3 seconds (3000ms)
+    expect(html).toContain("3000");
+    // Polling timeout should be 3 minutes
+    expect(html).toContain("POLL_TIMEOUT");
+  });
 });

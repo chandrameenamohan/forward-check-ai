@@ -1,5 +1,4 @@
       // ── Form submission handler ──
-
       var submitting = false;
       var investigationId = null;
       var evtSource = null;
@@ -113,7 +112,6 @@
       });
 
       // ═══ SSE CLIENT — connects after successful POST ═══
-
       // ── Elapsed time counter ──
       var elapsedSeconds = 0;
       var elapsedEl = document.getElementById('fc-elapsed');
@@ -182,7 +180,6 @@
 <%- include('_chat-sse-handlers') %>
 
       // ── Pipeline timeout detection (120s no events) ──
-
       var pipelineTimeout = null;
       var PIPELINE_TIMEOUT_MS = 120 * 1000;
 
@@ -215,10 +212,80 @@
         }
       }
 
-      // ── Connect to SSE stream ──
+      // ── Polling fallback for browsers without EventSource ──
+
+      var POLL_INTERVAL_MS = 3000;
+      var POLL_TIMEOUT = 180 * 1000; // 3 minutes
+      var pollTimer = null;
+      var pollStartTime = null;
+
+      function pollInvestigation() {
+        showPipelineStatus('Real-time updates unavailable. Checking for updates every few seconds.', 'warning');
+        pollStartTime = Date.now();
+
+        pollTimer = setInterval(function() {
+          // Stop polling after 3 minutes
+          if (Date.now() - pollStartTime > POLL_TIMEOUT) {
+            clearInterval(pollTimer);
+            pollTimer = null;
+            showPipelineStatus(
+              'This investigation is taking longer than expected. You can wait or check back at /v/' + investigationId,
+              'warning'
+            );
+            return;
+          }
+
+          fetch('/api/investigation/' + investigationId)
+            .then(function(res) {
+              if (!res.ok) return null;
+              return res.json();
+            })
+            .then(function(data) {
+              if (!data) return;
+
+              if (data.status === 'completed' || data.status === 'completed_non_factual') {
+                clearInterval(pollTimer);
+                pollTimer = null;
+                clearInterval(elapsedTimer);
+
+                if (data.status === 'completed' && data.final_verdict) {
+                  // Parse verdict if stored as JSON string
+                  var verdict = typeof data.final_verdict === 'string'
+                    ? JSON.parse(data.final_verdict) : data.final_verdict;
+                  showVerdictReveal({ verdict: verdict, totalCostUsd: data.total_cost_usd || 0 });
+                  setSegmentComplete('classify');
+                  setSegmentComplete('strategize');
+                  setSegmentComplete('investigate');
+                  setSegmentComplete('challenge');
+                  setSegmentComplete('judge');
+                  setSegmentComplete('verdict');
+                } else if (data.status === 'completed_non_factual' && data.classifier_result) {
+                  var classResult = typeof data.classifier_result === 'string'
+                    ? JSON.parse(data.classifier_result) : data.classifier_result;
+                  showNonFactualResponse(classResult.category || 'other');
+                }
+              } else if (data.status === 'investigating') {
+                // Update progress bar to show something is happening
+                setSegmentComplete('classify');
+              }
+            })
+            .catch(function() {
+              // Silently ignore poll errors — will retry next interval
+            });
+        }, POLL_INTERVAL_MS);
+      }
+
+      // ── Connect to SSE stream (or fall back to polling) ──
 
       function connectSSE(streamUrl) {
         startElapsedTimer();
+
+        // Check if EventSource is available
+        if (typeof EventSource === 'undefined') {
+          pollInvestigation();
+          return;
+        }
+
         startPipelineTimeout();
         evtSource = new EventSource(streamUrl);
 

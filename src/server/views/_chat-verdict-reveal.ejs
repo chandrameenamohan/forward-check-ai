@@ -199,6 +199,7 @@
         if (elapsedTimer) { clearInterval(elapsedTimer); elapsedTimer = null; }
         clearPipelineTimeout();
         if (evtSource) { evtSource.close(); evtSource = null; }
+        if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
 
         // Focus textarea
         if (ta) ta.focus();

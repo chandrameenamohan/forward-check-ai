@@ -327,7 +327,7 @@
 - Test: `"GET /chat should contain greeting category handler"`
 
 ### Task 5.3: SSE fallback — polling for browsers without EventSource
-- [ ]
+- [x]
 **Objective:** Add a polling fallback for the rare case where `EventSource` is not available (e.g., old browsers, corporate proxies).
 **Details:**
 - In `_chat-script.ejs`: check `typeof EventSource !== 'undefined'`
