@@ -228,7 +228,7 @@
 ## Phase 4: Inline Verdict Display
 
 ### Task 4.1: Verdict reveal animation and badge display
-- [ ]
+- [x]
 **Objective:** When `pipeline:complete` fires, reveal the verdict inline with a dramatic animation sequence: pause, badge, confidence ring.
 **Details:**
 - Add verdict reveal section to `chat.ejs` (hidden by default)

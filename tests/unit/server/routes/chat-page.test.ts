@@ -239,4 +239,39 @@ describe("Chat page — GET /chat", () => {
     expect(html).toContain("function stopStatusCycle(");
     expect(html).toContain("statusCyclers");
   });
+
+  // ── Task 4.1: Verdict reveal animation and badge display ──
+
+  it("GET /chat should contain verdict reveal section", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/chat`);
+    const html = await res.text();
+    expect(html).toContain("fc-verdict-reveal");
+    expect(html).toContain("fc-verdict-reveal-pause");
+    expect(html).toContain("fc-verdict-reveal-badge");
+    expect(html).toContain("showVerdictReveal");
+  });
+
+  it("GET /chat should contain confidence ring SVG", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/chat`);
+    const html = await res.text();
+    expect(html).toContain("fc-reveal-ring-fill");
+    expect(html).toContain("fc-verdict-reveal-confidence");
+    expect(html).toContain('viewBox="0 0 140 140"');
+    expect(html).toContain("strokeDasharray");
+  });
+
+  it("GET /chat should contain verdict badge color classes", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/chat`);
+    const html = await res.text();
+    expect(html).toContain("CATEGORY_COLORS");
+    expect(html).toContain("likely-true");
+    expect(html).toContain("likely-false");
+    expect(html).toContain("partially-true");
+    expect(html).toContain("unverified");
+    expect(html).toContain("satire");
+    expect(html).toContain("opinion");
+  });
 });
