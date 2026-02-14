@@ -148,7 +148,7 @@ The "See Live Verdict" page shows users the 6-agent pipeline working on their cl
 - Test: `"GET /live/:id should contain SSE connection script"`
 
 ### Task 2.2: SSE client and event dispatcher
-- [ ]
+- [x]
 **Objective:** Build the client-side JavaScript that connects to the SSE endpoint and dispatches events to the page UI.
 **Details:**
 - Add to `live.ejs` (inline `<script>`):

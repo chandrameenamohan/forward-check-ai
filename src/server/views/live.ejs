@@ -38,9 +38,16 @@
 
     <!-- ═══ PIPELINE VISUALIZATION AREA ═══ -->
     <div class="fc-live-pipeline" id="fc-pipeline-area">
-      <div class="fc-live-pipeline-placeholder" id="fc-pipeline-placeholder">
-        Connecting to investigation...
+      <div class="fc-connecting-spinner" id="fc-connecting-spinner">
+        <div class="fc-connecting-spinner-ring"></div>
+        <span>Connecting to investigation...</span>
       </div>
+
+      <!-- Agent cards injected here by JS event handlers -->
+      <div id="fc-agent-cards" class="fc-agent-cards"></div>
+
+      <!-- Error / status messages -->
+      <div id="fc-pipeline-status" class="fc-pipeline-status" style="display:none;"></div>
     </div>
 
   </div>
@@ -49,28 +56,172 @@
     (function() {
       var investigationId = '<%= id %>';
       var evtSource = new EventSource('/api/live/' + investigationId + '/stream');
+      var spinner = document.getElementById('fc-connecting-spinner');
+      var statusEl = document.getElementById('fc-pipeline-status');
+
+      // ── Hide spinner on first event ──
+      var spinnerHidden = false;
+      function hideSpinner() {
+        if (!spinnerHidden && spinner) {
+          spinner.style.display = 'none';
+          spinnerHidden = true;
+        }
+      }
+
+      function showStatus(text, type) {
+        if (statusEl) {
+          statusEl.textContent = text;
+          statusEl.className = 'fc-pipeline-status fc-pipeline-status--' + (type || 'info');
+          statusEl.style.display = 'block';
+        }
+      }
+
+      // ── UI update stubs — Phase 3 will flesh these out ──
+
+      function updateClassifier(kind, data) {
+        hideSpinner();
+        // Stub: will render classifier agent card in Task 3.2
+      }
+
+      function updateStrategist(kind, data) {
+        hideSpinner();
+        // Stub: will render strategist agent card in Task 3.2
+      }
+
+      function updateInvestigators(kind, data) {
+        hideSpinner();
+        // Stub: will render investigator cards in Task 3.3
+      }
+
+      function updateDA(kind, data) {
+        hideSpinner();
+        // Stub: will render DA card in Task 3.4
+      }
+
+      function updateJudge(kind, data) {
+        hideSpinner();
+        // Stub: will render judge card / verdict in Task 3.5
+      }
+
+      // ── Pipeline lifecycle events ──
+
+      evtSource.addEventListener('pipeline:start', function(e) {
+        hideSpinner();
+      });
+
+      // ── Classifier events ──
+
+      evtSource.addEventListener('classifier:start', function(e) {
+        var data = JSON.parse(e.data);
+        updateClassifier('start', data);
+      });
+
+      evtSource.addEventListener('classifier:complete', function(e) {
+        var data = JSON.parse(e.data);
+        updateClassifier('complete', data);
+      });
+
+      // ── Strategist events ──
+
+      evtSource.addEventListener('strategist:start', function(e) {
+        var data = JSON.parse(e.data);
+        updateStrategist('start', data);
+      });
+
+      evtSource.addEventListener('strategist:complete', function(e) {
+        var data = JSON.parse(e.data);
+        updateStrategist('complete', data);
+      });
+
+      // ── Investigator events ──
+
+      evtSource.addEventListener('investigators:start', function(e) {
+        var data = JSON.parse(e.data);
+        updateInvestigators('start', data);
+      });
+
+      evtSource.addEventListener('investigator:searching', function(e) {
+        var data = JSON.parse(e.data);
+        updateInvestigators('searching', data);
+      });
+
+      evtSource.addEventListener('investigator:complete', function(e) {
+        var data = JSON.parse(e.data);
+        updateInvestigators('complete', data);
+      });
+
+      // ── Disagreement detection ──
+
+      evtSource.addEventListener('disagreement:detected', function(e) {
+        var data = JSON.parse(e.data);
+        updateInvestigators('disagreement', data);
+      });
+
+      // ── Devil's Advocate events ──
+
+      evtSource.addEventListener('da:start', function(e) {
+        var data = JSON.parse(e.data);
+        updateDA('start', data);
+      });
+
+      evtSource.addEventListener('da:complete', function(e) {
+        var data = JSON.parse(e.data);
+        updateDA('complete', data);
+      });
+
+      // ── Judge events ──
+
+      evtSource.addEventListener('judge:start', function(e) {
+        var data = JSON.parse(e.data);
+        updateJudge('start', data);
+      });
+
+      evtSource.addEventListener('judge:complete', function(e) {
+        var data = JSON.parse(e.data);
+        updateJudge('complete', data);
+      });
+
+      // ── Pipeline complete — verdict reveal + redirect ──
 
       evtSource.addEventListener('pipeline:complete', function(e) {
         var data = JSON.parse(e.data);
+        hideSpinner();
+        updateJudge('verdict', data);
         evtSource.close();
-        setTimeout(function() {
-          window.location.href = '/v/' + investigationId;
-        }, 5000);
+
+        var countdown = 5;
+        showStatus('Full analysis ready in ' + countdown + '...', 'success');
+
+        var timer = setInterval(function() {
+          countdown--;
+          if (countdown <= 0) {
+            clearInterval(timer);
+            window.location.href = '/v/' + investigationId;
+          } else {
+            showStatus('Full analysis ready in ' + countdown + '...', 'success');
+          }
+        }, 1000);
       });
+
+      // ── Pipeline error ──
 
       evtSource.addEventListener('pipeline:error', function(e) {
         var data = JSON.parse(e.data);
-        var placeholder = document.getElementById('fc-pipeline-placeholder');
-        if (placeholder) {
-          placeholder.textContent = 'Something went wrong: ' + (data.error || 'Unknown error');
-        }
+        hideSpinner();
+        showStatus('Something went wrong: ' + (data.error || 'Unknown error'), 'error');
         evtSource.close();
       });
 
+      // ── Connection error — reconnect handled by EventSource ──
+
       evtSource.onerror = function() {
-        var placeholder = document.getElementById('fc-pipeline-placeholder');
-        if (placeholder) {
-          placeholder.textContent = 'Connection lost. Reconnecting...';
+        showStatus('Connection lost. Reconnecting...', 'warning');
+      };
+
+      // Restore status when connection reopens
+      evtSource.onopen = function() {
+        if (statusEl && statusEl.textContent === 'Connection lost. Reconnecting...') {
+          statusEl.style.display = 'none';
         }
       };
     })();
