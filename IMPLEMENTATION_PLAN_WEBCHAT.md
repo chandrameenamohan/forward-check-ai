@@ -365,7 +365,7 @@
 - Visually verify: page renders correctly at 375px
 
 ### Task 6.2: Tablet and desktop optimization (768px, 1440px)
-- [ ]
+- [x]
 **Objective:** Optimize layout for tablet (768px) and large desktop (1440px) viewports.
 **Details:**
 - Tablet (768px): input area inline (not sticky), timeline cards with more breathing room

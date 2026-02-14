@@ -469,4 +469,29 @@ describe("Chat page — GET /chat", () => {
     expect(html).toContain("position: sticky");
     expect(html).toContain("bottom: 0");
   });
+
+  // ── Task 6.2: Tablet and desktop optimization (768px, 1440px) ──
+
+  it("GET /chat should include tablet breakpoint styles at 768px", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/chat`);
+    const html = await res.text();
+    // Tablet breakpoint present
+    expect(html).toContain("max-width: 768px");
+    // Tablet should NOT have sticky input (inline layout at tablet)
+    // Sticky is only at ≤375px small mobile
+    expect(html).toContain("max-width: 375px");
+  });
+
+  it("GET /chat should include desktop max-width of 900px", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/chat`);
+    const html = await res.text();
+    // Desktop: max-width 900px centered
+    expect(html).toContain("max-width: 900px");
+    // Desktop media query with min-width
+    expect(html).toContain("min-width: 769px");
+    // Larger headline on desktop
+    expect(html).toContain("font-size: 2.8rem");
+  });
 });
