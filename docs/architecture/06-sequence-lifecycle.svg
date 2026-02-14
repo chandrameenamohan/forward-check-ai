@@ -1,0 +1,128 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2400 900" width="2400" height="900">
+  <defs>
+    <marker id="ah" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="10" markerHeight="7" orient="auto">
+      <polygon points="0,0 10,3.5 0,7" fill="#aaa"/>
+    </marker>
+    <marker id="ahd" viewBox="0 0 10 7" refX="0" refY="3.5" markerWidth="10" markerHeight="7" orient="auto">
+      <polygon points="0,0 10,3.5 0,7" fill="#aaa"/>
+    </marker>
+  </defs>
+
+  <rect width="2400" height="900" fill="#fff"/>
+
+  <!-- ═══ TIMELINE BAR ═══ -->
+  <line x1="100" y1="820" x2="2300" y2="820" stroke="#e0e0e0" stroke-width="1.5"/>
+
+  <!-- Time markers -->
+  <text x="160" y="855" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="16" fill="#ccc">0s</text>
+  <text x="380" y="855" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="16" fill="#ccc">~1s</text>
+  <text x="600" y="855" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="16" fill="#ccc">~5s</text>
+  <text x="1070" y="855" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="16" fill="#ccc">~20s</text>
+  <text x="1480" y="855" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="16" fill="#ccc">~30s</text>
+  <text x="1800" y="855" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="16" fill="#ccc">~45s</text>
+  <text x="2200" y="855" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="16" fill="#ccc">~60s</text>
+
+  <!-- Time tick marks -->
+  <line x1="160" y1="815" x2="160" y2="825" stroke="#ddd" stroke-width="1.5"/>
+  <line x1="380" y1="815" x2="380" y2="825" stroke="#ddd" stroke-width="1.5"/>
+  <line x1="600" y1="815" x2="600" y2="825" stroke="#ddd" stroke-width="1.5"/>
+  <line x1="1070" y1="815" x2="1070" y2="825" stroke="#ddd" stroke-width="1.5"/>
+  <line x1="1480" y1="815" x2="1480" y2="825" stroke="#ddd" stroke-width="1.5"/>
+  <line x1="1800" y1="815" x2="1800" y2="825" stroke="#ddd" stroke-width="1.5"/>
+  <line x1="2200" y1="815" x2="2200" y2="825" stroke="#ddd" stroke-width="1.5"/>
+
+  <!-- ═══ MAIN FLOW ═══ -->
+
+  <!-- User (In) -->
+  <circle cx="160" cy="450" r="42" fill="#fef4f0" stroke="#e8a898" stroke-width="1.5"/>
+  <text x="160" y="452" text-anchor="middle" dominant-baseline="central" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="22" font-weight="500" fill="#c86040">User</text>
+
+  <!-- Classify -->
+  <rect x="290" y="412" width="180" height="76" rx="6" fill="#fdf8f0" stroke="#e0c8a0" stroke-width="1.5"/>
+  <text x="380" y="452" text-anchor="middle" dominant-baseline="central" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="24" font-weight="500" fill="#8a7040">Classify</text>
+  <text x="380" y="510" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="16" fill="#bbb">Haiku 4.5 · ~1s</text>
+
+  <!-- Strategize -->
+  <rect x="540" y="412" width="200" height="76" rx="6" fill="#e2e0f0" stroke="#b5b2d4" stroke-width="1.5"/>
+  <text x="640" y="452" text-anchor="middle" dominant-baseline="central" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="24" font-weight="500" fill="#5b5590">Strategize</text>
+  <text x="640" y="510" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="16" fill="#bbb">Opus 4.6 · ~3-5s</text>
+
+  <!-- Investigate (parallel bracket) -->
+  <rect x="820" y="260" width="250" height="76" rx="6" fill="#e7f0d8" stroke="#b5c99a" stroke-width="1.5"/>
+  <text x="945" y="300" text-anchor="middle" dominant-baseline="central" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="22" font-weight="500" fill="#4a6840">Source Verifier</text>
+
+  <rect x="820" y="412" width="250" height="76" rx="6" fill="#e7f0d8" stroke="#b5c99a" stroke-width="1.5"/>
+  <text x="945" y="452" text-anchor="middle" dominant-baseline="central" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="22" font-weight="500" fill="#4a6840">Domain Expert</text>
+
+  <rect x="820" y="562" width="250" height="76" rx="6" fill="#e7f0d8" stroke="#b5c99a" stroke-width="1.5"/>
+  <text x="945" y="602" text-anchor="middle" dominant-baseline="central" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="22" font-weight="500" fill="#4a6840">Pattern Analyzer</text>
+
+  <text x="945" y="680" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="16" fill="#bbb">Sonnet 4.5 × 3 · ~10-15s parallel</text>
+
+  <!-- Parallel bracket (left) -->
+  <path d="M 800,280 C 785,280 780,300 780,450" fill="none" stroke="#ddd" stroke-width="1.5"/>
+  <path d="M 800,620 C 785,620 780,600 780,450" fill="none" stroke="#ddd" stroke-width="1.5"/>
+
+  <!-- Parallel bracket (right) -->
+  <path d="M 1090,280 C 1105,280 1110,300 1110,450" fill="none" stroke="#ddd" stroke-width="1.5"/>
+  <path d="M 1090,620 C 1105,620 1110,600 1110,450" fill="none" stroke="#ddd" stroke-width="1.5"/>
+
+  <!-- Aggregate (lavender) -->
+  <rect x="1180" y="412" width="200" height="76" rx="6" fill="#e2e0f0" stroke="#b5b2d4" stroke-width="1.5"/>
+  <text x="1280" y="452" text-anchor="middle" dominant-baseline="central" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="22" font-weight="500" fill="#5b5590">Aggregate</text>
+
+  <!-- Challenge -->
+  <rect x="1440" y="412" width="230" height="76" rx="6" fill="#e2e0f0" stroke="#b5b2d4" stroke-width="1.5"/>
+  <text x="1555" y="445" text-anchor="middle" dominant-baseline="central" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="22" font-weight="500" fill="#5b5590">Challenge</text>
+  <text x="1555" y="472" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="16" fill="#908cc0">Devil's Advocate</text>
+  <text x="1555" y="510" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="16" fill="#bbb">Opus 4.6 · ~5-10s</text>
+
+  <!-- Judge -->
+  <rect x="1740" y="412" width="180" height="76" rx="6" fill="#e2e0f0" stroke="#b5b2d4" stroke-width="1.5"/>
+  <text x="1830" y="452" text-anchor="middle" dominant-baseline="central" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="24" font-weight="500" fill="#5b5590">Judge</text>
+  <text x="1830" y="510" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="16" fill="#bbb">Opus 4.6 · ~5-15s</text>
+
+  <!-- Outputs -->
+  <!-- Telegram verdict -->
+  <rect x="2020" y="280" width="220" height="60" rx="6" fill="#fef4f0" stroke="#e8a898" stroke-width="1.2"/>
+  <text x="2130" y="312" text-anchor="middle" dominant-baseline="central" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="20" font-weight="500" fill="#c86040">Telegram Verdict</text>
+
+  <!-- Save to DB -->
+  <rect x="2020" y="410" width="220" height="60" rx="6" fill="#fef4f0" stroke="#e8a898" stroke-width="1.2"/>
+  <text x="2130" y="442" text-anchor="middle" dominant-baseline="central" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="20" font-weight="500" fill="#c86040">Save to DB</text>
+
+  <!-- Web page -->
+  <rect x="2020" y="540" width="220" height="60" rx="6" fill="#fef4f0" stroke="#e8a898" stroke-width="1.2"/>
+  <text x="2130" y="572" text-anchor="middle" dominant-baseline="central" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="20" font-weight="500" fill="#c86040">Verdict Page</text>
+
+  <!-- ═══ ARROWS ═══ -->
+
+  <!-- User → Classify -->
+  <line x1="202" y1="450" x2="288" y2="450" stroke="#aaa" stroke-width="2" marker-end="url(#ah)"/>
+
+  <!-- Classify → Strategize -->
+  <line x1="470" y1="450" x2="538" y2="450" stroke="#aaa" stroke-width="2" marker-end="url(#ah)"/>
+
+  <!-- Strategize → Investigators (fan out, dashed) -->
+  <path d="M 740,438 C 775,438 790,298 818,298" fill="none" stroke="#aaa" stroke-width="2" stroke-dasharray="8 6" marker-end="url(#ah)"/>
+  <line x1="740" y1="450" x2="818" y2="450" stroke="#aaa" stroke-width="2" stroke-dasharray="8 6" marker-end="url(#ah)"/>
+  <path d="M 740,462 C 775,462 790,600 818,600" fill="none" stroke="#aaa" stroke-width="2" stroke-dasharray="8 6" marker-end="url(#ah)"/>
+
+  <!-- Investigators → Aggregate (fan in, dashed) -->
+  <path d="M 1110,450 C 1140,450 1150,450 1178,450" fill="none" stroke="#aaa" stroke-width="2" stroke-dasharray="8 6" marker-end="url(#ah)"/>
+
+  <!-- Aggregate → Challenge -->
+  <line x1="1380" y1="450" x2="1438" y2="450" stroke="#aaa" stroke-width="2" marker-end="url(#ah)"/>
+
+  <!-- Challenge → Judge -->
+  <line x1="1670" y1="450" x2="1738" y2="450" stroke="#aaa" stroke-width="2" marker-end="url(#ah)"/>
+
+  <!-- Judge → Outputs (fan out) -->
+  <path d="M 1920,438 C 1960,438 1980,310 2018,310" fill="none" stroke="#aaa" stroke-width="2" marker-end="url(#ah)"/>
+  <line x1="1920" y1="450" x2="2018" y2="440" stroke="#aaa" stroke-width="2" marker-end="url(#ah)"/>
+  <path d="M 1920,462 C 1960,462 1980,570 2018,570" fill="none" stroke="#aaa" stroke-width="2" marker-end="url(#ah)"/>
+
+  <!-- ═══ DEEP REASONING INDICATOR ═══ -->
+  <rect x="1440" y="180" width="480" height="50" rx="25" fill="#fff8f0" stroke="#e8c080" stroke-width="1" stroke-dasharray="6 4"/>
+  <text x="1680" y="208" text-anchor="middle" dominant-baseline="central" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="17" fill="#b09050" font-style="italic">Deep Reasoning Mode — activates when investigators disagree</text>
+</svg>

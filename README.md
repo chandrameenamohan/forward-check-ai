@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/architecture/03-agent-pipeline.png" alt="ForwardCheck-AI Agent Pipeline" width="800">
+  <img src="docs/architecture/03-agent-pipeline.svg" alt="ForwardCheck-AI Agent Pipeline" width="800">
 </p>
 
 # ForwardCheck-AI
@@ -79,7 +79,7 @@ When investigators disagree (confidence spread > 30 points), the system automati
 ## Three-tier model strategy
 
 <p align="center">
-  <img src="docs/architecture/04-three-tier-model.png" alt="Three-Tier Model Strategy" width="700">
+  <img src="docs/architecture/04-three-tier-model.svg" alt="Three-Tier Model Strategy" width="700">
 </p>
 
 We don't throw Opus at everything. Each model does what it's best at.
@@ -145,7 +145,7 @@ The bot starts polling Telegram. The web server runs on `http://localhost:3000`.
 ## Architecture
 
 <p align="center">
-  <img src="docs/architecture/02-component-architecture.png" alt="Component Architecture" width="800">
+  <img src="docs/architecture/02-component-architecture.svg" alt="Component Architecture" width="800">
 </p>
 
 ### Project structure
@@ -191,7 +191,7 @@ src/
 ### Data flow
 
 <p align="center">
-  <img src="docs/architecture/06-sequence-lifecycle.png" alt="Investigation Lifecycle" width="800">
+  <img src="docs/architecture/06-sequence-lifecycle.svg" alt="Investigation Lifecycle" width="800">
 </p>
 
 ---
@@ -255,11 +255,11 @@ Full architecture documentation with 10 rendered diagrams lives in [`docs/archit
 | Diagram | What it shows |
 |---------|---------------|
 | [System Context](docs/architecture/01-system-context.png) | External dependencies and boundaries |
-| [Component Architecture](docs/architecture/02-component-architecture.png) | Internal module structure |
-| [Agent Pipeline](docs/architecture/03-agent-pipeline.png) | Complete data flow through 6 agents |
-| [Three-Tier Model](docs/architecture/04-three-tier-model.png) | Haiku / Sonnet / Opus allocation |
+| [Component Architecture](docs/architecture/02-component-architecture.svg) | Internal module structure |
+| [Agent Pipeline](docs/architecture/03-agent-pipeline.svg) | Complete data flow through 6 agents |
+| [Three-Tier Model](docs/architecture/04-three-tier-model.svg) | Haiku / Sonnet / Opus allocation |
 | [Data Model](docs/architecture/05-data-model.png) | Entity relationships |
-| [Sequence Lifecycle](docs/architecture/06-sequence-lifecycle.png) | Full investigation sequence diagram |
+| [Sequence Lifecycle](docs/architecture/06-sequence-lifecycle.svg) | Full investigation sequence diagram |
 | [Tool Dispatch](docs/architecture/07-tool-dispatch.png) | How agents call external tools |
 | [Deployment](docs/architecture/08-deployment-runtime.png) | Runtime architecture |
 | [Cost Model](docs/architecture/09-cost-model.png) | Per-agent cost breakdown |

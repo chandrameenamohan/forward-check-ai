@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2400 800" width="2400" height="800">
+  <rect width="2400" height="800" fill="#fff"/>
+
+  <!-- ═══ ROUTING TIER ═══ -->
+  <rect x="80" y="80" width="480" height="640" rx="12" fill="#fdf8f0" stroke="#e0c8a0" stroke-width="1.5"/>
+  <text x="320" y="140" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="28" font-weight="600" fill="#8a7040" letter-spacing="2">ROUTING</text>
+  <text x="320" y="178" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="20" fill="#b0a070">Haiku 4.5</text>
+
+  <!-- Classifier box -->
+  <rect x="180" y="340" width="280" height="76" rx="6" fill="#e7f0d8" stroke="#b5c99a" stroke-width="1.5"/>
+  <text x="320" y="380" text-anchor="middle" dominant-baseline="central" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="26" font-weight="500" fill="#4a6840">Classifier</text>
+
+  <text x="320" y="520" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="20" fill="#bbb">~$0.01 / call</text>
+  <text x="320" y="556" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="18" fill="#ccc">1 call</text>
+
+  <!-- ═══ INVESTIGATION TIER ═══ -->
+  <rect x="640" y="80" width="680" height="640" rx="12" fill="#f4f8ee" stroke="#c0d8a0" stroke-width="1.5"/>
+  <text x="980" y="140" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="28" font-weight="600" fill="#5a7840" letter-spacing="2">INVESTIGATION</text>
+  <text x="980" y="178" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="20" fill="#90b070">Sonnet 4.5</text>
+
+  <!-- Source box -->
+  <rect x="680" y="270" width="240" height="76" rx="6" fill="#e7f0d8" stroke="#b5c99a" stroke-width="1.5"/>
+  <text x="800" y="310" text-anchor="middle" dominant-baseline="central" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="22" font-weight="500" fill="#4a6840">Source Verification</text>
+
+  <!-- Domain box -->
+  <rect x="680" y="380" width="240" height="76" rx="6" fill="#e7f0d8" stroke="#b5c99a" stroke-width="1.5"/>
+  <text x="800" y="420" text-anchor="middle" dominant-baseline="central" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="22" font-weight="500" fill="#4a6840">Domain Expertise</text>
+
+  <!-- Pattern box -->
+  <rect x="680" y="490" width="240" height="76" rx="6" fill="#e7f0d8" stroke="#b5c99a" stroke-width="1.5"/>
+  <text x="800" y="530" text-anchor="middle" dominant-baseline="central" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="22" font-weight="500" fill="#4a6840">Pattern Analysis</text>
+
+  <!-- Parallel indicator -->
+  <text x="1040" y="385" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="16" fill="#b0b0b0" font-style="italic">run in</text>
+  <text x="1040" y="408" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="16" fill="#b0b0b0" font-style="italic">parallel</text>
+
+  <text x="980" y="640" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="20" fill="#bbb">~$0.30 / call</text>
+  <text x="980" y="676" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="18" fill="#ccc">3 calls (parallel)</text>
+
+  <!-- ═══ REASONING TIER ═══ -->
+  <rect x="1400" y="80" width="920" height="640" rx="12" fill="#eeedf6" stroke="#c0bce0" stroke-width="1.5"/>
+  <text x="1860" y="140" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="28" font-weight="600" fill="#5b5590" letter-spacing="2">REASONING</text>
+  <text x="1860" y="178" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="20" fill="#908cc0">Opus 4.6</text>
+
+  <!-- Strategist box -->
+  <rect x="1450" y="320" width="220" height="76" rx="6" fill="#e2e0f0" stroke="#b5b2d4" stroke-width="1.5"/>
+  <text x="1560" y="360" text-anchor="middle" dominant-baseline="central" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="24" font-weight="500" fill="#5b5590">Strategist</text>
+  <text x="1560" y="418" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="16" fill="#b0b0b0" font-style="italic">plans investigation</text>
+
+  <!-- Devil's Advocate box -->
+  <rect x="1720" y="320" width="260" height="76" rx="6" fill="#e2e0f0" stroke="#b5b2d4" stroke-width="1.5"/>
+  <text x="1850" y="360" text-anchor="middle" dominant-baseline="central" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="22" font-weight="500" fill="#5b5590">Devil's Advocate</text>
+  <text x="1850" y="418" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="16" fill="#b0b0b0" font-style="italic">adversarial challenge</text>
+
+  <!-- Judge box -->
+  <rect x="2030" y="320" width="220" height="76" rx="6" fill="#e2e0f0" stroke="#b5b2d4" stroke-width="1.5"/>
+  <text x="2140" y="360" text-anchor="middle" dominant-baseline="central" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="24" font-weight="500" fill="#5b5590">Judge</text>
+  <text x="2140" y="418" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="16" fill="#b0b0b0" font-style="italic">final synthesis</text>
+
+  <!-- Sequential indicator -->
+  <text x="1860" y="495" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="16" fill="#b0b0b0" font-style="italic">3 sequential calls — each uses a different capability</text>
+
+  <text x="1860" y="640" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="20" fill="#bbb">~$0.20–2.00 / call</text>
+  <text x="1860" y="676" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="18" fill="#ccc">3 calls (sequential)</text>
+</svg>

@@ -1,0 +1,133 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2400 1000" width="2400" height="1000">
+  <defs>
+    <marker id="ah" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="10" markerHeight="7" orient="auto">
+      <polygon points="0,0 10,3.5 0,7" fill="#aaa"/>
+    </marker>
+    <marker id="ahd" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="10" markerHeight="7" orient="auto">
+      <polygon points="0,0 10,3.5 0,7" fill="#aaa"/>
+    </marker>
+  </defs>
+
+  <rect width="2400" height="1000" fill="#fff"/>
+
+  <!-- ═══ ROW 1: ENTRY POINTS ═══ -->
+
+  <!-- Telegram -->
+  <circle cx="200" cy="260" r="42" fill="#fef4f0" stroke="#e8a898" stroke-width="1.5"/>
+  <text x="200" y="252" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="18" font-weight="500" fill="#c86040">Telegram</text>
+  <text x="200" y="274" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="18" font-weight="500" fill="#c86040">User</text>
+
+  <!-- Browser -->
+  <circle cx="200" cy="740" r="42" fill="#fef4f0" stroke="#e8a898" stroke-width="1.5"/>
+  <text x="200" y="732" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="18" font-weight="500" fill="#c86040">Web</text>
+  <text x="200" y="754" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="18" font-weight="500" fill="#c86040">User</text>
+
+  <!-- ═══ ROW 2: APPLICATION LAYER ═══ -->
+
+  <!-- Bot Handler -->
+  <rect x="380" y="222" width="200" height="76" rx="6" fill="#e7f0d8" stroke="#b5c99a" stroke-width="1.5"/>
+  <text x="480" y="262" text-anchor="middle" dominant-baseline="central" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="24" font-weight="500" fill="#4a6840">Bot Handler</text>
+  <text x="480" y="318" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="16" fill="#bbb">Grammy</text>
+
+  <!-- Express Server -->
+  <rect x="380" y="702" width="200" height="76" rx="6" fill="#e7f0d8" stroke="#b5c99a" stroke-width="1.5"/>
+  <text x="480" y="742" text-anchor="middle" dominant-baseline="central" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="22" font-weight="500" fill="#4a6840">Express Server</text>
+  <text x="480" y="798" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="16" fill="#bbb">Express 5 + EJS</text>
+
+  <!-- ═══ ROW 3: CORE ═══ -->
+
+  <!-- Orchestrator -->
+  <rect x="700" y="350" width="220" height="76" rx="6" fill="#e2e0f0" stroke="#b5b2d4" stroke-width="1.5"/>
+  <text x="810" y="390" text-anchor="middle" dominant-baseline="central" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="24" font-weight="500" fill="#5b5590">Orchestrator</text>
+  <text x="810" y="446" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="16" fill="#bbb">Pipeline control</text>
+
+  <!-- ═══ ROW 4: AGENTS ═══ -->
+
+  <!-- Agent Pipeline group -->
+  <rect x="1040" y="160" width="580" height="460" rx="10" fill="#fafcf7" stroke="#d5dfc8" stroke-width="1" stroke-dasharray="6 4"/>
+  <text x="1330" y="195" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="18" fill="#999" letter-spacing="1">AGENT PIPELINE</text>
+
+  <!-- Classifier -->
+  <rect x="1080" y="225" width="180" height="60" rx="6" fill="#e7f0d8" stroke="#b5c99a" stroke-width="1.2"/>
+  <text x="1170" y="257" text-anchor="middle" dominant-baseline="central" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="20" font-weight="500" fill="#4a6840">Classifier</text>
+
+  <!-- Strategist -->
+  <rect x="1080" y="310" width="180" height="60" rx="6" fill="#e7f0d8" stroke="#b5c99a" stroke-width="1.2"/>
+  <text x="1170" y="342" text-anchor="middle" dominant-baseline="central" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="20" font-weight="500" fill="#4a6840">Strategist</text>
+
+  <!-- Investigators (grouped) -->
+  <rect x="1300" y="225" width="280" height="60" rx="6" fill="#e7f0d8" stroke="#b5c99a" stroke-width="1.2"/>
+  <text x="1440" y="257" text-anchor="middle" dominant-baseline="central" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="20" font-weight="500" fill="#4a6840">Investigators ×3</text>
+
+  <!-- Devil's Advocate -->
+  <rect x="1300" y="310" width="280" height="60" rx="6" fill="#e7f0d8" stroke="#b5c99a" stroke-width="1.2"/>
+  <text x="1440" y="342" text-anchor="middle" dominant-baseline="central" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="20" font-weight="500" fill="#4a6840">Devil's Advocate</text>
+
+  <!-- Judge -->
+  <rect x="1190" y="395" width="280" height="60" rx="6" fill="#e7f0d8" stroke="#b5c99a" stroke-width="1.2"/>
+  <text x="1330" y="427" text-anchor="middle" dominant-baseline="central" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="20" font-weight="500" fill="#4a6840">Judge</text>
+
+  <!-- Model labels inside pipeline group -->
+  <text x="1090" y="545" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="15" fill="#ccc">Haiku → Sonnet → Opus</text>
+  <text x="1090" y="570" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="15" fill="#ccc">6 agents, 3 model tiers</text>
+
+  <!-- ═══ ROW 5: SERVICES ═══ -->
+
+  <!-- SQLite -->
+  <rect x="700" y="620" width="220" height="76" rx="6" fill="#e2e0f0" stroke="#b5b2d4" stroke-width="1.5"/>
+  <text x="810" y="660" text-anchor="middle" dominant-baseline="central" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="24" font-weight="500" fill="#5b5590">SQLite</text>
+  <text x="810" y="716" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="16" fill="#bbb">better-sqlite3 (WAL)</text>
+
+  <!-- Claude Client -->
+  <rect x="1100" y="700" width="220" height="76" rx="6" fill="#e2e0f0" stroke="#b5b2d4" stroke-width="1.5"/>
+  <text x="1210" y="740" text-anchor="middle" dominant-baseline="central" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="22" font-weight="500" fill="#5b5590">Claude Client</text>
+  <text x="1210" y="796" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="16" fill="#bbb">Anthropic SDK</text>
+
+  <!-- External Tools -->
+  <rect x="1750" y="350" width="220" height="76" rx="6" fill="#e2e0f0" stroke="#b5b2d4" stroke-width="1.5"/>
+  <text x="1860" y="390" text-anchor="middle" dominant-baseline="central" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="24" font-weight="500" fill="#5b5590">Tools</text>
+
+  <!-- Brave Search -->
+  <rect x="2050" y="280" width="220" height="60" rx="6" fill="#fef4f0" stroke="#e8a898" stroke-width="1.2"/>
+  <text x="2160" y="312" text-anchor="middle" dominant-baseline="central" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="20" font-weight="500" fill="#c86040">Brave Search</text>
+
+  <!-- Google Fact Check -->
+  <rect x="2050" y="370" width="220" height="60" rx="6" fill="#fef4f0" stroke="#e8a898" stroke-width="1.2"/>
+  <text x="2160" y="402" text-anchor="middle" dominant-baseline="central" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="18" font-weight="500" fill="#c86040">Google Fact Check</text>
+
+  <!-- ═══ ARROWS ═══ -->
+
+  <!-- Telegram → Bot Handler -->
+  <line x1="242" y1="260" x2="378" y2="260" stroke="#aaa" stroke-width="2" marker-end="url(#ah)"/>
+
+  <!-- Browser → Express -->
+  <line x1="242" y1="740" x2="378" y2="740" stroke="#aaa" stroke-width="2" marker-end="url(#ah)"/>
+
+  <!-- Bot Handler → Orchestrator -->
+  <path d="M 580,280 C 640,280 660,388 698,388" fill="none" stroke="#aaa" stroke-width="2" marker-end="url(#ah)"/>
+
+  <!-- Express → SQLite (read verdicts) -->
+  <path d="M 580,740 C 640,740 660,660 698,660" fill="none" stroke="#aaa" stroke-width="2" marker-end="url(#ah)"/>
+  <text x="640" y="718" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="16" fill="#bbb">Read/</text>
+  <text x="640" y="736" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="16" fill="#bbb">Write</text>
+
+  <!-- Orchestrator → Agent Pipeline -->
+  <line x1="920" y1="388" x2="1038" y2="388" stroke="#aaa" stroke-width="2" marker-end="url(#ah)"/>
+
+  <!-- Orchestrator → SQLite -->
+  <line x1="810" y1="426" x2="810" y2="618" stroke="#aaa" stroke-width="2" stroke-dasharray="8 6" marker-end="url(#ah)"/>
+
+  <!-- Agent Pipeline → Tools -->
+  <line x1="1620" y1="388" x2="1748" y2="388" stroke="#aaa" stroke-width="2" stroke-dasharray="8 6" marker-end="url(#ah)"/>
+  <text x="1684" y="375" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="16" fill="#bbb">Call/</text>
+  <text x="1684" y="375" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="16" fill="#bbb">Response</text>
+
+  <!-- Tools → Brave -->
+  <line x1="1970" y1="375" x2="2048" y2="320" stroke="#aaa" stroke-width="2" stroke-dasharray="8 6" marker-end="url(#ah)"/>
+
+  <!-- Tools → Google -->
+  <line x1="1970" y1="400" x2="2048" y2="400" stroke="#aaa" stroke-width="2" stroke-dasharray="8 6" marker-end="url(#ah)"/>
+
+  <!-- Agent Pipeline → Claude Client -->
+  <path d="M 1330,460 C 1330,540 1240,620 1218,698" fill="none" stroke="#aaa" stroke-width="2" stroke-dasharray="8 6" marker-end="url(#ah)"/>
+</svg>
