@@ -470,6 +470,93 @@
       overflow: hidden;
     }
 
+    /* ─── DA card ─── */
+    .fc-agent-card--da {
+      position: relative;
+    }
+    .fc-agent-icon--da {
+      color: var(--fc-accent-red);
+    }
+    .fc-agent-card--da.fc-agent--active {
+      border-color: var(--fc-accent-red);
+      box-shadow: 0 0 20px rgba(239, 68, 68, 0.15);
+      animation: fc-da-pulse 2s ease-in-out infinite;
+    }
+    .fc-agent-card--da.fc-agent--active .fc-agent-icon {
+      background: rgba(239, 68, 68, 0.12);
+      box-shadow: 0 0 10px rgba(239, 68, 68, 0.2);
+    }
+    .fc-agent-card--da.fc-agent--active .fc-agent-status {
+      color: var(--fc-accent-red);
+    }
+
+    /* ─── DA deep reasoning badge ─── */
+    .fc-da-deep-reasoning {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.55rem;
+      padding: 0.12rem 0.5rem;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--fc-accent-purple);
+      border: 1px solid var(--fc-accent-purple);
+      background: rgba(168, 85, 247, 0.08);
+    }
+    .fc-da-deep-reasoning svg {
+      color: var(--fc-accent-purple);
+    }
+
+    /* ─── DA outcome badge ─── */
+    .fc-da-outcome {
+      margin-top: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .fc-da-outcome-badge {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      padding: 0.15rem 0.6rem;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .fc-da-outcome-badge--defeated {
+      color: var(--fc-accent-green);
+      background: rgba(34, 197, 94, 0.1);
+      border: 1px solid rgba(34, 197, 94, 0.2);
+    }
+    .fc-da-outcome-badge--held {
+      color: var(--fc-accent-red);
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+
+    /* ─── DA thinking excerpt ─── */
+    .fc-da-thinking {
+      margin-top: 0.75rem;
+      padding: 0.75rem 1rem;
+      background: var(--fc-surface-raised);
+      border-radius: 6px;
+      border-left: 2px solid var(--fc-accent-red);
+    }
+
+    /* ─── DA entrance animation ─── */
+    @keyframes fc-da-entrance {
+      0% { opacity: 0; transform: translateX(30px); }
+      100% { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes fc-da-pulse {
+      0%, 100% { box-shadow: 0 0 20px rgba(239, 68, 68, 0.15); }
+      50% { box-shadow: 0 0 30px rgba(239, 68, 68, 0.25); }
+    }
+    .fc-agent-card--da.fc-da-entering {
+      animation: fc-da-entrance 0.6s ease-out;
+    }
+
     /* ─── Disagreement alert ─── */
     .fc-disagreement-alert {
       display: flex;
@@ -546,7 +633,9 @@
       .fc-connecting-spinner-ring,
       .fc-progress-segment--active .fc-progress-segment-fill,
       .fc-agent--active,
-      .fc-disagreement-alert {
+      .fc-disagreement-alert,
+      .fc-agent-card--da.fc-da-entering,
+      .fc-agent-card--da.fc-agent--active {
         animation: none;
       }
       .fc-progress-segment-fill,

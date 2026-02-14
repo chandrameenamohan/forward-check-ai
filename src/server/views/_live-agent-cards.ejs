@@ -109,3 +109,31 @@
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
   <span>Your investigators disagree — escalating to Deep Reasoning</span>
 </div>
+
+<div class="fc-connector-line"></div>
+
+<!-- Devil's Advocate card -->
+<div class="fc-agent-card fc-agent-card--da fc-agent--idle" id="fc-card-da">
+  <div class="fc-agent-card-header">
+    <div class="fc-agent-icon fc-agent-icon--da">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l1 6 5-4-3 5 6 1-6 1 3 5-5-4-1 6-1-6-5 4 3-5-6-1 6-1-3-5 5 4z"/></svg>
+    </div>
+    <div class="fc-agent-card-title">
+      <span class="fc-agent-name">Devil&#x27;s Advocate</span>
+      <span class="fc-model-badge fc-model-badge--opus">Opus 4.6</span>
+    </div>
+    <div class="fc-da-deep-reasoning" id="fc-da-deep-reasoning" style="display:none;">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 12l4-4"/><circle cx="12" cy="12" r="3"/></svg>
+      <span>Deep Reasoning</span>
+    </div>
+    <div class="fc-agent-check" id="fc-da-check">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+  </div>
+  <div class="fc-agent-status" id="fc-da-status">Standing by to challenge the consensus</div>
+  <div class="fc-da-outcome" id="fc-da-outcome" style="display:none;"></div>
+  <div class="fc-da-thinking" id="fc-da-thinking" style="display:none;">
+    <span class="fc-agent-thinking-label">AI Reasoning</span>
+    <p class="fc-agent-thinking-text" id="fc-da-thinking-text"></p>
+  </div>
+</div>

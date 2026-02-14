@@ -426,4 +426,49 @@ describe("Live verdict page routes", () => {
     // Each card should have a search query display area
     expect(html).toContain("fc-investigator-search");
   });
+
+  // ── Task 3.4: Devil's Advocate card with thinking visualization ──
+
+  it("GET /live/:id should contain devils advocate card", async () => {
+    const port = await startServer();
+    const id = repo.create("DA card test");
+
+    const res = await fetch(`http://127.0.0.1:${port}/live/${id}`);
+    const html = await res.text();
+
+    expect(html).toContain("fc-agent-card--da");
+    expect(html).toContain("Devil&#x27;s Advocate");
+    expect(html).toContain("fc-model-badge--opus");
+    // Should start in idle state
+    expect(html).toContain("fc-agent--idle");
+    // Should have the updateDA function
+    expect(html).toContain("updateDA");
+  });
+
+  it("GET /live/:id should contain deep reasoning indicator placeholder", async () => {
+    const port = await startServer();
+    const id = repo.create("Deep reasoning test");
+
+    const res = await fetch(`http://127.0.0.1:${port}/live/${id}`);
+    const html = await res.text();
+
+    // Deep reasoning badge container should exist (hidden by default)
+    expect(html).toContain("fc-da-deep-reasoning");
+    expect(html).toContain("Deep Reasoning");
+    // DA thinking excerpt area
+    expect(html).toContain("fc-da-thinking");
+  });
+
+  it("GET /live/:id should contain DA outcome display area", async () => {
+    const port = await startServer();
+    const id = repo.create("DA outcome test");
+
+    const res = await fetch(`http://127.0.0.1:${port}/live/${id}`);
+    const html = await res.text();
+
+    // Outcome badge area for succeeded/failed counter-argument
+    expect(html).toContain("fc-da-outcome");
+    // DA card should have a connector line before it
+    expect(html).toContain("fc-connector-line");
+  });
 });

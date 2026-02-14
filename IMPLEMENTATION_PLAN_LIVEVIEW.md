@@ -231,7 +231,7 @@ The "See Live Verdict" page shows users the 6-agent pipeline working on their cl
 - Manual: verify parallel activation looks compelling
 
 ### Task 3.4: Devil's Advocate card with thinking visualization
-- [ ]
+- [x]
 **Objective:** Build the DA card that shows adversarial reasoning in action — the "courtroom cross-examination" moment.
 **Details:**
 - Add to `live.ejs`:

@@ -149,8 +149,60 @@
       function updateDA(kind, data) {
         hideSpinner();
         setSegmentComplete('investigate');
-        if (kind === 'start') { setSegmentActive('challenge'); }
-        if (kind === 'complete') { setSegmentComplete('challenge'); addCost(data.costUsd); }
+        var statusEl3 = document.getElementById('fc-da-status');
+        var checkEl = document.getElementById('fc-da-check');
+        var deepBadge = document.getElementById('fc-da-deep-reasoning');
+        var outcomeEl = document.getElementById('fc-da-outcome');
+        var thinkingEl = document.getElementById('fc-da-thinking');
+        var thinkingText = document.getElementById('fc-da-thinking-text');
+        var daCard = document.getElementById('fc-card-da');
+
+        if (kind === 'start') {
+          setSegmentActive('challenge');
+          setCardState('fc-card-da', 'active');
+
+          // Dramatic entrance animation
+          if (daCard) {
+            daCard.classList.add('fc-da-entering');
+            setTimeout(function() {
+              daCard.classList.remove('fc-da-entering');
+            }, 600);
+          }
+
+          if (statusEl3) statusEl3.textContent = 'The Devil\u2019s Advocate just entered the room...';
+
+          // Show deep reasoning badge if effort is elevated
+          if (data.effortLevel === 'max' && deepBadge) {
+            deepBadge.style.display = 'inline-flex';
+          }
+        }
+
+        if (kind === 'complete') {
+          setSegmentComplete('challenge');
+          setCardState('fc-card-da', 'complete');
+          addCost(data.costUsd);
+
+          if (statusEl3) statusEl3.textContent = 'Cross-examination complete';
+          if (checkEl) checkEl.style.display = 'flex';
+
+          // Outcome badge: did the counter-argument hold or fail?
+          if (outcomeEl && data.report) {
+            var succeeded = data.report.overallAssessment === 'counter_argument_succeeded' ||
+                            data.report.challengeSucceeded === true;
+            if (succeeded) {
+              outcomeEl.innerHTML = '<span class="fc-da-outcome-badge fc-da-outcome-badge--held">Counter-argument held up</span>';
+            } else {
+              outcomeEl.innerHTML = '<span class="fc-da-outcome-badge fc-da-outcome-badge--defeated">Counter-argument defeated</span>';
+            }
+            outcomeEl.style.display = 'flex';
+          }
+
+          // Thinking excerpt (monologue-style)
+          if (thinkingEl && thinkingText && data.thinkingExcerpt) {
+            thinkingText.textContent = data.thinkingExcerpt;
+            thinkingEl.style.display = 'block';
+          }
+        }
       }
 
       // ── Judge card ──
