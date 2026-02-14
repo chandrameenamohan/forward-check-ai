@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2400 1000" width="2400" height="1000">
+  <defs>
+    <marker id="ah" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="10" markerHeight="7" orient="auto">
+      <polygon points="0,0 10,3.5 0,7" fill="#aaa"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="2400" height="1000" fill="#fff"/>
+
+  <!-- ═══ NODES ═══ -->
+
+  <!-- In circle -->
+  <circle cx="130" cy="500" r="42" fill="#fef4f0" stroke="#e8a898" stroke-width="1.5"/>
+  <text x="130" y="502" text-anchor="middle" dominant-baseline="central" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="24" font-weight="500" fill="#c86040">In</text>
+
+  <!-- Classifier -->
+  <rect x="270" y="462" width="180" height="76" rx="6" fill="#e7f0d8" stroke="#b5c99a" stroke-width="1.5"/>
+  <text x="360" y="502" text-anchor="middle" dominant-baseline="central" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="26" font-weight="500" fill="#4a6840">Classifier</text>
+  <text x="360" y="560" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="18" fill="#aaa">Haiku 4.5</text>
+
+  <!-- Strategist -->
+  <rect x="540" y="462" width="190" height="76" rx="6" fill="#e7f0d8" stroke="#b5c99a" stroke-width="1.5"/>
+  <text x="635" y="502" text-anchor="middle" dominant-baseline="central" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="26" font-weight="500" fill="#4a6840">Strategist</text>
+  <text x="635" y="560" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="18" fill="#aaa">Opus 4.6</text>
+
+  <!-- Source Verification -->
+  <rect x="870" y="258" width="250" height="76" rx="6" fill="#e7f0d8" stroke="#b5c99a" stroke-width="1.5"/>
+  <text x="995" y="298" text-anchor="middle" dominant-baseline="central" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="24" font-weight="500" fill="#4a6840">Source Verification</text>
+  <text x="995" y="356" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="18" fill="#aaa">Sonnet 4.5</text>
+
+  <!-- Domain Expertise -->
+  <rect x="870" y="462" width="250" height="76" rx="6" fill="#e7f0d8" stroke="#b5c99a" stroke-width="1.5"/>
+  <text x="995" y="502" text-anchor="middle" dominant-baseline="central" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="24" font-weight="500" fill="#4a6840">Domain Expertise</text>
+  <text x="995" y="560" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="18" fill="#aaa">Sonnet 4.5</text>
+
+  <!-- Pattern Analysis -->
+  <rect x="870" y="662" width="250" height="76" rx="6" fill="#e7f0d8" stroke="#b5c99a" stroke-width="1.5"/>
+  <text x="995" y="702" text-anchor="middle" dominant-baseline="central" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="24" font-weight="500" fill="#4a6840">Pattern Analysis</text>
+  <text x="995" y="758" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="18" fill="#aaa">Sonnet 4.5</text>
+
+  <!-- Aggregator (lavender) -->
+  <rect x="1250" y="462" width="190" height="76" rx="6" fill="#e2e0f0" stroke="#b5b2d4" stroke-width="1.5"/>
+  <text x="1345" y="502" text-anchor="middle" dominant-baseline="central" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="26" font-weight="500" fill="#5b5590">Aggregator</text>
+
+  <!-- Devil's Advocate -->
+  <rect x="1540" y="462" width="260" height="76" rx="6" fill="#e7f0d8" stroke="#b5c99a" stroke-width="1.5"/>
+  <text x="1670" y="502" text-anchor="middle" dominant-baseline="central" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="25" font-weight="500" fill="#4a6840">Devil's Advocate</text>
+  <text x="1670" y="560" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="18" fill="#aaa">Opus 4.6</text>
+
+  <!-- Judge -->
+  <rect x="1900" y="462" width="150" height="76" rx="6" fill="#e7f0d8" stroke="#b5c99a" stroke-width="1.5"/>
+  <text x="1975" y="502" text-anchor="middle" dominant-baseline="central" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="26" font-weight="500" fill="#4a6840">Judge</text>
+  <text x="1975" y="560" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="18" fill="#aaa">Opus 4.6</text>
+
+  <!-- Out circle -->
+  <circle cx="2170" cy="500" r="42" fill="#fef4f0" stroke="#e8a898" stroke-width="1.5"/>
+  <text x="2170" y="502" text-anchor="middle" dominant-baseline="central" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="24" font-weight="500" fill="#c86040">Out</text>
+
+  <!-- ═══ ARROWS ═══ -->
+
+  <!-- In → Classifier (solid) -->
+  <line x1="172" y1="500" x2="268" y2="500" stroke="#aaa" stroke-width="2" marker-end="url(#ah)"/>
+
+  <!-- Classifier → Strategist (solid) -->
+  <line x1="450" y1="500" x2="538" y2="500" stroke="#aaa" stroke-width="2" marker-end="url(#ah)"/>
+
+  <!-- Strategist → Source Verification (dashed, curve up) -->
+  <path d="M 730,488 C 800,488 820,296 868,296" fill="none" stroke="#aaa" stroke-width="2" stroke-dasharray="8 6" marker-end="url(#ah)"/>
+
+  <!-- Strategist → Domain Expertise (dashed, straight) -->
+  <line x1="730" y1="500" x2="868" y2="500" stroke="#aaa" stroke-width="2" stroke-dasharray="8 6" marker-end="url(#ah)"/>
+
+  <!-- Strategist → Pattern Analysis (dashed, curve down) -->
+  <path d="M 730,512 C 800,512 820,700 868,700" fill="none" stroke="#aaa" stroke-width="2" stroke-dasharray="8 6" marker-end="url(#ah)"/>
+
+  <!-- Source Verification → Aggregator (dashed, curve down) -->
+  <path d="M 1120,296 C 1185,296 1200,500 1248,500" fill="none" stroke="#aaa" stroke-width="2" stroke-dasharray="8 6" marker-end="url(#ah)"/>
+
+  <!-- Domain Expertise → Aggregator (dashed, straight) -->
+  <line x1="1120" y1="500" x2="1248" y2="500" stroke="#aaa" stroke-width="2" stroke-dasharray="8 6" marker-end="url(#ah)"/>
+
+  <!-- Pattern Analysis → Aggregator (dashed, curve up) -->
+  <path d="M 1120,700 C 1185,700 1200,500 1248,500" fill="none" stroke="#aaa" stroke-width="2" stroke-dasharray="8 6" marker-end="url(#ah)"/>
+
+  <!-- Aggregator → Devil's Advocate (solid) -->
+  <line x1="1440" y1="500" x2="1538" y2="500" stroke="#aaa" stroke-width="2" marker-end="url(#ah)"/>
+
+  <!-- Devil's Advocate → Judge (solid) -->
+  <line x1="1800" y1="500" x2="1898" y2="500" stroke="#aaa" stroke-width="2" marker-end="url(#ah)"/>
+
+  <!-- Judge → Out (solid) -->
+  <line x1="2050" y1="500" x2="2128" y2="500" stroke="#aaa" stroke-width="2" marker-end="url(#ah)"/>
+</svg>
