@@ -248,7 +248,7 @@
 - Test: `"GET /chat should contain verdict badge color classes"`
 
 ### Task 4.2: Confidence decomposition bars and verdict summary
-- [ ]
+- [x]
 **Objective:** Display the 4-component confidence decomposition as horizontal bar charts inline, plus the 3-line verdict summary and manipulation techniques.
 **Details:**
 - After the confidence ring reveals, show:

@@ -236,6 +236,74 @@
       to { transform: rotate(360deg); }
     }
 
+    /* ═══ VERDICT EXTRAS (manipulation techniques + deep reasoning) ═══ */
+
+    .fc-verdict-techniques {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: center;
+      margin-top: 1.25rem;
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    .fc-verdict-techniques.fc-reveal-techniques-visible {
+      animation: fc-reveal-fade-up 0.5s ease-out forwards;
+    }
+    @keyframes fc-reveal-fade-up {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .fc-technique-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.3rem 0.7rem;
+      border-radius: 20px;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.02em;
+      border: 1px solid;
+    }
+    .fc-technique-pill--high {
+      color: var(--fc-accent-red);
+      border-color: var(--fc-accent-red);
+      background: rgba(239, 68, 68, 0.08);
+    }
+    .fc-technique-pill--medium {
+      color: var(--fc-accent-amber);
+      border-color: var(--fc-accent-amber);
+      background: rgba(234, 179, 8, 0.08);
+    }
+    .fc-technique-pill--low {
+      color: var(--fc-text-muted);
+      border-color: var(--fc-border);
+      background: rgba(255, 255, 255, 0.03);
+    }
+    .fc-technique-sev {
+      font-size: 0.55rem;
+      opacity: 0.7;
+    }
+
+    .fc-verdict-deep-reasoning {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-top: 0.75rem;
+      padding: 0.35rem 0.85rem;
+      border: 1px solid var(--fc-accent-purple, #a855f7);
+      border-radius: 6px;
+      color: var(--fc-accent-purple, #a855f7);
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.03em;
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    .fc-verdict-deep-reasoning.fc-reveal-techniques-visible {
+      animation: fc-reveal-fade-up 0.5s ease-out forwards;
+    }
+
     /* ─── Responsive: tablet (≤768px) ─── */
     @media (max-width: 768px) {
       .fc-chat-wrapper {
@@ -304,6 +372,12 @@
       }
       .fc-chat-spinner {
         animation: none;
+      }
+      .fc-verdict-techniques.fc-reveal-techniques-visible,
+      .fc-verdict-deep-reasoning.fc-reveal-techniques-visible {
+        animation: none;
+        opacity: 1;
+        transform: none;
       }
     }
 </style>

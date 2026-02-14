@@ -240,6 +240,34 @@ describe("Chat page — GET /chat", () => {
     expect(html).toContain("statusCyclers");
   });
 
+  // ── Task 4.2: Confidence decomposition bars and verdict summary ──
+
+  it("GET /chat should contain decomposition bar elements", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/chat`);
+    const html = await res.text();
+    // 4 decomposition bars
+    expect(html).toContain("fc-reveal-bar-evidence");
+    expect(html).toContain("fc-reveal-bar-source");
+    expect(html).toContain("fc-reveal-bar-complexity");
+    expect(html).toContain("fc-reveal-bar-counter");
+    // Labels
+    expect(html).toContain("Evidence Strength");
+    expect(html).toContain("Source Reliability");
+    expect(html).toContain("Claim Complexity");
+    expect(html).toContain("Counter-Argument");
+    // Summary element
+    expect(html).toContain("fc-verdict-reveal-summary");
+  });
+
+  it("GET /chat should contain manipulation techniques section", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/chat`);
+    const html = await res.text();
+    expect(html).toContain("fc-verdict-techniques");
+    expect(html).toContain("manipulationTechniques");
+  });
+
   // ── Task 4.1: Verdict reveal animation and badge display ──
 
   it("GET /chat should contain verdict reveal section", async () => {
