@@ -23,6 +23,7 @@ const DISAGREEMENT_SPREAD_THRESHOLD = 30;
 
 export interface InvestigateOptions {
   onStatusUpdate?: (stage: PipelineStage) => void | Promise<void>;
+  onInvestigationCreated?: (investigationId: string) => void | Promise<void>;
   telegramChatId?: string;
   telegramMessageId?: string;
 }
@@ -78,6 +79,12 @@ export class InvestigationPipeline {
     const investigationId = this.repo.create(
       message, options?.telegramChatId, options?.telegramMessageId,
     );
+
+    try {
+      await options?.onInvestigationCreated?.(investigationId);
+    } catch (err) {
+      logger.warn({ err, investigationId }, "onInvestigationCreated callback failed, continuing");
+    }
 
     this.emitEvent({ kind: "pipeline:start", investigationId, message, timestamp: Date.now() });
 

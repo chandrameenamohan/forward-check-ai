@@ -305,7 +305,7 @@ The "See Live Verdict" page shows users the 6-agent pipeline working on their cl
 ## Phase 5: Integration
 
 ### Task 5.1: Telegram bot sends live verdict URL
-- [ ]
+- [x]
 **Objective:** When a user sends a message to the bot, send them a `/live/:id` URL immediately so they can watch the investigation unfold in real-time.
 **Details:**
 - Update `src/bot/message-handler.ts`:

@@ -41,6 +41,27 @@ export function createMessageHandler(
     try {
       const result = await pipeline.investigate(text, {
         onStatusUpdate: (stage) => statusUpdater.update(stage),
+        onInvestigationCreated: async (investigationId) => {
+          const liveUrl = `${baseUrl}/live/${investigationId}`;
+          const isPublicUrl = liveUrl.startsWith("https://");
+
+          if (isPublicUrl) {
+            const keyboard = new InlineKeyboard().url(
+              "Watch Live Investigation",
+              liveUrl,
+            );
+            await ctx.api.sendMessage(
+              chatId,
+              "🔍 Watch your claim get investigated in real-time:",
+              { reply_markup: keyboard },
+            );
+          } else {
+            await ctx.api.sendMessage(
+              chatId,
+              `🔍 Watch your claim get investigated in real-time:\n${liveUrl}`,
+            );
+          }
+        },
         telegramChatId: String(chatId),
         telegramMessageId: String(message.message_id),
       });
