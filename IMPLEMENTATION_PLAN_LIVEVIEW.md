@@ -320,7 +320,7 @@ The "See Live Verdict" page shows users the 6-agent pipeline working on their cl
 - Existing message-handler tests must still pass
 
 ### Task 5.2: Landing page "Watch a Live Investigation" link
-- [ ]
+- [x]
 **Objective:** Add a dynamic element on the landing page that links to an active investigation (if one is running) or the most recent completed live view.
 **Details:**
 - Update `src/server/app.ts` landing route:

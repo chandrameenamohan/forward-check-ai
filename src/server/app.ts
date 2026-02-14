@@ -34,7 +34,18 @@ export function createApp(repo?: InvestigationRepository, eventBus?: PipelineEve
 
   // Landing page
   app.get("/", (_req: Request, res: Response) => {
-    res.render("landing");
+    let recentInvestigationId: string | null = null;
+    if (repo) {
+      try {
+        const recent = repo.getRecent(1);
+        if (recent.length > 0) {
+          recentInvestigationId = recent[0]!.id;
+        }
+      } catch {
+        // DB query failed — fall back to no recent investigation
+      }
+    }
+    res.render("landing", { recentInvestigationId });
   });
 
   // Health endpoint
