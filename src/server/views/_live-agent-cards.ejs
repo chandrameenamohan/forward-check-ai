@@ -39,3 +39,73 @@
     <p class="fc-agent-thinking-text" id="fc-strategist-thinking-text"></p>
   </div>
 </div>
+
+<div class="fc-connector-line"></div>
+
+<!-- ═══ INVESTIGATOR CARDS — 3 in parallel ═══ -->
+<div class="fc-investigator-row" id="fc-investigator-row">
+
+  <!-- Source Verification -->
+  <div class="fc-agent-card fc-agent-card--investigator fc-agent-card--investigator-source fc-agent--idle" id="fc-card-inv-source">
+    <div class="fc-agent-card-header">
+      <div class="fc-agent-icon fc-agent-icon--investigator">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </div>
+      <div class="fc-agent-card-title">
+        <span class="fc-agent-name">Source Verification</span>
+        <span class="fc-model-badge fc-model-badge--sonnet">Sonnet</span>
+      </div>
+      <div class="fc-agent-check fc-inv-check" id="fc-inv-source-check">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+    </div>
+    <div class="fc-agent-status" id="fc-inv-source-status">Standing by to trace your sources</div>
+    <div class="fc-investigator-search" id="fc-inv-source-search" style="display:none;"></div>
+    <div class="fc-investigator-confidence" id="fc-inv-source-confidence" style="display:none;"></div>
+  </div>
+
+  <!-- Domain Expertise -->
+  <div class="fc-agent-card fc-agent-card--investigator fc-agent-card--investigator-domain fc-agent--idle" id="fc-card-inv-domain">
+    <div class="fc-agent-card-header">
+      <div class="fc-agent-icon fc-agent-icon--investigator">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      </div>
+      <div class="fc-agent-card-title">
+        <span class="fc-agent-name">Domain Expertise</span>
+        <span class="fc-model-badge fc-model-badge--sonnet">Sonnet</span>
+      </div>
+      <div class="fc-agent-check fc-inv-check" id="fc-inv-domain-check">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+    </div>
+    <div class="fc-agent-status" id="fc-inv-domain-status">Standing by for domain deep-dive</div>
+    <div class="fc-investigator-search" id="fc-inv-domain-search" style="display:none;"></div>
+    <div class="fc-investigator-confidence" id="fc-inv-domain-confidence" style="display:none;"></div>
+  </div>
+
+  <!-- Pattern Matching -->
+  <div class="fc-agent-card fc-agent-card--investigator fc-agent-card--investigator-pattern fc-agent--idle" id="fc-card-inv-pattern">
+    <div class="fc-agent-card-header">
+      <div class="fc-agent-icon fc-agent-icon--investigator">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h4v4H4z"/><path d="M14 4h4v4h-4z"/><path d="M4 14h4v4H4z"/><path d="M14 14h4v4h-4z"/><path d="M10 2v4"/><path d="M10 18v4"/><path d="M2 10h4"/><path d="M18 10h4"/></svg>
+      </div>
+      <div class="fc-agent-card-title">
+        <span class="fc-agent-name">Pattern Matching</span>
+        <span class="fc-model-badge fc-model-badge--sonnet">Sonnet</span>
+      </div>
+      <div class="fc-agent-check fc-inv-check" id="fc-inv-pattern-check">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+    </div>
+    <div class="fc-agent-status" id="fc-inv-pattern-status">Standing by to spot known fakes</div>
+    <div class="fc-investigator-search" id="fc-inv-pattern-search" style="display:none;"></div>
+    <div class="fc-investigator-confidence" id="fc-inv-pattern-confidence" style="display:none;"></div>
+  </div>
+
+</div>
+
+<!-- Disagreement alert (hidden by default) -->
+<div class="fc-disagreement-alert" id="fc-disagreement-alert" style="display:none;">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+  <span>Your investigators disagree — escalating to Deep Reasoning</span>
+</div>

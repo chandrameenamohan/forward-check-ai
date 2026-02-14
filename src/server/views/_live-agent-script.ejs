@@ -1,0 +1,163 @@
+      // ── Agent card state helpers ──
+
+      function setCardState(cardId, state) {
+        var card = document.getElementById(cardId);
+        if (!card) return;
+        card.classList.remove('fc-agent--idle', 'fc-agent--active', 'fc-agent--complete', 'fc-agent--failed');
+        card.classList.add('fc-agent--' + state);
+      }
+
+      // ── HTML escape helper ──
+      function escapeHtml(str) {
+        var div = document.createElement('div');
+        div.appendChild(document.createTextNode(str));
+        return div.innerHTML;
+      }
+
+      // ── Classifier card ──
+
+      function updateClassifier(kind, data) {
+        hideSpinner();
+        var statusEl2 = document.getElementById('fc-classifier-status');
+        var resultEl = document.getElementById('fc-classifier-result');
+        var checkEl = document.getElementById('fc-classifier-check');
+
+        if (kind === 'start') {
+          setSegmentActive('classify');
+          setCardState('fc-card-classifier', 'active');
+          if (statusEl2) statusEl2.textContent = 'Scanning for manipulation patterns...';
+        }
+        if (kind === 'complete') {
+          setSegmentComplete('classify');
+          setCardState('fc-card-classifier', 'complete');
+          addCost(data.costUsd);
+          if (statusEl2) statusEl2.textContent = 'Scan complete';
+          if (checkEl) checkEl.style.display = 'flex';
+          if (resultEl && data.result) {
+            var cat = data.result.category || '';
+            var claim = data.result.extractedClaim || '';
+            resultEl.innerHTML = '<span class="fc-agent-result-tag">' + escapeHtml(cat.replace(/_/g, ' ')) + '</span>' +
+              (claim ? '<span class="fc-agent-result-claim">' + escapeHtml(claim) + '</span>' : '');
+            resultEl.style.display = 'block';
+          }
+        }
+      }
+
+      // ── Strategist card ──
+
+      function updateStrategist(kind, data) {
+        hideSpinner();
+        var statusEl2 = document.getElementById('fc-strategist-status');
+        var resultEl = document.getElementById('fc-strategist-result');
+        var checkEl = document.getElementById('fc-strategist-check');
+        var thinkingEl = document.getElementById('fc-strategist-thinking');
+        var thinkingText = document.getElementById('fc-strategist-thinking-text');
+
+        if (kind === 'start') {
+          setSegmentActive('strategize');
+          setCardState('fc-card-strategist', 'active');
+          if (statusEl2) statusEl2.textContent = 'Building your investigation playbook...';
+        }
+        if (kind === 'complete') {
+          setSegmentComplete('strategize');
+          setCardState('fc-card-strategist', 'complete');
+          addCost(data.costUsd);
+          if (statusEl2) statusEl2.textContent = 'Strategy locked in';
+          if (checkEl) checkEl.style.display = 'flex';
+          if (resultEl && data.strategy) {
+            var criteria = data.strategy.falsificationCriteria;
+            if (criteria) {
+              var items = [];
+              if (criteria.whatWouldProveTrue) items = items.concat(criteria.whatWouldProveTrue);
+              if (criteria.whatWouldProveFalse) items = items.concat(criteria.whatWouldProveFalse);
+              var text = items.length > 0 ? items.slice(0, 2).map(function(s) { return escapeHtml(s); }).join(' · ') : '';
+              if (text) {
+                resultEl.innerHTML = '<span class="fc-agent-result-criteria">' + text + '</span>';
+                resultEl.style.display = 'block';
+              }
+            }
+          }
+          if (thinkingEl && thinkingText && data.thinkingExcerpt) {
+            thinkingText.textContent = data.thinkingExcerpt;
+            thinkingEl.style.display = 'block';
+          }
+        }
+      }
+
+      // ── Investigator cards ──
+
+      var invRoleMap = {
+        'source_verification': 'source',
+        'domain_expertise': 'domain',
+        'pattern_matching': 'pattern'
+      };
+      var invCompletedCount = 0;
+
+      function updateInvestigators(kind, data) {
+        hideSpinner();
+        if (kind === 'start') {
+          setSegmentActive('investigate');
+          // Activate all 3 cards at once
+          ['source', 'domain', 'pattern'].forEach(function(key) {
+            setCardState('fc-card-inv-' + key, 'active');
+            var st = document.getElementById('fc-inv-' + key + '-status');
+            if (st) st.textContent = 'Searching the web...';
+          });
+        }
+        if (kind === 'searching') {
+          var key = invRoleMap[data.role] || '';
+          if (key) {
+            var searchEl = document.getElementById('fc-inv-' + key + '-search');
+            if (searchEl) {
+              searchEl.textContent = 'Searching: ' + (data.query || '');
+              searchEl.style.display = 'block';
+            }
+          }
+        }
+        if (kind === 'complete') {
+          addCost(data.costUsd);
+          invCompletedCount++;
+          var key2 = invRoleMap[data.role] || '';
+          if (key2) {
+            setCardState('fc-card-inv-' + key2, 'complete');
+            var st2 = document.getElementById('fc-inv-' + key2 + '-status');
+            if (st2) st2.textContent = 'Report filed';
+            var chk = document.getElementById('fc-inv-' + key2 + '-check');
+            if (chk) chk.style.display = 'flex';
+            if (data.report) {
+              var confEl = document.getElementById('fc-inv-' + key2 + '-confidence');
+              if (confEl) {
+                var score = data.report.confidenceScore || 0;
+                var summary = data.report.summary || '';
+                confEl.innerHTML = '<span class="fc-investigator-confidence-badge">' + score + '%</span>' +
+                  (summary ? '<span class="fc-investigator-summary">' + escapeHtml(summary) + '</span>' : '');
+                confEl.style.display = 'flex';
+              }
+            }
+          }
+          if (invCompletedCount >= 3) { setSegmentComplete('investigate'); }
+        }
+        if (kind === 'disagreement') {
+          setSegmentComplete('investigate');
+          var alert = document.getElementById('fc-disagreement-alert');
+          if (alert) alert.style.display = 'flex';
+        }
+      }
+
+      // ── DA card ──
+
+      function updateDA(kind, data) {
+        hideSpinner();
+        setSegmentComplete('investigate');
+        if (kind === 'start') { setSegmentActive('challenge'); }
+        if (kind === 'complete') { setSegmentComplete('challenge'); addCost(data.costUsd); }
+      }
+
+      // ── Judge card ──
+
+      function updateJudge(kind, data) {
+        hideSpinner();
+        if (kind === 'start') { setSegmentActive('judge'); }
+        if (kind === 'complete') { setSegmentComplete('judge'); addCost(data.costUsd); }
+        if (kind === 'verdict') { setSegmentComplete('verdict'); clearInterval(elapsedTimer); }
+      }

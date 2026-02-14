@@ -209,7 +209,7 @@ The "See Live Verdict" page shows users the 6-agent pipeline working on their cl
 - Manual: verify state transitions look smooth
 
 ### Task 3.3: Investigator cards — parallel visualization
-- [ ]
+- [x]
 **Objective:** Build 3 investigator cards that activate simultaneously and show parallel progress — the "three detectives on the case" moment.
 **Details:**
 - Add to `live.ejs`:

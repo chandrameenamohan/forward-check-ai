@@ -358,4 +358,72 @@ describe("Live verdict page routes", () => {
 
     expect(html).toContain("fc-connector-line");
   });
+
+  // ── Task 3.3: Investigator cards — parallel visualization ──
+
+  it("GET /live/:id should contain 3 investigator cards", async () => {
+    const port = await startServer();
+    const id = repo.create("Investigator cards test");
+
+    const res = await fetch(`http://127.0.0.1:${port}/live/${id}`);
+    const html = await res.text();
+
+    expect(html).toContain("fc-agent-card--investigator-source");
+    expect(html).toContain("fc-agent-card--investigator-domain");
+    expect(html).toContain("fc-agent-card--investigator-pattern");
+    // All 3 should be in a horizontal row container
+    expect(html).toContain("fc-investigator-row");
+  });
+
+  it("GET /live/:id should contain investigator role labels", async () => {
+    const port = await startServer();
+    const id = repo.create("Investigator labels test");
+
+    const res = await fetch(`http://127.0.0.1:${port}/live/${id}`);
+    const html = await res.text();
+
+    expect(html).toContain("Source Verification");
+    expect(html).toContain("Domain Expertise");
+    expect(html).toContain("Pattern Matching");
+    // All should have Sonnet badges
+    expect(html).toContain("fc-model-badge--sonnet");
+  });
+
+  it("GET /live/:id should contain investigator Sonnet badges", async () => {
+    const port = await startServer();
+    const id = repo.create("Investigator badges test");
+
+    const res = await fetch(`http://127.0.0.1:${port}/live/${id}`);
+    const html = await res.text();
+
+    // Count Sonnet badge occurrences (at least 3 for investigators)
+    const sonnetCount = (html.match(/fc-model-badge--sonnet/g) || []).length;
+    expect(sonnetCount).toBeGreaterThanOrEqual(3);
+  });
+
+  it("GET /live/:id should contain disagreement detection area", async () => {
+    const port = await startServer();
+    const id = repo.create("Disagreement test");
+
+    const res = await fetch(`http://127.0.0.1:${port}/live/${id}`);
+    const html = await res.text();
+
+    // Disagreement alert container should exist (hidden by default)
+    expect(html).toContain("fc-disagreement-alert");
+    // JS handler for disagreement
+    expect(html).toContain("disagreement");
+  });
+
+  it("GET /live/:id should contain investigator confidence score area", async () => {
+    const port = await startServer();
+    const id = repo.create("Investigator confidence test");
+
+    const res = await fetch(`http://127.0.0.1:${port}/live/${id}`);
+    const html = await res.text();
+
+    // Each card should have a confidence score container
+    expect(html).toContain("fc-investigator-confidence");
+    // Each card should have a search query display area
+    expect(html).toContain("fc-investigator-search");
+  });
 });
