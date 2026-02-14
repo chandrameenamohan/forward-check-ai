@@ -250,7 +250,7 @@ The "See Live Verdict" page shows users the 6-agent pipeline working on their cl
 - Manual: verify dramatic entrance effect
 
 ### Task 3.5: Verdict reveal moment
-- [ ]
+- [x]
 **Objective:** Build the climactic verdict reveal — the last 5 seconds of the demo video that makes judges remember your project.
 **Details:**
 - Add to `live.ejs`:

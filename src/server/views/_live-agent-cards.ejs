@@ -113,7 +113,7 @@
 <div class="fc-connector-line"></div>
 
 <!-- Devil's Advocate card -->
-<div class="fc-agent-card fc-agent-card--da fc-agent--idle" id="fc-card-da">
+<div class="fc-agent-card fc-agent-card--da fc-agent--idle" id="fc-card-da" data-agent="da">
   <div class="fc-agent-card-header">
     <div class="fc-agent-icon fc-agent-icon--da">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l1 6 5-4-3 5 6 1-6 1 3 5-5-4-1 6-1-6-5 4 3-5-6-1 6-1-3-5 5 4z"/></svg>
@@ -135,5 +135,83 @@
   <div class="fc-da-thinking" id="fc-da-thinking" style="display:none;">
     <span class="fc-agent-thinking-label">AI Reasoning</span>
     <p class="fc-agent-thinking-text" id="fc-da-thinking-text"></p>
+  </div>
+</div>
+
+<div class="fc-connector-line"></div>
+
+<!-- Judge card -->
+<div class="fc-agent-card fc-agent-card--judge fc-agent--idle" id="fc-card-judge">
+  <div class="fc-agent-card-header">
+    <div class="fc-agent-icon fc-agent-icon--judge">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 14l-4-4"/><path d="M4 20l4-4"/><path d="M6 6l4.5 4.5"/><circle cx="11.5" cy="11.5" r="2.5"/><path d="M20 4l-6.5 6.5"/></svg>
+    </div>
+    <div class="fc-agent-card-title">
+      <span class="fc-agent-name">Judge</span>
+      <span class="fc-model-badge fc-model-badge--opus">Opus 4.6</span>
+    </div>
+    <div class="fc-agent-check" id="fc-judge-check">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+  </div>
+  <div class="fc-agent-status" id="fc-judge-status">Standing by for the final word</div>
+  <div class="fc-agent-thinking" id="fc-judge-thinking" style="display:none;">
+    <span class="fc-agent-thinking-label">AI Reasoning</span>
+    <p class="fc-agent-thinking-text" id="fc-judge-thinking-text"></p>
+  </div>
+</div>
+
+<!-- ═══ VERDICT REVEAL ═══ -->
+<div class="fc-verdict-reveal" id="fc-verdict-reveal" style="display:none;">
+
+  <!-- Dramatic pause overlay -->
+  <div class="fc-verdict-reveal-pause" id="fc-verdict-reveal-pause"></div>
+
+  <!-- Verdict badge -->
+  <div class="fc-verdict-reveal-badge" id="fc-verdict-reveal-badge">
+    <span class="fc-verdict-reveal-dot" id="fc-verdict-reveal-dot"></span>
+    <span id="fc-verdict-reveal-category"></span>
+  </div>
+
+  <!-- Confidence ring -->
+  <div class="fc-verdict-reveal-ring" id="fc-verdict-reveal-ring">
+    <svg viewBox="0 0 140 140">
+      <circle class="fc-reveal-ring-bg" cx="70" cy="70" r="65"/>
+      <circle class="fc-reveal-ring-fill" cx="70" cy="70" r="65" id="fc-reveal-ring-fill"/>
+    </svg>
+    <div class="fc-verdict-reveal-ring-number">
+      <span class="fc-verdict-reveal-confidence" id="fc-verdict-reveal-confidence">0</span>
+      <span class="fc-verdict-reveal-pct">% confidence</span>
+    </div>
+  </div>
+
+  <!-- Summary -->
+  <p class="fc-verdict-reveal-summary" id="fc-verdict-reveal-summary"></p>
+
+  <!-- Confidence decomposition bars -->
+  <div class="fc-verdict-reveal-bars" id="fc-verdict-reveal-bars">
+    <div class="fc-reveal-bar-row">
+      <span class="fc-reveal-bar-label">Evidence Strength</span>
+      <div class="fc-reveal-bar-track"><div class="fc-reveal-bar-fill" id="fc-reveal-bar-evidence"></div></div>
+    </div>
+    <div class="fc-reveal-bar-row">
+      <span class="fc-reveal-bar-label">Source Reliability</span>
+      <div class="fc-reveal-bar-track"><div class="fc-reveal-bar-fill" id="fc-reveal-bar-source"></div></div>
+    </div>
+    <div class="fc-reveal-bar-row">
+      <span class="fc-reveal-bar-label">Claim Complexity</span>
+      <div class="fc-reveal-bar-track"><div class="fc-reveal-bar-fill" id="fc-reveal-bar-complexity"></div></div>
+    </div>
+    <div class="fc-reveal-bar-row">
+      <span class="fc-reveal-bar-label">Counter-Argument</span>
+      <div class="fc-reveal-bar-track"><div class="fc-reveal-bar-fill" id="fc-reveal-bar-counter"></div></div>
+    </div>
+  </div>
+
+  <!-- CTA + countdown -->
+  <a class="fc-verdict-reveal-cta" id="fc-verdict-reveal-cta" href="#">Read the Full Analysis</a>
+  <div class="fc-verdict-countdown" id="fc-verdict-countdown">
+    <span id="fc-verdict-countdown-text">Full analysis ready in 8...</span>
+    <button class="fc-verdict-countdown-cancel" id="fc-verdict-cancel-redirect" type="button">Stay on this page</button>
   </div>
 </div>

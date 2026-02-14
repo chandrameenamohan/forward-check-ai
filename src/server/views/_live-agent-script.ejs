@@ -207,9 +207,174 @@
 
       // ── Judge card ──
 
+      var CATEGORY_COLORS = {
+        'likely-true': '#22c55e',
+        'partially-true': '#eab308',
+        'unverified': '#6b7280',
+        'likely-false': '#ef4444',
+        'satire': '#a855f7',
+        'opinion': '#3b82f6'
+      };
+
       function updateJudge(kind, data) {
         hideSpinner();
-        if (kind === 'start') { setSegmentActive('judge'); }
-        if (kind === 'complete') { setSegmentComplete('judge'); addCost(data.costUsd); }
-        if (kind === 'verdict') { setSegmentComplete('verdict'); clearInterval(elapsedTimer); }
+        var statusEl4 = document.getElementById('fc-judge-status');
+        var checkEl = document.getElementById('fc-judge-check');
+        var thinkingEl = document.getElementById('fc-judge-thinking');
+        var thinkingText = document.getElementById('fc-judge-thinking-text');
+
+        if (kind === 'start') {
+          setSegmentActive('judge');
+          setCardState('fc-card-judge', 'active');
+          if (statusEl4) statusEl4.textContent = 'All evidence weighed. The Judge is deciding your verdict...';
+        }
+        if (kind === 'complete') {
+          setSegmentComplete('judge');
+          setCardState('fc-card-judge', 'complete');
+          addCost(data.costUsd);
+          if (statusEl4) statusEl4.textContent = 'Verdict rendered';
+          if (checkEl) checkEl.style.display = 'flex';
+
+          if (thinkingEl && thinkingText && data.thinkingExcerpt) {
+            thinkingText.textContent = data.thinkingExcerpt;
+            thinkingEl.style.display = 'block';
+          }
+        }
+        if (kind === 'verdict') {
+          setSegmentComplete('verdict');
+          clearInterval(elapsedTimer);
+          showVerdictReveal(data);
+        }
+      }
+
+      // ── Verdict reveal ──
+
+      var redirectTimer = null;
+      var redirectCancelled = false;
+
+      function cancelRedirect() {
+        redirectCancelled = true;
+        if (redirectTimer) { clearInterval(redirectTimer); redirectTimer = null; }
+        var countdownEl = document.getElementById('fc-verdict-countdown');
+        if (countdownEl) countdownEl.style.display = 'none';
+      }
+
+      function showVerdictReveal(data) {
+        var reveal = document.getElementById('fc-verdict-reveal');
+        if (!reveal) return;
+
+        var verdict = data.verdict || {};
+        var category = verdict.category || 'unverified';
+        var confidence = verdict.confidence || 0;
+        var summary = verdict.summary || '';
+        var decomp = verdict.confidenceDecomposition || {};
+        var verdictColor = CATEGORY_COLORS[category] || '#6b7280';
+
+        // Set CSS custom property for verdict color
+        reveal.style.setProperty('--fc-reveal-color', verdictColor);
+
+        // Show the container
+        reveal.style.display = 'block';
+
+        // 1. Brief dramatic pause (1s)
+        var pauseEl = document.getElementById('fc-verdict-reveal-pause');
+        if (pauseEl) {
+          pauseEl.style.display = 'block';
+          setTimeout(function() { pauseEl.style.display = 'none'; }, 1000);
+        }
+
+        // 2. Badge slides in after pause
+        setTimeout(function() {
+          var badgeEl = document.getElementById('fc-verdict-reveal-badge');
+          var dotEl = document.getElementById('fc-verdict-reveal-dot');
+          var catEl = document.getElementById('fc-verdict-reveal-category');
+          if (badgeEl) {
+            badgeEl.style.borderColor = verdictColor;
+            badgeEl.style.color = verdictColor;
+            badgeEl.style.background = verdictColor + '14';
+            badgeEl.classList.add('fc-reveal-badge-visible');
+          }
+          if (dotEl) {
+            dotEl.style.background = verdictColor;
+            dotEl.style.boxShadow = '0 0 8px ' + verdictColor;
+          }
+          if (catEl) catEl.textContent = category.replace(/-/g, ' ').toUpperCase();
+        }, 1000);
+
+        // 3. Confidence ring animates after badge
+        setTimeout(function() {
+          var ringFill = document.getElementById('fc-reveal-ring-fill');
+          var confEl = document.getElementById('fc-verdict-reveal-confidence');
+          if (ringFill) {
+            var circumference = 2 * Math.PI * 65;
+            var dashLen = (confidence / 100) * circumference;
+            ringFill.style.stroke = verdictColor;
+            ringFill.style.filter = 'drop-shadow(0 0 6px ' + verdictColor + ')';
+            ringFill.style.strokeDasharray = dashLen.toFixed(1) + ' ' + circumference.toFixed(1);
+          }
+          // Animate number count-up
+          if (confEl) {
+            var current = 0;
+            var step = Math.max(1, Math.floor(confidence / 30));
+            var countUp = setInterval(function() {
+              current += step;
+              if (current >= confidence) { current = confidence; clearInterval(countUp); }
+              confEl.textContent = String(current);
+            }, 40);
+          }
+        }, 1600);
+
+        // 4. Summary text fades in
+        setTimeout(function() {
+          var summaryEl = document.getElementById('fc-verdict-reveal-summary');
+          if (summaryEl) {
+            summaryEl.textContent = summary;
+            summaryEl.classList.add('fc-reveal-summary-visible');
+          }
+        }, 2200);
+
+        // 5. Confidence decomposition bars animate
+        setTimeout(function() {
+          var barsEl = document.getElementById('fc-verdict-reveal-bars');
+          if (barsEl) barsEl.classList.add('fc-reveal-bars-visible');
+          var evBar = document.getElementById('fc-reveal-bar-evidence');
+          var srcBar = document.getElementById('fc-reveal-bar-source');
+          var cmpBar = document.getElementById('fc-reveal-bar-complexity');
+          var cntBar = document.getElementById('fc-reveal-bar-counter');
+          if (evBar) evBar.style.width = (decomp.evidenceStrength || 0) + '%';
+          if (srcBar) srcBar.style.width = (decomp.sourceReliability || 0) + '%';
+          if (cmpBar) cmpBar.style.width = (decomp.claimComplexity || 0) + '%';
+          if (cntBar) cntBar.style.width = (decomp.counterArgumentResilience || 0) + '%';
+        }, 2800);
+
+        // 6. CTA + countdown appear
+        setTimeout(function() {
+          var ctaEl = document.getElementById('fc-verdict-reveal-cta');
+          var countdownEl = document.getElementById('fc-verdict-countdown');
+          if (ctaEl) {
+            ctaEl.href = '/v/' + investigationId;
+            ctaEl.classList.add('fc-reveal-cta-visible');
+          }
+          if (countdownEl) countdownEl.classList.add('fc-reveal-countdown-visible');
+
+          // Start countdown
+          var countdown = 8;
+          var countdownText = document.getElementById('fc-verdict-countdown-text');
+          redirectTimer = setInterval(function() {
+            countdown--;
+            if (redirectCancelled) return;
+            if (countdown <= 0) {
+              clearInterval(redirectTimer);
+              window.location.href = '/v/' + investigationId;
+            } else if (countdownText) {
+              countdownText.textContent = 'Full analysis ready in ' + countdown + '...';
+            }
+          }, 1000);
+        }, 3400);
+
+        // Cancel redirect button
+        var cancelBtn = document.getElementById('fc-verdict-cancel-redirect');
+        if (cancelBtn) {
+          cancelBtn.addEventListener('click', cancelRedirect);
+        }
       }

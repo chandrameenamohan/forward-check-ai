@@ -237,19 +237,6 @@
         hideSpinner();
         updateJudge('verdict', data);
         evtSource.close();
-
-        var countdown = 5;
-        showStatus('Full analysis ready in ' + countdown + '...', 'success');
-
-        var timer = setInterval(function() {
-          countdown--;
-          if (countdown <= 0) {
-            clearInterval(timer);
-            window.location.href = '/v/' + investigationId;
-          } else {
-            showStatus('Full analysis ready in ' + countdown + '...', 'success');
-          }
-        }, 1000);
       });
 
       // ── Pipeline error ──

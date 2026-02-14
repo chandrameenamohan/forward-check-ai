@@ -471,4 +471,78 @@ describe("Live verdict page routes", () => {
     // DA card should have a connector line before it
     expect(html).toContain("fc-connector-line");
   });
+
+  // ── Task 3.5: Verdict reveal moment ──
+
+  it("GET /live/:id should contain judge agent card", async () => {
+    const port = await startServer();
+    const id = repo.create("Judge card test");
+
+    const res = await fetch(`http://127.0.0.1:${port}/live/${id}`);
+    const html = await res.text();
+
+    expect(html).toContain("fc-agent-card--judge");
+    expect(html).toContain("Judge");
+    expect(html).toContain("fc-model-badge--opus");
+    // Should start in idle state
+    expect(html).toContain("fc-agent--idle");
+  });
+
+  it("GET /live/:id should contain verdict reveal container", async () => {
+    const port = await startServer();
+    const id = repo.create("Verdict reveal test");
+
+    const res = await fetch(`http://127.0.0.1:${port}/live/${id}`);
+    const html = await res.text();
+
+    // Verdict reveal overlay (hidden by default)
+    expect(html).toContain("fc-verdict-reveal");
+    // Verdict badge area
+    expect(html).toContain("fc-verdict-reveal-badge");
+    // Confidence ring
+    expect(html).toContain("fc-verdict-reveal-ring");
+    // Summary text area
+    expect(html).toContain("fc-verdict-reveal-summary");
+    // Confidence decomposition bars
+    expect(html).toContain("fc-verdict-reveal-bars");
+    // CTA button to full analysis
+    expect(html).toContain("Read the Full Analysis");
+  });
+
+  it("GET /live/:id should contain redirect countdown", async () => {
+    const port = await startServer();
+    const id = repo.create("Redirect countdown test");
+
+    const res = await fetch(`http://127.0.0.1:${port}/live/${id}`);
+    const html = await res.text();
+
+    // Countdown text element
+    expect(html).toContain("fc-verdict-countdown");
+    // Stay on page link
+    expect(html).toContain("Stay on this page");
+    // Redirect logic in JS
+    expect(html).toContain("cancelRedirect");
+  });
+
+  it("GET /live/:id should contain verdict reveal animation keyframes", async () => {
+    const port = await startServer();
+    const id = repo.create("Verdict animation test");
+
+    const res = await fetch(`http://127.0.0.1:${port}/live/${id}`);
+    const html = await res.text();
+
+    // Verdict reveal animations
+    expect(html).toContain("fc-reveal-badge-in");
+    expect(html).toContain("fc-reveal-ring-draw");
+  });
+
+  it("GET /live/:id should respect prefers-reduced-motion for verdict reveal", async () => {
+    const port = await startServer();
+    const id = repo.create("Reduced motion verdict test");
+
+    const res = await fetch(`http://127.0.0.1:${port}/live/${id}`);
+    const html = await res.text();
+
+    expect(html).toContain("prefers-reduced-motion");
+  });
 });

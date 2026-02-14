@@ -602,6 +602,243 @@
       50% { box-shadow: 0 0 24px rgba(234, 179, 8, 0.2); }
     }
 
+    /* ─── Judge card ─── */
+    .fc-agent-card--judge.fc-agent--active {
+      border-color: var(--fc-accent-green);
+      box-shadow: 0 0 20px rgba(34, 197, 94, 0.12);
+      animation: fc-judge-pulse 2s ease-in-out infinite;
+    }
+    .fc-agent-card--judge.fc-agent--active .fc-agent-icon {
+      background: rgba(34, 197, 94, 0.12);
+      box-shadow: 0 0 8px rgba(34, 197, 94, 0.15);
+    }
+    .fc-agent-card--judge.fc-agent--active .fc-agent-status {
+      color: var(--fc-accent-green);
+    }
+    @keyframes fc-judge-pulse {
+      0%, 100% { box-shadow: 0 0 20px rgba(34, 197, 94, 0.12); }
+      50% { box-shadow: 0 0 32px rgba(34, 197, 94, 0.22); }
+    }
+
+    /* ═══ VERDICT REVEAL ═══ */
+    .fc-verdict-reveal {
+      margin-top: 2rem;
+      text-align: center;
+      position: relative;
+    }
+
+    /* Dramatic pause overlay */
+    .fc-verdict-reveal-pause {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 10, 15, 0.85);
+      z-index: 100;
+      animation: fc-reveal-pause-pulse 1s ease-in-out;
+    }
+    @keyframes fc-reveal-pause-pulse {
+      0%, 100% { opacity: 0; }
+      50% { opacity: 1; }
+    }
+
+    /* Verdict badge */
+    .fc-verdict-reveal-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.7rem 2rem;
+      border: 2px solid transparent;
+      border-radius: 100px;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.9rem;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      opacity: 0;
+      transform: translateY(20px) scale(0.9);
+      transition: none;
+    }
+    .fc-verdict-reveal-badge.fc-reveal-badge-visible {
+      animation: fc-reveal-badge-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+    @keyframes fc-reveal-badge-in {
+      from { opacity: 0; transform: translateY(20px) scale(0.9); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .fc-verdict-reveal-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+      animation: fc-pulse 2s ease-in-out infinite;
+    }
+
+    /* Confidence ring */
+    .fc-verdict-reveal-ring {
+      margin: 2rem auto;
+      position: relative;
+      width: 160px;
+      height: 160px;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+    .fc-reveal-badge-visible ~ .fc-verdict-reveal-ring {
+      opacity: 1;
+    }
+    .fc-verdict-reveal-ring svg {
+      transform: rotate(-90deg);
+      width: 160px;
+      height: 160px;
+    }
+    .fc-reveal-ring-bg {
+      fill: none;
+      stroke: var(--fc-surface-raised);
+      stroke-width: 8;
+    }
+    .fc-reveal-ring-fill {
+      fill: none;
+      stroke: var(--fc-accent-gray);
+      stroke-width: 8;
+      stroke-linecap: round;
+      stroke-dasharray: 0 408;
+      transition: stroke-dasharray 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    @keyframes fc-reveal-ring-draw {
+      from { stroke-dasharray: 0 408; }
+    }
+    .fc-verdict-reveal-ring-number {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .fc-verdict-reveal-confidence {
+      font-family: 'Instrument Serif', serif;
+      font-size: 3.2rem;
+      line-height: 1;
+      color: var(--fc-text);
+    }
+    .fc-verdict-reveal-pct {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--fc-text-dim);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-top: 0.2rem;
+    }
+
+    /* Summary */
+    .fc-verdict-reveal-summary {
+      font-family: 'Instrument Serif', serif;
+      font-size: 1.15rem;
+      line-height: 1.6;
+      color: var(--fc-text-muted);
+      max-width: 560px;
+      margin: 0 auto;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: none;
+    }
+    .fc-verdict-reveal-summary.fc-reveal-summary-visible {
+      animation: fc-reveal-fade-up 0.6s ease-out forwards;
+    }
+    @keyframes fc-reveal-fade-up {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Confidence decomposition bars */
+    .fc-verdict-reveal-bars {
+      margin: 1.5rem auto;
+      max-width: 420px;
+      opacity: 0;
+      transition: none;
+    }
+    .fc-verdict-reveal-bars.fc-reveal-bars-visible {
+      animation: fc-reveal-fade-up 0.5s ease-out forwards;
+    }
+    .fc-reveal-bar-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.5rem;
+    }
+    .fc-reveal-bar-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--fc-text-dim);
+      width: 120px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+    .fc-reveal-bar-track {
+      flex: 1;
+      height: 6px;
+      background: var(--fc-surface-raised);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .fc-reveal-bar-fill {
+      height: 100%;
+      width: 0;
+      border-radius: 3px;
+      background: linear-gradient(90deg, var(--fc-accent-amber), var(--fc-accent-green));
+      transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* CTA button */
+    .fc-verdict-reveal-cta {
+      display: inline-block;
+      margin-top: 1.5rem;
+      padding: 0.75rem 2rem;
+      background: var(--fc-accent-green);
+      color: var(--fc-bg);
+      font-family: 'Satoshi', sans-serif;
+      font-weight: 700;
+      font-size: 0.95rem;
+      text-decoration: none;
+      border-radius: 8px;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: box-shadow 0.3s ease;
+    }
+    .fc-verdict-reveal-cta.fc-reveal-cta-visible {
+      animation: fc-reveal-fade-up 0.5s ease-out forwards;
+    }
+    .fc-verdict-reveal-cta:hover {
+      box-shadow: 0 0 24px rgba(34, 197, 94, 0.3);
+      color: var(--fc-bg);
+    }
+
+    /* Countdown + cancel */
+    .fc-verdict-countdown {
+      margin-top: 1rem;
+      opacity: 0;
+      transition: none;
+    }
+    .fc-verdict-countdown.fc-reveal-countdown-visible {
+      animation: fc-reveal-fade-up 0.4s ease-out 0.2s forwards;
+    }
+    .fc-verdict-countdown-cancel {
+      background: none;
+      border: none;
+      color: var(--fc-text-dim);
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      cursor: pointer;
+      text-decoration: underline;
+      margin-left: 0.5rem;
+    }
+    .fc-verdict-countdown-cancel:hover {
+      color: var(--fc-text-muted);
+    }
+    #fc-verdict-countdown-text {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--fc-text-dim);
+    }
+
     /* ─── Responsive ─── */
     @media (max-width: 768px) {
       .fc-live-headline {
@@ -635,12 +872,30 @@
       .fc-agent--active,
       .fc-disagreement-alert,
       .fc-agent-card--da.fc-da-entering,
-      .fc-agent-card--da.fc-agent--active {
+      .fc-agent-card--da.fc-agent--active,
+      .fc-agent-card--judge.fc-agent--active,
+      .fc-verdict-reveal-pause,
+      .fc-verdict-reveal-badge.fc-reveal-badge-visible,
+      .fc-verdict-reveal-dot,
+      .fc-verdict-reveal-summary.fc-reveal-summary-visible,
+      .fc-verdict-reveal-bars.fc-reveal-bars-visible,
+      .fc-verdict-reveal-cta.fc-reveal-cta-visible,
+      .fc-verdict-countdown.fc-reveal-countdown-visible {
         animation: none;
+      }
+      .fc-verdict-reveal-badge.fc-reveal-badge-visible,
+      .fc-verdict-reveal-summary.fc-reveal-summary-visible,
+      .fc-verdict-reveal-bars.fc-reveal-bars-visible,
+      .fc-verdict-reveal-cta.fc-reveal-cta-visible,
+      .fc-verdict-countdown.fc-reveal-countdown-visible {
+        opacity: 1;
+        transform: none;
       }
       .fc-progress-segment-fill,
       .fc-agent-card,
-      .fc-agent-icon {
+      .fc-agent-icon,
+      .fc-reveal-ring-fill,
+      .fc-reveal-bar-fill {
         transition: none;
       }
     }
