@@ -1,6 +1,8 @@
       // ── Form submission handler ──
 
       var submitting = false;
+      var investigationId = null;
+      var evtSource = null;
 
       function handleSubmit() {
         if (submitting) return;
@@ -31,8 +33,10 @@
           resetSubmitButton();
 
           if (result.ok) {
-            // Redirect to live investigation page
-            window.location.href = '/live/' + result.data.id;
+            investigationId = result.data.id;
+            var streamUrl = result.data.streamUrl || ('/api/live/' + investigationId + '/stream');
+            showInvestigationArea(textarea.value);
+            connectSSE(streamUrl);
             return;
           }
 
@@ -55,6 +59,21 @@
         updateState();
       }
 
+      // ── Show / hide investigation area ──
+
+      function showInvestigationArea(claimText) {
+        var chatHeader = document.querySelector('.fc-chat-header');
+        if (chatHeader) chatHeader.style.display = 'none';
+        if (inputArea) inputArea.style.display = 'none';
+        if (errorEl) errorEl.style.display = 'none';
+
+        var invArea = document.getElementById('fc-chat-investigation');
+        if (invArea) invArea.style.display = 'block';
+
+        var msgText = document.getElementById('fc-chat-claim-text');
+        if (msgText) msgText.textContent = claimText;
+      }
+
       // ── Error display ──
 
       var errorEl = document.getElementById('fc-chat-error');
@@ -64,7 +83,6 @@
         errorEl.textContent = msg;
         errorEl.style.display = 'block';
         inputArea.classList.add('fc-chat-input-area--error');
-        // Shake animation
         inputArea.classList.add('fc-chat-shake');
         setTimeout(function() {
           inputArea.classList.remove('fc-chat-shake');
@@ -93,3 +111,172 @@
           if (!submit.disabled) handleSubmit();
         }
       });
+
+      // ═══ SSE CLIENT — connects after successful POST ═══
+
+      // ── Elapsed time counter ──
+      var elapsedSeconds = 0;
+      var elapsedEl = document.getElementById('fc-elapsed');
+      var elapsedTimer = null;
+
+      function startElapsedTimer() {
+        elapsedSeconds = 0;
+        elapsedTimer = setInterval(function() {
+          elapsedSeconds++;
+          var mins = Math.floor(elapsedSeconds / 60);
+          var secs = elapsedSeconds % 60;
+          if (elapsedEl) {
+            elapsedEl.textContent = mins + ':' + (secs < 10 ? '0' : '') + secs;
+          }
+        }, 1000);
+      }
+
+      // ── Cost tracker ──
+      var totalCost = 0;
+      var costEl = document.getElementById('fc-cost-value');
+      function addCost(costUsd) {
+        if (typeof costUsd === 'number') {
+          totalCost += costUsd;
+          if (costEl) {
+            costEl.textContent = '$' + totalCost.toFixed(2);
+          }
+        }
+      }
+
+      // ── Progress bar ──
+      function setSegmentActive(step) {
+        var seg = document.getElementById('fc-seg-' + step);
+        if (seg) {
+          seg.classList.add('fc-progress-segment--active');
+          seg.classList.remove('fc-progress-segment--complete');
+        }
+      }
+      function setSegmentComplete(step) {
+        var seg = document.getElementById('fc-seg-' + step);
+        if (seg) {
+          seg.classList.remove('fc-progress-segment--active');
+          seg.classList.add('fc-progress-segment--complete');
+        }
+      }
+
+      // ── Spinner ──
+      var spinner = document.getElementById('fc-chat-connecting-spinner');
+      var spinnerHidden = false;
+      function hideSpinner() {
+        if (!spinnerHidden && spinner) {
+          spinner.style.display = 'none';
+          spinnerHidden = true;
+        }
+      }
+
+      // ── Pipeline status messages ──
+      var pipelineStatusEl = document.getElementById('fc-chat-pipeline-status');
+      function showPipelineStatus(text, type) {
+        if (pipelineStatusEl) {
+          pipelineStatusEl.textContent = text;
+          pipelineStatusEl.className = 'fc-pipeline-status fc-pipeline-status--' + (type || 'info');
+          pipelineStatusEl.style.display = 'block';
+        }
+      }
+
+<%- include('_chat-sse-handlers') %>
+
+      // ── Connect to SSE stream ──
+
+      function connectSSE(streamUrl) {
+        startElapsedTimer();
+        evtSource = new EventSource(streamUrl);
+
+        // ── Pipeline lifecycle ──
+        evtSource.addEventListener('pipeline:start', function(e) {
+          hideSpinner();
+        });
+
+        // ── Classifier ──
+        evtSource.addEventListener('classifier:start', function(e) {
+          var data = JSON.parse(e.data);
+          updateClassifier('start', data);
+        });
+        evtSource.addEventListener('classifier:complete', function(e) {
+          var data = JSON.parse(e.data);
+          updateClassifier('complete', data);
+        });
+
+        // ── Strategist ──
+        evtSource.addEventListener('strategist:start', function(e) {
+          var data = JSON.parse(e.data);
+          updateStrategist('start', data);
+        });
+        evtSource.addEventListener('strategist:complete', function(e) {
+          var data = JSON.parse(e.data);
+          updateStrategist('complete', data);
+        });
+
+        // ── Investigators ──
+        evtSource.addEventListener('investigators:start', function(e) {
+          var data = JSON.parse(e.data);
+          updateInvestigators('start', data);
+        });
+        evtSource.addEventListener('investigator:searching', function(e) {
+          var data = JSON.parse(e.data);
+          updateInvestigators('searching', data);
+        });
+        evtSource.addEventListener('investigator:complete', function(e) {
+          var data = JSON.parse(e.data);
+          updateInvestigators('complete', data);
+        });
+
+        // ── Disagreement ──
+        evtSource.addEventListener('disagreement:detected', function(e) {
+          var data = JSON.parse(e.data);
+          updateInvestigators('disagreement', data);
+        });
+
+        // ── Devil's Advocate ──
+        evtSource.addEventListener('da:start', function(e) {
+          var data = JSON.parse(e.data);
+          updateDA('start', data);
+        });
+        evtSource.addEventListener('da:complete', function(e) {
+          var data = JSON.parse(e.data);
+          updateDA('complete', data);
+        });
+
+        // ── Judge ──
+        evtSource.addEventListener('judge:start', function(e) {
+          var data = JSON.parse(e.data);
+          updateJudge('start', data);
+        });
+        evtSource.addEventListener('judge:complete', function(e) {
+          var data = JSON.parse(e.data);
+          updateJudge('complete', data);
+        });
+
+        // ── Pipeline complete — verdict reveal ──
+        evtSource.addEventListener('pipeline:complete', function(e) {
+          var data = JSON.parse(e.data);
+          hideSpinner();
+          updateJudge('verdict', data);
+          evtSource.close();
+        });
+
+        // ── Pipeline error ──
+        evtSource.addEventListener('pipeline:error', function(e) {
+          var data = JSON.parse(e.data);
+          hideSpinner();
+          clearInterval(elapsedTimer);
+          showPipelineStatus('Something broke. Here\u2019s what happened: ' + (data.error || 'Unknown error'), 'error');
+          evtSource.close();
+        });
+
+        // ── Connection error ──
+        evtSource.onerror = function() {
+          showPipelineStatus('Connection dropped. Reconnecting...', 'warning');
+        };
+
+        evtSource.onopen = function() {
+          if (pipelineStatusEl && pipelineStatusEl.textContent === 'Connection dropped. Reconnecting...') {
+            pipelineStatusEl.style.display = 'none';
+          }
+        };
+      }

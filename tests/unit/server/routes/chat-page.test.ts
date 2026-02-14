@@ -111,4 +111,51 @@ describe("Chat page — GET /chat", () => {
     const html = await res.text();
     expect(html).toContain("fc-chat-error");
   });
+
+  // ── Task 3.1: SSE client connection and event handling ──
+
+  it("GET /chat should contain EventSource connection code", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/chat`);
+    const html = await res.text();
+    expect(html).toContain("new EventSource(");
+    expect(html).toContain("/api/live/");
+    expect(html).toContain("/stream");
+  });
+
+  it("GET /chat should handle all pipeline event types", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/chat`);
+    const html = await res.text();
+    // All 15 event types must have addEventListener registrations
+    const eventTypes = [
+      "pipeline:start",
+      "classifier:start",
+      "classifier:complete",
+      "strategist:start",
+      "strategist:complete",
+      "investigators:start",
+      "investigator:searching",
+      "investigator:complete",
+      "disagreement:detected",
+      "da:start",
+      "da:complete",
+      "judge:start",
+      "judge:complete",
+      "pipeline:complete",
+      "pipeline:error",
+    ];
+    for (const evt of eventTypes) {
+      expect(html).toContain(`'${evt}'`);
+    }
+  });
+
+  it("GET /chat should include elapsed time counter", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/chat`);
+    const html = await res.text();
+    expect(html).toContain("fc-elapsed");
+    expect(html).toContain("elapsedTimer");
+    expect(html).toContain("elapsedSeconds");
+  });
 });

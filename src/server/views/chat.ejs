@@ -8,6 +8,7 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Instrument+Serif:ital@0;1&family=Satoshi:wght@400;500;700;900&display=swap" rel="stylesheet">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 2l12 7v9c0 7-5 13-12 16C9 31 4 25 4 18V9l12-7z' fill='%230a0a0f' stroke='%2322c55e' stroke-width='2'/%3E%3Cpath d='M11 16l3 3 7-7' fill='none' stroke='%2322c55e' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
   <%- include('_chat-styles') %>
+  <%- include('_live-styles') %>
 </head>
 <body>
   <div class="fc-chat-wrapper">
@@ -62,6 +63,62 @@
 
       <!-- ═══ ERROR DISPLAY ═══ -->
       <div class="fc-chat-error" id="fc-chat-error" role="alert" style="display: none;"></div>
+
+      <!-- ═══ INVESTIGATION AREA (hidden until POST success) ═══ -->
+      <div id="fc-chat-investigation" style="display: none;">
+
+        <!-- Original claim -->
+        <div class="fc-live-message fc-chat-card">
+          <div class="fc-live-message-label">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 17 20 12 15 7"/><path d="M4 18v-2a4 4 0 0 1 4-4h12"/></svg>
+            Your claim
+          </div>
+          <p class="fc-live-message-text" id="fc-chat-claim-text"></p>
+        </div>
+
+        <!-- Progress header -->
+        <div class="fc-progress-header fc-chat-card">
+          <div class="fc-progress-header-top">
+            <span class="fc-progress-header-title">Investigating your claim...</span>
+            <span class="fc-elapsed" id="fc-elapsed">0:00</span>
+          </div>
+          <div class="fc-progress-bar" id="fc-progress-bar">
+            <div class="fc-progress-segment" id="fc-seg-classify"><div class="fc-progress-segment-fill"></div></div>
+            <div class="fc-progress-segment" id="fc-seg-strategize"><div class="fc-progress-segment-fill"></div></div>
+            <div class="fc-progress-segment" id="fc-seg-investigate"><div class="fc-progress-segment-fill"></div></div>
+            <div class="fc-progress-segment" id="fc-seg-challenge"><div class="fc-progress-segment-fill"></div></div>
+            <div class="fc-progress-segment" id="fc-seg-judge"><div class="fc-progress-segment-fill"></div></div>
+            <div class="fc-progress-segment" id="fc-seg-verdict"><div class="fc-progress-segment-fill"></div></div>
+          </div>
+          <div class="fc-progress-labels">
+            <span class="fc-progress-label">Classify</span>
+            <span class="fc-progress-label">Strategize</span>
+            <span class="fc-progress-label">Investigate</span>
+            <span class="fc-progress-label">Challenge</span>
+            <span class="fc-progress-label">Judge</span>
+            <span class="fc-progress-label">Verdict</span>
+          </div>
+          <div class="fc-cost-tracker" id="fc-cost-tracker">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v12M9 9.5a2.5 2.5 0 0 1 5 0c0 1.5-2.5 2-2.5 4M9 14.5a2.5 2.5 0 0 0 5 0"/></svg>
+            API cost: <span id="fc-cost-value">$0.00</span>
+          </div>
+        </div>
+
+        <!-- Pipeline area -->
+        <div class="fc-live-pipeline">
+          <div class="fc-connecting-spinner" id="fc-chat-connecting-spinner">
+            <div class="fc-connecting-spinner-ring"></div>
+            <span>Tapping into your investigation...</span>
+          </div>
+
+          <div id="fc-agent-cards" class="fc-agent-cards">
+            <%- include('_live-agent-cards') %>
+          </div>
+
+          <div id="fc-chat-pipeline-status" class="fc-pipeline-status" style="display:none;"></div>
+        </div>
+
+      </div>
 
     </main>
 

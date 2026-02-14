@@ -152,7 +152,7 @@
 ## Phase 3: SSE Integration & Investigation Timeline
 
 ### Task 3.1: SSE client connection and event handling
-- [ ]
+- [x]
 **Objective:** After a successful POST, connect to the SSE stream and handle all 15 pipeline event types, following the exact same patterns as `_live-agent-script.ejs`.
 **Details:**
 - In `_chat-script.ejs`: after POST success, create `new EventSource(streamUrl)`
