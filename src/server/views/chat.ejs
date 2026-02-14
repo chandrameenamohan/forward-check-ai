@@ -11,9 +11,11 @@
   <%- include('_live-styles') %>
 </head>
 <body>
+  <a class="fc-skip-link" href="#fc-chat-textarea">Skip to main content</a>
+
   <div class="fc-chat-wrapper">
 
-    <nav class="fc-topbar">
+    <nav class="fc-topbar" aria-label="Site navigation">
       <a class="fc-topbar-brand" href="/">ForwardCheck</a>
       <a class="fc-topbar-link" href="/">Home</a>
     </nav>
@@ -65,7 +67,7 @@
       <div class="fc-chat-error" id="fc-chat-error" role="alert" style="display: none;"></div>
 
       <!-- ═══ INVESTIGATION AREA (hidden until POST success) ═══ -->
-      <div id="fc-chat-investigation" style="display: none;">
+      <div id="fc-chat-investigation" role="region" aria-label="Investigation progress" style="display: none;">
 
         <!-- Original claim -->
         <div class="fc-live-message fc-chat-card">
@@ -77,12 +79,12 @@
         </div>
 
         <!-- Progress header -->
-        <div class="fc-progress-header fc-chat-card">
+        <div class="fc-progress-header fc-chat-card" role="status" aria-live="polite">
           <div class="fc-progress-header-top">
             <span class="fc-progress-header-title">Investigating your claim...</span>
-            <span class="fc-elapsed" id="fc-elapsed">0:00</span>
+            <span class="fc-elapsed" id="fc-elapsed" aria-label="Elapsed time">0:00</span>
           </div>
-          <div class="fc-progress-bar" id="fc-progress-bar">
+          <div class="fc-progress-bar" id="fc-progress-bar" role="progressbar" aria-label="Investigation progress" aria-valuemin="0" aria-valuemax="6" aria-valuenow="0">
             <div class="fc-progress-segment" id="fc-seg-classify"><div class="fc-progress-segment-fill"></div></div>
             <div class="fc-progress-segment" id="fc-seg-strategize"><div class="fc-progress-segment-fill"></div></div>
             <div class="fc-progress-segment" id="fc-seg-investigate"><div class="fc-progress-segment-fill"></div></div>
@@ -115,7 +117,7 @@
             <%- include('_live-agent-cards') %>
           </div>
 
-          <div id="fc-chat-pipeline-status" class="fc-pipeline-status" style="display:none;"></div>
+          <div id="fc-chat-pipeline-status" class="fc-pipeline-status" role="status" aria-live="polite" style="display:none;"></div>
         </div>
 
         <!-- Non-factual response card (shown when classifier detects non-factual) -->

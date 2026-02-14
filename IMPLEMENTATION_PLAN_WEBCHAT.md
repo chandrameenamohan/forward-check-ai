@@ -382,7 +382,7 @@
 - Visually verify: page renders correctly at 768px and 1440px
 
 ### Task 6.3: Accessibility — prefers-reduced-motion, ARIA labels, keyboard navigation
-- [ ]
+- [x]
 **Objective:** Ensure the chat page meets accessibility standards: reduced motion support, ARIA labels, and full keyboard navigation.
 **Details:**
 - `prefers-reduced-motion`: disable all animations (pulse, shake, slide-in, verdict reveal sequence)

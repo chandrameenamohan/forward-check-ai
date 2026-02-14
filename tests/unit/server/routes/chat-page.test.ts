@@ -494,4 +494,52 @@ describe("Chat page — GET /chat", () => {
     // Larger headline on desktop
     expect(html).toContain("font-size: 2.8rem");
   });
+
+  // ── Task 6.3: Accessibility — prefers-reduced-motion, ARIA labels, keyboard nav ──
+
+  it("GET /chat should include prefers-reduced-motion media query", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/chat`);
+    const html = await res.text();
+    // Must have prefers-reduced-motion media query
+    expect(html).toContain("prefers-reduced-motion: reduce");
+    // All key animations disabled
+    expect(html).toContain("animation: none");
+    expect(html).toContain("transition: none");
+  });
+
+  it("GET /chat should include ARIA labels on interactive elements", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/chat`);
+    const html = await res.text();
+    // Textarea
+    expect(html).toContain('aria-label="Enter a claim to fact-check"');
+    // Submit button
+    expect(html).toContain('aria-label="Submit claim for investigation"');
+    // Clear button
+    expect(html).toContain('aria-label="Clear input"');
+    // Skip link
+    expect(html).toContain("fc-skip-link");
+    expect(html).toContain("Skip to main content");
+    // Nav landmark
+    expect(html).toContain('aria-label="Site navigation"');
+    // Focus-visible styles
+    expect(html).toContain("focus-visible");
+  });
+
+  it("GET /chat should include aria-live regions for dynamic content", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/chat`);
+    const html = await res.text();
+    // Character counter
+    expect(html).toContain('aria-live="polite"');
+    // Error display
+    expect(html).toContain('role="alert"');
+    // Agent status elements should have role="status"
+    expect(html).toContain('role="status"');
+    // Verdict reveal should have role="alert" with aria-live="assertive"
+    expect(html).toContain('aria-live="assertive"');
+    // Progress bar should have progressbar role
+    expect(html).toContain('role="progressbar"');
+  });
 });

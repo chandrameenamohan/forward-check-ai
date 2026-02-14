@@ -12,7 +12,7 @@
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
     </div>
   </div>
-  <div class="fc-agent-status" id="fc-classifier-status">First up — scanning your message for red flags</div>
+  <div class="fc-agent-status" id="fc-classifier-status" role="status" aria-live="polite">First up — scanning your message for red flags</div>
   <div class="fc-agent-result" id="fc-classifier-result" style="display:none;"></div>
 </div>
 
@@ -32,7 +32,7 @@
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
     </div>
   </div>
-  <div class="fc-agent-status" id="fc-strategist-status">Next — the Strategist maps your investigation</div>
+  <div class="fc-agent-status" id="fc-strategist-status" role="status" aria-live="polite">Next — the Strategist maps your investigation</div>
   <div class="fc-agent-result" id="fc-strategist-result" style="display:none;"></div>
   <div class="fc-agent-thinking" id="fc-strategist-thinking" style="display:none;">
     <span class="fc-agent-thinking-label">AI Reasoning</span>
@@ -59,7 +59,7 @@
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
       </div>
     </div>
-    <div class="fc-agent-status" id="fc-inv-source-status">Ready to trace your sources</div>
+    <div class="fc-agent-status" id="fc-inv-source-status" role="status" aria-live="polite">Ready to trace your sources</div>
     <div class="fc-investigator-search" id="fc-inv-source-search" style="display:none;"></div>
     <div class="fc-investigator-confidence" id="fc-inv-source-confidence" style="display:none;"></div>
   </div>
@@ -78,7 +78,7 @@
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
       </div>
     </div>
-    <div class="fc-agent-status" id="fc-inv-domain-status">Ready to call in the subject expert</div>
+    <div class="fc-agent-status" id="fc-inv-domain-status" role="status" aria-live="polite">Ready to call in the subject expert</div>
     <div class="fc-investigator-search" id="fc-inv-domain-search" style="display:none;"></div>
     <div class="fc-investigator-confidence" id="fc-inv-domain-confidence" style="display:none;"></div>
   </div>
@@ -97,7 +97,7 @@
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
       </div>
     </div>
-    <div class="fc-agent-status" id="fc-inv-pattern-status">Ready to check fact-checker databases</div>
+    <div class="fc-agent-status" id="fc-inv-pattern-status" role="status" aria-live="polite">Ready to check fact-checker databases</div>
     <div class="fc-investigator-search" id="fc-inv-pattern-search" style="display:none;"></div>
     <div class="fc-investigator-confidence" id="fc-inv-pattern-confidence" style="display:none;"></div>
   </div>
@@ -130,7 +130,7 @@
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
     </div>
   </div>
-  <div class="fc-agent-status" id="fc-da-status">Waiting to challenge what the investigators found</div>
+  <div class="fc-agent-status" id="fc-da-status" role="status" aria-live="polite">Waiting to challenge what the investigators found</div>
   <div class="fc-da-outcome" id="fc-da-outcome" style="display:none;"></div>
   <div class="fc-da-thinking" id="fc-da-thinking" style="display:none;">
     <span class="fc-agent-thinking-label">AI Reasoning</span>
@@ -154,7 +154,7 @@
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
     </div>
   </div>
-  <div class="fc-agent-status" id="fc-judge-status">Last call — the Judge decides your verdict</div>
+  <div class="fc-agent-status" id="fc-judge-status" role="status" aria-live="polite">Last call — the Judge decides your verdict</div>
   <div class="fc-agent-thinking" id="fc-judge-thinking" style="display:none;">
     <span class="fc-agent-thinking-label">AI Reasoning</span>
     <p class="fc-agent-thinking-text" id="fc-judge-thinking-text"></p>
@@ -162,7 +162,7 @@
 </div>
 
 <!-- ═══ VERDICT REVEAL ═══ -->
-<div class="fc-verdict-reveal" id="fc-verdict-reveal" style="display:none;">
+<div class="fc-verdict-reveal" id="fc-verdict-reveal" role="alert" aria-live="assertive" style="display:none;">
 
   <!-- Dramatic pause overlay -->
   <div class="fc-verdict-reveal-pause" id="fc-verdict-reveal-pause"></div>

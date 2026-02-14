@@ -1,5 +1,45 @@
 <%- include('_design-tokens') %>
 <style>
+    /* ═══ ACCESSIBILITY ═══ */
+
+    /* Skip-to-content link — hidden until focused */
+    .fc-skip-link {
+      position: absolute;
+      top: -100%;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 0.6rem 1.4rem;
+      background: var(--fc-accent-green);
+      color: var(--fc-bg);
+      font-family: 'Satoshi', sans-serif;
+      font-weight: 700;
+      font-size: 0.85rem;
+      border-radius: 0 0 8px 8px;
+      text-decoration: none;
+      z-index: 1000;
+      transition: top 0.2s ease;
+    }
+    .fc-skip-link:focus {
+      top: 0;
+      outline: none;
+    }
+
+    /* Focus-visible outlines for all interactive elements */
+    .fc-chat-textarea:focus-visible {
+      outline: 2px solid var(--fc-accent-green);
+      outline-offset: 2px;
+    }
+    .fc-chat-submit:focus-visible,
+    .fc-chat-clear:focus-visible,
+    .fc-chat-action:focus-visible,
+    .fc-chat-nonfactual-btn:focus-visible,
+    .fc-topbar-brand:focus-visible,
+    .fc-topbar-link:focus-visible {
+      outline: 2px solid var(--fc-accent-green);
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+
     /* ═══ CHAT PAGE LAYOUT ═══ */
 
     .fc-chat-wrapper {
@@ -559,11 +599,15 @@
 
     /* ─── Reduced motion ─── */
     @media (prefers-reduced-motion: reduce) {
+      .fc-skip-link {
+        transition: none;
+      }
       .fc-chat-card,
       .fc-chat-input-area,
       .fc-chat-submit,
       .fc-chat-clear,
-      .fc-chat-counter {
+      .fc-chat-counter,
+      .fc-topbar-link {
         transition: none;
       }
       .fc-chat-shake {
