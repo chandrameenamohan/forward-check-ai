@@ -9,7 +9,8 @@ const logger = createLogger({ level: "info" });
 const KEEPALIVE_INTERVAL_MS = 15_000;
 
 /**
- * Create SSE live-stream routes.
+ * Create SSE live-stream routes and live verdict page.
+ * GET /live/:id — live verdict page (renders EJS template)
  * GET /api/live/:id/stream — SSE endpoint for real-time pipeline events
  */
 export function createLiveStreamRouter(
@@ -18,6 +19,39 @@ export function createLiveStreamRouter(
 ): Router {
   const router = Router();
 
+  // Live verdict page
+  router.get("/live/:id", (req: Request, res: Response) => {
+    const rawId = req.params["id"];
+    const id = Array.isArray(rawId) ? rawId[0] : rawId;
+    if (!id) {
+      res.status(400).json({ error: "Missing investigation ID" });
+      return;
+    }
+
+    const investigation = repo.getById(id);
+    if (!investigation) {
+      logger.info({ id }, "Live page: investigation not found");
+      res.status(404).json({ error: "Investigation not found" });
+      return;
+    }
+
+    // Redirect to static verdict page if already completed
+    if (
+      investigation.status === "completed" ||
+      investigation.status === "completed_non_factual"
+    ) {
+      res.redirect(`/v/${id}`);
+      return;
+    }
+
+    res.render("live", {
+      id: investigation.id,
+      originalMessage: investigation.original_message,
+      status: investigation.status,
+    });
+  });
+
+  // SSE stream endpoint
   router.get("/api/live/:id/stream", (req: Request, res: Response) => {
     const rawId = req.params["id"];
     const id = Array.isArray(rawId) ? rawId[0] : rawId;

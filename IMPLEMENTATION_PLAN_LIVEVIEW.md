@@ -124,7 +124,7 @@ The "See Live Verdict" page shows users the 6-agent pipeline working on their cl
 ## Phase 2: Live Verdict Page — Foundation
 
 ### Task 2.1: Create live verdict route and page skeleton
-- [ ]
+- [x]
 **Objective:** Add `GET /live/:id` route that renders a new `live.ejs` template with the established design system.
 **Details:**
 - Create `src/server/views/live.ejs` — full HTML page skeleton
