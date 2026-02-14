@@ -1,0 +1,68 @@
+import { Router } from "express";
+import type { Request, Response } from "express";
+import type { InvestigationRepository } from "../../db/investigation-repository.js";
+import type { PipelineEventBus } from "../../orchestrator/pipeline-events.js";
+import { createLogger } from "../../config/logger.js";
+
+const logger = createLogger({ level: "info" });
+
+const KEEPALIVE_INTERVAL_MS = 15_000;
+
+/**
+ * Create SSE live-stream routes.
+ * GET /api/live/:id/stream — SSE endpoint for real-time pipeline events
+ */
+export function createLiveStreamRouter(
+  repo: InvestigationRepository,
+  eventBus: PipelineEventBus,
+): Router {
+  const router = Router();
+
+  router.get("/api/live/:id/stream", (req: Request, res: Response) => {
+    const rawId = req.params["id"];
+    const id = Array.isArray(rawId) ? rawId[0] : rawId;
+    if (!id) {
+      res.status(400).json({ error: "Missing investigation ID" });
+      return;
+    }
+
+    // Verify investigation exists
+    const investigation = repo.getById(id);
+    if (!investigation) {
+      logger.info({ id }, "SSE stream: investigation not found");
+      res.status(404).json({ error: "Investigation not found" });
+      return;
+    }
+
+    // Set SSE headers
+    res.setHeader("Content-Type", "text/event-stream");
+    res.setHeader("Cache-Control", "no-cache");
+    res.setHeader("Connection", "keep-alive");
+    res.flushHeaders();
+
+    // Flush historical events (catch-up for late-joining clients)
+    const history = eventBus.getHistory(id);
+    for (const event of history) {
+      res.write(`event: ${event.kind}\ndata: ${JSON.stringify(event)}\n\n`);
+    }
+
+    // Subscribe to new events
+    const unsubscribe = eventBus.subscribe(id, (event) => {
+      res.write(`event: ${event.kind}\ndata: ${JSON.stringify(event)}\n\n`);
+    });
+
+    // Keepalive comment every 15 seconds
+    const keepaliveTimer = setInterval(() => {
+      res.write(":\n\n");
+    }, KEEPALIVE_INTERVAL_MS);
+
+    // Clean up on client disconnect
+    req.on("close", () => {
+      logger.debug({ id }, "SSE client disconnected");
+      unsubscribe();
+      clearInterval(keepaliveTimer);
+    });
+  });
+
+  return router;
+}

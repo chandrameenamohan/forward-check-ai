@@ -82,7 +82,7 @@ The "See Live Verdict" page shows users the 6-agent pipeline working on their cl
 ## Phase 1: SSE Streaming Endpoint
 
 ### Task 1.1: Create SSE endpoint for live investigation streaming
-- [ ]
+- [x]
 **Objective:** Build the Server-Sent Events endpoint that streams pipeline events to the browser in real-time.
 **Details:**
 - Create `src/server/routes/live-stream.ts`
