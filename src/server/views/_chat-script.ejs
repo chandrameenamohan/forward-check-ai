@@ -41,7 +41,7 @@
           }
 
           if (result.rateLimit) {
-            showError("You've checked too many claims in the last minute. Try again in " + result.seconds + " seconds.");
+            showError("You've checked too many claims in the last minute. Take a breath — try again in " + result.seconds + " seconds.");
             return;
           }
 
@@ -181,74 +181,122 @@
 
 <%- include('_chat-sse-handlers') %>
 
+      // ── Pipeline timeout detection (120s no events) ──
+
+      var pipelineTimeout = null;
+      var PIPELINE_TIMEOUT_MS = 120 * 1000;
+
+      function startPipelineTimeout() {
+        clearPipelineTimeout();
+        pipelineTimeout = setTimeout(function() {
+          showPipelineStatus(
+            'This investigation is taking longer than expected. You can wait or check back at /v/' + investigationId,
+            'warning'
+          );
+        }, PIPELINE_TIMEOUT_MS);
+      }
+
+      function resetPipelineTimeout() {
+        if (pipelineTimeout) {
+          clearTimeout(pipelineTimeout);
+          pipelineTimeout = setTimeout(function() {
+            showPipelineStatus(
+              'This investigation is taking longer than expected. You can wait or check back at /v/' + investigationId,
+              'warning'
+            );
+          }, PIPELINE_TIMEOUT_MS);
+        }
+      }
+
+      function clearPipelineTimeout() {
+        if (pipelineTimeout) {
+          clearTimeout(pipelineTimeout);
+          pipelineTimeout = null;
+        }
+      }
+
       // ── Connect to SSE stream ──
 
       function connectSSE(streamUrl) {
         startElapsedTimer();
+        startPipelineTimeout();
         evtSource = new EventSource(streamUrl);
 
         // ── Pipeline lifecycle ──
         evtSource.addEventListener('pipeline:start', function(e) {
           hideSpinner();
+          resetPipelineTimeout();
         });
 
         // ── Classifier ──
         evtSource.addEventListener('classifier:start', function(e) {
           var data = JSON.parse(e.data);
+          resetPipelineTimeout();
           updateClassifier('start', data);
         });
         evtSource.addEventListener('classifier:complete', function(e) {
           var data = JSON.parse(e.data);
+          resetPipelineTimeout();
           updateClassifier('complete', data);
         });
 
         // ── Strategist ──
         evtSource.addEventListener('strategist:start', function(e) {
           var data = JSON.parse(e.data);
+          resetPipelineTimeout();
           updateStrategist('start', data);
         });
         evtSource.addEventListener('strategist:complete', function(e) {
           var data = JSON.parse(e.data);
+          resetPipelineTimeout();
           updateStrategist('complete', data);
         });
 
         // ── Investigators ──
         evtSource.addEventListener('investigators:start', function(e) {
           var data = JSON.parse(e.data);
+          resetPipelineTimeout();
           updateInvestigators('start', data);
         });
         evtSource.addEventListener('investigator:searching', function(e) {
           var data = JSON.parse(e.data);
+          resetPipelineTimeout();
           updateInvestigators('searching', data);
         });
         evtSource.addEventListener('investigator:complete', function(e) {
           var data = JSON.parse(e.data);
+          resetPipelineTimeout();
           updateInvestigators('complete', data);
         });
 
         // ── Disagreement ──
         evtSource.addEventListener('disagreement:detected', function(e) {
           var data = JSON.parse(e.data);
+          resetPipelineTimeout();
           updateInvestigators('disagreement', data);
         });
 
         // ── Devil's Advocate ──
         evtSource.addEventListener('da:start', function(e) {
           var data = JSON.parse(e.data);
+          resetPipelineTimeout();
           updateDA('start', data);
         });
         evtSource.addEventListener('da:complete', function(e) {
           var data = JSON.parse(e.data);
+          resetPipelineTimeout();
           updateDA('complete', data);
         });
 
         // ── Judge ──
         evtSource.addEventListener('judge:start', function(e) {
           var data = JSON.parse(e.data);
+          resetPipelineTimeout();
           updateJudge('start', data);
         });
         evtSource.addEventListener('judge:complete', function(e) {
           var data = JSON.parse(e.data);
+          resetPipelineTimeout();
           updateJudge('complete', data);
         });
 
@@ -256,6 +304,7 @@
         evtSource.addEventListener('pipeline:complete', function(e) {
           var data = JSON.parse(e.data);
           hideSpinner();
+          clearPipelineTimeout();
           updateJudge('verdict', data);
           evtSource.close();
         });
@@ -264,6 +313,7 @@
         evtSource.addEventListener('pipeline:error', function(e) {
           var data = JSON.parse(e.data);
           hideSpinner();
+          clearPipelineTimeout();
           clearInterval(elapsedTimer);
           showPipelineStatus('Something broke. Here\u2019s what happened: ' + (data.error || 'Unknown error'), 'error');
           evtSource.close();

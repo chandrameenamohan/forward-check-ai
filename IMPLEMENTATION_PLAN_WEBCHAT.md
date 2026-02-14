@@ -289,7 +289,7 @@
 ## Phase 5: Error Handling & Edge Cases
 
 ### Task 5.1: Error states — empty input, timeout, rate limit, network drop
-- [ ]
+- [x]
 **Objective:** Handle all error states with clear, helpful messages following Power Writing copy guidelines.
 **Details:**
 - **Empty/short input** (< 10 chars): "Give your claim a bit more detail. We need at least 10 characters to investigate."

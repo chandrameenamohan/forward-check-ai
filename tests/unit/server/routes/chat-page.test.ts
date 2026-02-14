@@ -328,4 +328,57 @@ describe("Chat page — GET /chat", () => {
     expect(html).toContain("satire");
     expect(html).toContain("opinion");
   });
+
+  // ── Task 5.1: Error states — empty input, timeout, rate limit, network drop ──
+
+  it("GET /chat should contain error display elements", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/chat`);
+    const html = await res.text();
+    expect(html).toContain("fc-chat-error");
+    expect(html).toContain('role="alert"');
+    expect(html).toContain("fc-chat-input-area--error");
+    expect(html).toContain("fc-chat-shake");
+  });
+
+  it("GET /chat should contain rate limit error message template", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/chat`);
+    const html = await res.text();
+    // Rate limit handling with Retry-After header and seconds countdown
+    expect(html).toContain("429");
+    expect(html).toContain("Retry-After");
+    expect(html).toContain("too many claims");
+    expect(html).toContain("Take a breath");
+  });
+
+  it("GET /chat should contain network error message template", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/chat`);
+    const html = await res.text();
+    // Network error message and retry capability
+    expect(html).toContain("Lost connection");
+    expect(html).toContain("try again");
+  });
+
+  it("GET /chat should contain pipeline timeout detection", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/chat`);
+    const html = await res.text();
+    // Timeout detection after 120s of no SSE events
+    expect(html).toContain("pipelineTimeout");
+    expect(html).toContain("120");
+    expect(html).toContain("taking longer than expected");
+  });
+
+  it("GET /chat should contain SSE reconnection handling", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/chat`);
+    const html = await res.text();
+    // SSE connection drop and reconnection
+    expect(html).toContain("Connection dropped");
+    expect(html).toContain("Reconnecting");
+    expect(html).toContain("evtSource.onerror");
+    expect(html).toContain("evtSource.onopen");
+  });
 });

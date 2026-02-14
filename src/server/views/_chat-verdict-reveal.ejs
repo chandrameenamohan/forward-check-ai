@@ -193,6 +193,7 @@
         investigationId = null;
         cardEntered = {};
         if (elapsedTimer) { clearInterval(elapsedTimer); elapsedTimer = null; }
+        clearPipelineTimeout();
         if (evtSource) { evtSource.close(); evtSource = null; }
 
         // Focus textarea
