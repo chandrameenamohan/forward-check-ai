@@ -352,7 +352,7 @@ The "See Live Verdict" page shows users the 6-agent pipeline working on their cl
 ## Phase 6: Polish & Demo Optimization
 
 ### Task 6.1: Entrance animations and transitions
-- [ ]
+- [x]
 **Objective:** Add smooth entrance animations for agent cards and transitions between states for a polished demo experience.
 **Details:**
 - Agent card entrance: staggered slide-up with fade (CSS `@keyframes` + JS class toggle on SSE events)

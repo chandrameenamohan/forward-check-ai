@@ -260,7 +260,7 @@
       border-radius: 10px;
       padding: 1.25rem 1.5rem;
       backdrop-filter: blur(12px);
-      transition: border-color 0.5s ease, opacity 0.5s ease, box-shadow 0.5s ease;
+      transition: border-color 0.5s ease, opacity 0.5s ease, box-shadow 0.5s ease, background 0.5s ease;
     }
     .fc-agent-card-header {
       display: flex;
@@ -602,6 +602,36 @@
       50% { box-shadow: 0 0 24px rgba(234, 179, 8, 0.2); }
     }
 
+    /* ─── Agent card entrance animation ─── */
+    @keyframes fc-card-entrance {
+      from {
+        opacity: 0;
+        transform: translateY(16px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .fc-card-entering {
+      animation: fc-card-entrance 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    /* ─── Investigator synchronized pulse ─── */
+    @keyframes fc-investigator-sync-pulse {
+      0%, 100% { box-shadow: 0 0 12px rgba(234, 179, 8, 0.08); }
+      50% { box-shadow: 0 0 22px rgba(234, 179, 8, 0.22); border-color: rgba(234, 179, 8, 0.8); }
+    }
+    .fc-investigator-row .fc-agent--active {
+      animation: fc-investigator-sync-pulse 1.8s ease-in-out infinite;
+    }
+    .fc-investigator-row .fc-agent--active:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+    .fc-investigator-row .fc-agent--active:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
     /* ─── Judge card ─── */
     .fc-agent-card--judge.fc-agent--active {
       border-color: var(--fc-accent-green);
@@ -931,6 +961,8 @@
       .fc-connecting-spinner-ring,
       .fc-progress-segment--active .fc-progress-segment-fill,
       .fc-agent--active,
+      .fc-card-entering,
+      .fc-investigator-row .fc-agent--active,
       .fc-disagreement-alert,
       .fc-agent-card--da.fc-da-entering,
       .fc-agent-card--da.fc-agent--active,
@@ -944,6 +976,7 @@
       .fc-verdict-countdown.fc-reveal-countdown-visible {
         animation: none;
       }
+      .fc-card-entering,
       .fc-verdict-reveal-badge.fc-reveal-badge-visible,
       .fc-verdict-reveal-summary.fc-reveal-summary-visible,
       .fc-verdict-reveal-bars.fc-reveal-bars-visible,

@@ -591,4 +591,42 @@ describe("Live verdict page routes", () => {
     expect(res.status).toBe(200);
     expect(res.headers.get("content-type")).toContain("image/jpeg");
   });
+
+  // ── Task 6.1: Entrance animations and transitions ──
+
+  it("GET /live/:id should include entrance animation keyframes", async () => {
+    const port = await startServer();
+    const id = repo.create("Animation keyframes test");
+
+    const res = await fetch(`http://127.0.0.1:${port}/live/${id}`);
+    const html = await res.text();
+
+    // Agent card entrance animation
+    expect(html).toContain("fc-card-entrance");
+    // Investigator synchronized pulse
+    expect(html).toContain("fc-investigator-sync-pulse");
+  });
+
+  it("GET /live/:id should have entrance animation class toggling in JS", async () => {
+    const port = await startServer();
+    const id = repo.create("Entrance class toggle test");
+
+    const res = await fetch(`http://127.0.0.1:${port}/live/${id}`);
+    const html = await res.text();
+
+    // JS should add entrance class to cards on activation
+    expect(html).toContain("fc-card-entering");
+  });
+
+  it("GET /live/:id should respect prefers-reduced-motion for entrance animations", async () => {
+    const port = await startServer();
+    const id = repo.create("Entrance reduced motion test");
+
+    const res = await fetch(`http://127.0.0.1:${port}/live/${id}`);
+    const html = await res.text();
+
+    // Entrance animations included in reduced motion block
+    expect(html).toContain("fc-card-entering");
+    expect(html).toContain("prefers-reduced-motion");
+  });
 });

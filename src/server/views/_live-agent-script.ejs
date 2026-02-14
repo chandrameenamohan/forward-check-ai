@@ -1,10 +1,22 @@
       // ── Agent card state helpers ──
 
+      var cardEntered = {};
+
       function setCardState(cardId, state) {
         var card = document.getElementById(cardId);
         if (!card) return;
+        var wasIdle = card.classList.contains('fc-agent--idle');
         card.classList.remove('fc-agent--idle', 'fc-agent--active', 'fc-agent--complete', 'fc-agent--failed');
         card.classList.add('fc-agent--' + state);
+
+        // Trigger entrance animation on first activation
+        if (wasIdle && state === 'active' && !cardEntered[cardId]) {
+          cardEntered[cardId] = true;
+          card.classList.add('fc-card-entering');
+          setTimeout(function() {
+            card.classList.remove('fc-card-entering');
+          }, 500);
+        }
       }
 
       // ── HTML escape helper ──
