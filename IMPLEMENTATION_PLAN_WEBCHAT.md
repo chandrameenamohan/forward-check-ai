@@ -49,7 +49,7 @@
 - Cleanup: call cleanup function after tests
 
 ### Task 0.3: Mount chat routes in app.ts
-- [ ]
+- [x]
 **Objective:** Wire the chat router and rate limiter into the Express app, ensuring it works alongside existing routes.
 **Details:**
 - Import `createChatRouter` in `src/server/app.ts`

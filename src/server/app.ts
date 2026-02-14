@@ -10,6 +10,7 @@ import { createLiveStreamRouter } from "./routes/live-stream.js";
 import { createChatRouter } from "./routes/chat.js";
 import type { PipelineEventBus } from "../orchestrator/pipeline-events.js";
 import type { InvestigationPipeline } from "../orchestrator/pipeline.js";
+import { createRateLimiter } from "./middleware/rate-limit.js";
 
 const logger = createLogger({ level: "info" });
 
@@ -74,6 +75,8 @@ export function createApp(repo?: InvestigationRepository, eventBus?: PipelineEve
 
     // Chat API route (requires both repo and pipeline)
     if (pipeline) {
+      const chatRateLimiter = createRateLimiter(10, 60_000);
+      app.use("/api/chat/message", chatRateLimiter);
       app.use(createChatRouter(repo, pipeline));
     }
   }
