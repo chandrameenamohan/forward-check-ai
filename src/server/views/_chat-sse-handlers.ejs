@@ -53,6 +53,41 @@
         if (el) el.style.opacity = '1';
       }
 
+      // ── Non-factual response messages ──
+
+      var NON_FACTUAL_MESSAGES = {
+        opinion: "That looks like an opinion, not a fact. ForwardCheck investigates claims that can be verified \u2014 try pasting something specific.",
+        scam: "This message looks suspicious. Stay safe \u2014 don\u2019t click unknown links or share personal info. If there\u2019s a factual claim inside, paste just that part.",
+        greeting: "Hey! Paste a suspicious message and hit \u2018Investigate This\u2019 to get started.",
+        other: "Not sure what to do with this one. Try pasting a specific claim \u2014 something like \u2018WHO says green tea cures cancer.\u2019"
+      };
+
+      var NON_FACTUAL_ICONS = {
+        opinion: '\uD83D\uDCAD',
+        scam: '\u26A0\uFE0F',
+        greeting: '\uD83D\uDC4B',
+        other: '\uD83E\uDD14'
+      };
+
+      function showNonFactualResponse(category) {
+        var msg = NON_FACTUAL_MESSAGES[category] || NON_FACTUAL_MESSAGES['other'];
+        var icon = NON_FACTUAL_ICONS[category] || NON_FACTUAL_ICONS['other'];
+        var cardEl = document.getElementById('fc-chat-nonfactual');
+        var textEl = document.getElementById('fc-chat-nonfactual-text');
+        var iconEl = document.getElementById('fc-chat-nonfactual-icon');
+
+        if (cardEl && textEl) {
+          if (iconEl) iconEl.textContent = icon;
+          textEl.textContent = msg;
+          cardEl.style.display = 'block';
+        }
+
+        // Stop the pipeline — no further events expected
+        clearPipelineTimeout();
+        clearInterval(elapsedTimer);
+        if (evtSource) { evtSource.close(); evtSource = null; }
+      }
+
       // ── Classifier card ──
 
       function updateClassifier(kind, data) {
@@ -78,6 +113,11 @@
             resultEl.innerHTML = '<span class="fc-agent-result-tag">' + escapeHtml(cat.replace(/_/g, ' ')) + '</span>' +
               (claim ? '<span class="fc-agent-result-claim">' + escapeHtml(claim) + '</span>' : '');
             resultEl.style.display = 'block';
+          }
+
+          // Non-factual short-circuit — show inline response, close SSE
+          if (data.result && data.result.category !== 'factual_claim') {
+            showNonFactualResponse(data.result.category);
           }
         }
       }

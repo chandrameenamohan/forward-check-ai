@@ -381,4 +381,36 @@ describe("Chat page — GET /chat", () => {
     expect(html).toContain("evtSource.onerror");
     expect(html).toContain("evtSource.onopen");
   });
+
+  // ── Task 5.2: Non-factual message handling — opinion, scam, greeting ──
+
+  it("GET /chat should contain non-factual response templates", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/chat`);
+    const html = await res.text();
+    // Non-factual response card element
+    expect(html).toContain("fc-chat-nonfactual");
+    // Category-specific response messages
+    expect(html).toContain("NON_FACTUAL_MESSAGES");
+    // Check Another Claim button should be present
+    expect(html).toContain("Check Another Claim");
+  });
+
+  it("GET /chat should contain opinion category handler", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/chat`);
+    const html = await res.text();
+    // Opinion category detection and response
+    expect(html).toContain("opinion");
+    expect(html).toContain("not a fact");
+  });
+
+  it("GET /chat should contain greeting category handler", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/chat`);
+    const html = await res.text();
+    // Greeting category detection and response
+    expect(html).toContain("greeting");
+    expect(html).toContain("Investigate This");
+  });
 });

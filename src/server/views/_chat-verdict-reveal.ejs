@@ -171,6 +171,10 @@
         var actions = document.getElementById('fc-chat-actions');
         if (actions) { actions.style.display = 'none'; actions.classList.remove('fc-reveal-actions-visible'); }
 
+        // Reset non-factual card
+        var nonfactual = document.getElementById('fc-chat-nonfactual');
+        if (nonfactual) nonfactual.style.display = 'none';
+
         // Reset progress bar
         ['classify','strategize','investigate','challenge','judge','verdict'].forEach(function(s) {
           var seg = document.getElementById('fc-seg-' + s);
@@ -232,3 +236,5 @@
       if (resetBtn) resetBtn.addEventListener('click', resetChat);
       var shareBtn2 = document.getElementById('fc-chat-action-share');
       if (shareBtn2) shareBtn2.addEventListener('click', shareVerdict);
+      var nonfactualResetBtn = document.getElementById('fc-chat-nonfactual-reset');
+      if (nonfactualResetBtn) nonfactualResetBtn.addEventListener('click', resetChat);

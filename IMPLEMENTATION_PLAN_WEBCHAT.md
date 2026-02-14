@@ -308,7 +308,7 @@
 - Test: `"GET /chat should contain network error message template"`
 
 ### Task 5.2: Non-factual message handling — opinion, satire, greeting
-- [ ]
+- [x]
 **Objective:** When the classifier returns a non-factual category, display a friendly inline response instead of running the full pipeline.
 **Details:**
 - Listen for `classifier:complete` event where `result.category` is not `factual_claim`
