@@ -1,0 +1,685 @@
+<%- include('_design-tokens') %>
+  <style>
+    :root {
+      --fc-verdict-color: <%= verdict.category === 'likely-true' ? '#22c55e' : verdict.category === 'partially-true' ? '#eab308' : verdict.category === 'unverified' ? '#6b7280' : verdict.category === 'likely-false' ? '#ef4444' : verdict.category === 'satire' ? '#a855f7' : '#3b82f6' %>;
+    }
+
+    .fc-wrapper {
+      position: relative;
+      z-index: 1;
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 4rem;
+    }
+
+    .fc-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--fc-border);
+      margin-bottom: 2.5rem;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--fc-text-dim);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .fc-topbar-brand { color: var(--fc-text-muted); font-weight: 500; }
+
+    /* ─── HERO ─── */
+    .fc-hero {
+      text-align: center;
+      padding: 3rem 0 2.5rem;
+      position: relative;
+    }
+
+    .fc-hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 320px;
+      height: 320px;
+      background: radial-gradient(circle, var(--fc-verdict-color) 0%, transparent 70%);
+      opacity: 0.06;
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .fc-verdict-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.6rem 1.6rem;
+      border: 2px solid var(--fc-verdict-color);
+      border-radius: 100px;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.8rem;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--fc-verdict-color);
+      background: color-mix(in srgb, var(--fc-verdict-color) 8%, transparent);
+      animation: badge-in 0.6s ease-out both;
+    }
+
+    @keyframes badge-in {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .fc-verdict-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--fc-verdict-color);
+      box-shadow: 0 0 8px var(--fc-verdict-color);
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .fc-confidence-ring {
+      margin: 2rem auto 0;
+      position: relative;
+      width: 160px;
+      height: 160px;
+    }
+
+    .fc-confidence-ring svg {
+      transform: rotate(-90deg);
+      width: 160px;
+      height: 160px;
+    }
+
+    .fc-confidence-ring .ring-bg {
+      fill: none;
+      stroke: var(--fc-surface-raised);
+      stroke-width: 8;
+    }
+
+    .fc-confidence-ring .ring-fill {
+      fill: none;
+      stroke: var(--fc-verdict-color);
+      stroke-width: 8;
+      stroke-linecap: round;
+      stroke-dasharray: <%= (verdict.confidence / 100 * 408).toFixed(1) %> 408;
+      filter: drop-shadow(0 0 6px var(--fc-verdict-color));
+      animation: ring-draw 1.2s ease-out both;
+    }
+
+    @keyframes ring-draw { from { stroke-dasharray: 0 408; } }
+
+    .fc-confidence-number {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .fc-confidence-value {
+      font-family: 'Instrument Serif', serif;
+      font-size: 3.2rem;
+      line-height: 1;
+      color: var(--fc-text);
+    }
+
+    .fc-confidence-pct {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--fc-text-dim);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-top: 0.2rem;
+    }
+
+    .fc-nuance-tag {
+      display: inline-block;
+      margin-top: 1.2rem;
+      padding: 0.25rem 0.8rem;
+      background: var(--fc-surface-raised);
+      border: 1px solid var(--fc-border);
+      border-radius: 4px;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--fc-text-muted);
+    }
+
+    .fc-deep-reasoning {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-top: 1rem;
+      padding: 0.3rem 0.9rem;
+      background: linear-gradient(135deg, rgba(168,85,247,0.12), rgba(59,130,246,0.12));
+      border: 1px solid rgba(168,85,247,0.3);
+      border-radius: 100px;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--fc-accent-purple);
+    }
+
+    .fc-deep-reasoning-icon {
+      width: 12px;
+      height: 12px;
+      animation: spin-slow 4s linear infinite;
+    }
+
+    @keyframes spin-slow { to { transform: rotate(360deg); } }
+
+    .fc-summary {
+      margin-top: 2rem;
+      font-family: 'Instrument Serif', serif;
+      font-size: 1.35rem;
+      font-style: italic;
+      line-height: 1.55;
+      color: var(--fc-text);
+      max-width: 580px;
+      margin-left: auto;
+      margin-right: auto;
+      animation: fade-up 0.7s ease-out 0.3s both;
+    }
+
+    @keyframes fade-up {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─── CONFIDENCE DECOMPOSITION ─── */
+    .fc-decomposition {
+      margin-top: 3rem;
+      padding: 1.5rem;
+      background: var(--fc-surface);
+      border: 1px solid var(--fc-border);
+      border-radius: 8px;
+      animation: fade-up 0.7s ease-out 0.5s both;
+    }
+
+    .fc-decomposition-title {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--fc-text-dim);
+      margin-bottom: 1.25rem;
+    }
+
+    .fc-bar-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 0.9rem;
+    }
+
+    .fc-bar-row:last-child { margin-bottom: 0; }
+
+    .fc-bar-label {
+      flex: 0 0 180px;
+      font-size: 0.78rem;
+      color: var(--fc-text-muted);
+      text-align: right;
+      font-weight: 500;
+    }
+
+    .fc-bar-track {
+      flex: 1;
+      height: 6px;
+      background: var(--fc-surface-raised);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .fc-bar-fill {
+      height: 100%;
+      border-radius: 3px;
+      background: var(--fc-verdict-color);
+      animation: bar-grow 1s ease-out 0.7s both;
+    }
+
+    @keyframes bar-grow { from { width: 0 !important; } }
+
+    .fc-bar-value {
+      flex: 0 0 36px;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--fc-text-dim);
+      text-align: right;
+    }
+
+    /* ─── SECTIONS ─── */
+    .fc-section {
+      margin-top: 2.5rem;
+      padding: 1.5rem;
+      background: var(--fc-surface);
+      border: 1px solid var(--fc-border);
+      border-radius: 8px;
+      animation: fade-up 0.7s ease-out both;
+    }
+
+    .fc-section-title {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--fc-text-dim);
+      margin-bottom: 1rem;
+      padding-bottom: 0.6rem;
+      border-bottom: 1px solid var(--fc-border);
+    }
+
+    .fc-section p, .fc-section li {
+      font-size: 0.88rem;
+      color: var(--fc-text-muted);
+      line-height: 1.65;
+    }
+
+    .fc-section ul { list-style: none; padding: 0; }
+
+    .fc-section li {
+      padding: 0.4rem 0;
+      padding-left: 1rem;
+      position: relative;
+    }
+
+    .fc-section li::before {
+      content: '\203A';
+      position: absolute;
+      left: 0;
+      color: var(--fc-verdict-color);
+      font-weight: 700;
+    }
+
+    .fc-section a {
+      color: var(--fc-accent-blue);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.2s;
+    }
+
+    .fc-section a:hover { border-bottom-color: var(--fc-accent-blue); }
+
+    .fc-section blockquote {
+      padding: 0.6rem 1rem;
+      border-left: 2px solid var(--fc-border);
+      color: var(--fc-text-dim);
+      font-style: italic;
+      font-size: 0.84rem;
+      margin: 0.5rem 0;
+    }
+
+    .fc-section em { color: var(--fc-text-dim); font-size: 0.84rem; }
+
+    .fc-agent-card {
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--fc-border);
+    }
+
+    .fc-agent-card:last-child { border-bottom: none; }
+
+    .fc-agent-role {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--fc-verdict-color);
+      margin-bottom: 0.4rem;
+    }
+
+    /* ─── MANIPULATION TECHNIQUE CARDS ─── */
+    .fc-manip-card {
+      padding: 1.25rem;
+      background: var(--fc-surface-raised);
+      border: 1px solid var(--fc-border);
+      border-radius: 6px;
+      margin-bottom: 0.75rem;
+    }
+
+    .fc-manip-card:last-child { margin-bottom: 0; }
+
+    .fc-manip-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.6rem;
+    }
+
+    .fc-manip-name {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--fc-accent-red);
+    }
+
+    .fc-manip-severity-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--fc-text-dim);
+    }
+
+    .fc-manip-desc {
+      font-size: 0.85rem;
+      color: var(--fc-text-muted);
+      line-height: 1.55;
+      margin-bottom: 0.75rem;
+    }
+
+    .fc-manip-quote {
+      padding: 0.5rem 0.9rem;
+      border-left: 2px solid var(--fc-accent-red);
+      background: rgba(239, 68, 68, 0.04);
+      border-radius: 0 4px 4px 0;
+      font-size: 0.8rem;
+      font-style: italic;
+      color: var(--fc-text-dim);
+      line-height: 1.5;
+      margin-bottom: 0.75rem;
+    }
+
+    .fc-manip-severity-bar {
+      height: 4px;
+      background: var(--fc-surface);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .fc-manip-severity-fill {
+      height: 100%;
+      border-radius: 2px;
+      background: linear-gradient(90deg, var(--fc-accent-amber), var(--fc-accent-red));
+      animation: bar-grow 1s ease-out both;
+    }
+
+    /* ─── AI REASONING ─── */
+    .fc-reasoning-block {
+      padding: 1.25rem;
+      background: var(--fc-surface-raised);
+      border: 1px solid var(--fc-border);
+      border-radius: 6px;
+      margin-bottom: 0.75rem;
+    }
+
+    .fc-reasoning-block:last-child { margin-bottom: 0; }
+
+    .fc-reasoning-label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .fc-reasoning-agent {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--fc-accent-purple);
+    }
+
+    .fc-reasoning-outcome {
+      display: inline-flex;
+      padding: 0.15rem 0.5rem;
+      border-radius: 100px;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .fc-outcome-failed {
+      background: rgba(34, 197, 94, 0.1);
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      color: var(--fc-accent-green);
+    }
+
+    .fc-outcome-succeeded {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: var(--fc-accent-red);
+    }
+
+    .fc-outcome-partial {
+      background: rgba(234, 179, 8, 0.1);
+      border: 1px solid rgba(234, 179, 8, 0.3);
+      color: var(--fc-accent-amber);
+    }
+
+    .fc-reasoning-text {
+      font-size: 0.84rem;
+      color: var(--fc-text-muted);
+      line-height: 1.6;
+      font-style: italic;
+    }
+
+    .fc-reasoning-assessment {
+      font-size: 0.85rem;
+      color: var(--fc-text-muted);
+      line-height: 1.6;
+      margin-bottom: 0.6rem;
+    }
+
+    /* ─── FALSIFICATION CRITERIA ─── */
+    .fc-criteria-group {
+      margin-bottom: 1rem;
+    }
+
+    .fc-criteria-group:last-child { margin-bottom: 0; }
+
+    .fc-criteria-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+
+    .fc-criteria-prove { color: var(--fc-accent-green); }
+    .fc-criteria-disprove { color: var(--fc-accent-red); }
+
+    .fc-criteria-item {
+      padding: 0.35rem 0;
+      padding-left: 1rem;
+      position: relative;
+      font-size: 0.84rem;
+      color: var(--fc-text-muted);
+      line-height: 1.55;
+    }
+
+    .fc-criteria-item::before {
+      content: '\203A';
+      position: absolute;
+      left: 0;
+      font-weight: 700;
+    }
+
+    .fc-criteria-prove + .fc-criteria-item::before { color: var(--fc-accent-green); }
+    .fc-criteria-disprove ~ .fc-criteria-item::before { color: var(--fc-accent-red); }
+
+    /* ─── ACCORDION / AGENT REPORTS ─── */
+    .fc-accordion { border: none; }
+
+    .fc-accordion-item {
+      background: transparent;
+      border: 1px solid var(--fc-border);
+      border-radius: 6px !important;
+      margin-bottom: 0.5rem;
+      overflow: hidden;
+    }
+
+    .fc-accordion-item:last-child { margin-bottom: 0; }
+
+    .fc-accordion-btn {
+      background: var(--fc-surface-raised);
+      color: var(--fc-text);
+      font-size: 0.85rem;
+      padding: 0.85rem 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      box-shadow: none !important;
+    }
+
+    .fc-accordion-btn::after {
+      filter: invert(0.5);
+    }
+
+    .fc-accordion-btn:not(.collapsed) {
+      background: var(--fc-surface-raised);
+      color: var(--fc-text);
+    }
+
+    .fc-agent-role-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--fc-verdict-color);
+    }
+
+    .fc-agent-confidence-badge {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      padding: 0.15rem 0.5rem;
+      background: var(--fc-surface);
+      border: 1px solid var(--fc-border);
+      border-radius: 100px;
+      color: var(--fc-text-muted);
+      margin-left: auto;
+    }
+
+    .fc-accordion-body {
+      background: var(--fc-surface);
+      border-top: 1px solid var(--fc-border);
+      padding: 1.25rem;
+    }
+
+    .fc-agent-summary {
+      font-size: 0.88rem;
+      color: var(--fc-text);
+      line-height: 1.6;
+      margin-bottom: 0.5rem;
+    }
+
+    .fc-agent-assessment {
+      font-size: 0.84rem;
+      color: var(--fc-text-muted);
+      line-height: 1.6;
+      margin-bottom: 1rem;
+    }
+
+    .fc-finding-card {
+      padding: 0.75rem;
+      background: var(--fc-surface-raised);
+      border: 1px solid var(--fc-border);
+      border-radius: 4px;
+      margin-bottom: 0.5rem;
+    }
+
+    .fc-finding-card:last-child { margin-bottom: 0; }
+
+    .fc-finding-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .fc-finding-claim {
+      font-size: 0.82rem;
+      color: var(--fc-text);
+      font-weight: 500;
+    }
+
+    .fc-finding-assessment {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.1rem 0.4rem;
+      border-radius: 3px;
+      white-space: nowrap;
+    }
+
+    .fc-assessment-supported { background: rgba(34,197,94,0.1); color: var(--fc-accent-green); border: 1px solid rgba(34,197,94,0.3); }
+    .fc-assessment-contradicted { background: rgba(239,68,68,0.1); color: var(--fc-accent-red); border: 1px solid rgba(239,68,68,0.3); }
+    .fc-assessment-insufficient_evidence { background: rgba(107,114,128,0.1); color: var(--fc-accent-gray); border: 1px solid rgba(107,114,128,0.3); }
+    .fc-assessment-mixed { background: rgba(234,179,8,0.1); color: var(--fc-accent-amber); border: 1px solid rgba(234,179,8,0.3); }
+
+    .fc-finding-sources { margin-top: 0.5rem; }
+
+    .fc-finding-source {
+      padding: 0.4rem 0;
+    }
+
+    .fc-finding-source a {
+      color: var(--fc-accent-blue);
+      text-decoration: none;
+      font-size: 0.8rem;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.2s;
+    }
+
+    .fc-finding-source a:hover { border-bottom-color: var(--fc-accent-blue); }
+
+    .fc-source-credibility {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.58rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--fc-text-dim);
+      margin-left: 0.5rem;
+    }
+
+    .fc-finding-source blockquote {
+      padding: 0.4rem 0.8rem;
+      border-left: 2px solid var(--fc-border);
+      color: var(--fc-text-dim);
+      font-style: italic;
+      font-size: 0.78rem;
+      margin: 0.3rem 0 0;
+      line-height: 1.5;
+    }
+
+    .fc-footer {
+      margin-top: 3rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--fc-border);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--fc-text-dim);
+      letter-spacing: 0.06em;
+    }
+
+    .fc-footer-item { display: flex; align-items: center; gap: 0.4rem; }
+    .fc-footer-label { text-transform: uppercase; letter-spacing: 0.1em; }
+
+    @media (max-width: 640px) {
+      .fc-wrapper { padding: 1.25rem 1rem 3rem; }
+      .fc-hero { padding: 2rem 0 2rem; }
+      .fc-confidence-ring { width: 130px; height: 130px; }
+      .fc-confidence-ring svg { width: 130px; height: 130px; }
+      .fc-confidence-value { font-size: 2.6rem; }
+      .fc-summary { font-size: 1.15rem; }
+      .fc-bar-label { flex: 0 0 120px; font-size: 0.7rem; }
+      .fc-bar-value { font-size: 0.65rem; }
+      .fc-footer { flex-direction: column; gap: 0.6rem; }
+    }
+  </style>

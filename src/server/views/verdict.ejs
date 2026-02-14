@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verdict — ForwardCheck</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Instrument+Serif:ital@0;1&family=Satoshi:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <%- include('_verdict-styles') %>
+</head>
+<body>
+  <div class="fc-wrapper">
+
+    <div class="fc-topbar">
+      <span class="fc-topbar-brand">ForwardCheck</span>
+      <span>Investigation #<%= id.slice(0, 8) %></span>
+    </div>
+
+    <!-- ═══ HERO SECTION ═══ -->
+    <section class="fc-hero">
+      <div class="fc-verdict-badge">
+        <span class="fc-verdict-dot"></span>
+        <%= verdict.category %>
+      </div>
+
+      <% if (verdict.nuanceTag) { %>
+        <div><span class="fc-nuance-tag"><%= verdict.nuanceTag %></span></div>
+      <% } %>
+
+      <% if (verdict.deepReasoningActivated) { %>
+        <div>
+          <span class="fc-deep-reasoning">
+            <svg class="fc-deep-reasoning-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2a10 10 0 1 0 10 10" stroke-linecap="round"/>
+            </svg>
+            Deep Reasoning Mode
+          </span>
+        </div>
+      <% } %>
+
+      <div class="fc-confidence-ring">
+        <svg viewBox="0 0 140 140">
+          <circle class="ring-bg" cx="70" cy="70" r="65"/>
+          <circle class="ring-fill" cx="70" cy="70" r="65"/>
+        </svg>
+        <div class="fc-confidence-number">
+          <span class="fc-confidence-value"><%= verdict.confidence %></span>
+          <span class="fc-confidence-pct">% confidence</span>
+        </div>
+      </div>
+
+      <p class="fc-summary"><%= verdict.summary %></p>
+    </section>
+
+    <!-- ═══ CONFIDENCE DECOMPOSITION ═══ -->
+    <div class="fc-decomposition">
+      <div class="fc-decomposition-title">Confidence Decomposition</div>
+
+      <div class="fc-bar-row">
+        <span class="fc-bar-label">Evidence Strength</span>
+        <div class="fc-bar-track">
+          <div class="fc-bar-fill" style="width: <%= verdict.confidenceDecomposition.evidenceStrength %>%"></div>
+        </div>
+        <span class="fc-bar-value"><%= verdict.confidenceDecomposition.evidenceStrength %></span>
+      </div>
+
+      <div class="fc-bar-row">
+        <span class="fc-bar-label">Source Reliability</span>
+        <div class="fc-bar-track">
+          <div class="fc-bar-fill" style="width: <%= verdict.confidenceDecomposition.sourceReliability %>%"></div>
+        </div>
+        <span class="fc-bar-value"><%= verdict.confidenceDecomposition.sourceReliability %></span>
+      </div>
+
+      <div class="fc-bar-row">
+        <span class="fc-bar-label">Claim Complexity</span>
+        <div class="fc-bar-track">
+          <div class="fc-bar-fill" style="width: <%= verdict.confidenceDecomposition.claimComplexity %>%"></div>
+        </div>
+        <span class="fc-bar-value"><%= verdict.confidenceDecomposition.claimComplexity %></span>
+      </div>
+
+      <div class="fc-bar-row">
+        <span class="fc-bar-label">Counter-Argument Resilience</span>
+        <div class="fc-bar-track">
+          <div class="fc-bar-fill" style="width: <%= verdict.confidenceDecomposition.counterArgumentResilience %>%"></div>
+        </div>
+        <span class="fc-bar-value"><%= verdict.confidenceDecomposition.counterArgumentResilience %></span>
+      </div>
+    </div>
+
+    <!-- ═══ MANIPULATION TECHNIQUES ═══ -->
+    <% if (verdict.manipulationTechniques && verdict.manipulationTechniques.length > 0) { %>
+      <div class="fc-section">
+        <div class="fc-section-title">Manipulation Techniques</div>
+        <% verdict.manipulationTechniques.forEach(function(tech) { %>
+          <div class="fc-manip-card">
+            <div class="fc-manip-header">
+              <span class="fc-manip-name"><%= tech.technique %></span>
+              <span class="fc-manip-severity-label"><%= tech.severity %>/100</span>
+            </div>
+            <p class="fc-manip-desc"><%= tech.description %></p>
+            <div class="fc-manip-quote"><%= tech.evidenceQuote %></div>
+            <div class="fc-manip-severity-bar">
+              <div class="fc-manip-severity-fill" style="width: <%= tech.severity %>%"></div>
+            </div>
+          </div>
+        <% }); %>
+      </div>
+    <% } %>
+
+    <!-- ═══ AI REASONING ═══ -->
+    <% if (challengeReport || verdict.thinkingSummary) { %>
+      <div class="fc-section">
+        <div class="fc-section-title">AI Reasoning</div>
+
+        <% if (challengeReport) { %>
+          <div class="fc-reasoning-block">
+            <div class="fc-reasoning-label">
+              <span class="fc-reasoning-agent">Devil's Advocate</span>
+              <span class="fc-reasoning-outcome <%= verdict.devilsAdvocateOutcome === 'counter_argument_failed' ? 'fc-outcome-failed' : verdict.devilsAdvocateOutcome === 'counter_argument_succeeded' ? 'fc-outcome-succeeded' : 'fc-outcome-partial' %>"><%= verdict.devilsAdvocateOutcome %></span>
+            </div>
+            <p class="fc-reasoning-assessment"><%= challengeReport.overallAssessment %></p>
+            <% if (challengeReport.thinkingExcerpt) { %>
+              <p class="fc-reasoning-text"><%= challengeReport.thinkingExcerpt %></p>
+            <% } %>
+          </div>
+        <% } %>
+
+        <% if (verdict.thinkingSummary) { %>
+          <div class="fc-reasoning-block">
+            <div class="fc-reasoning-label">
+              <span class="fc-reasoning-agent">Judge</span>
+            </div>
+            <p class="fc-reasoning-text"><%= verdict.thinkingSummary %></p>
+          </div>
+        <% } %>
+      </div>
+    <% } %>
+
+    <!-- ═══ FALSIFICATION CRITERIA ═══ -->
+    <% if (verdict.falsificationCriteria) { %>
+      <div class="fc-section">
+        <div class="fc-section-title">What Would Change This Verdict</div>
+        <% if (verdict.falsificationCriteria.whatWouldProveTrue && verdict.falsificationCriteria.whatWouldProveTrue.length > 0) { %>
+          <div class="fc-criteria-group">
+            <div class="fc-criteria-label fc-criteria-prove">Would prove true</div>
+            <% verdict.falsificationCriteria.whatWouldProveTrue.forEach(function(item) { %>
+              <div class="fc-criteria-item"><%= item %></div>
+            <% }); %>
+          </div>
+        <% } %>
+        <% if (verdict.falsificationCriteria.whatWouldProveFalse && verdict.falsificationCriteria.whatWouldProveFalse.length > 0) { %>
+          <div class="fc-criteria-group">
+            <div class="fc-criteria-label fc-criteria-disprove">Would prove false</div>
+            <% verdict.falsificationCriteria.whatWouldProveFalse.forEach(function(item) { %>
+              <div class="fc-criteria-item"><%= item %></div>
+            <% }); %>
+          </div>
+        <% } %>
+      </div>
+    <% } %>
+
+    <!-- ═══ REASONING ═══ -->
+    <div class="fc-section">
+      <div class="fc-section-title">Reasoning</div>
+      <p><%= verdict.reasoning %></p>
+    </div>
+
+    <!-- ═══ KEY FINDINGS ═══ -->
+    <% if (verdict.keyFindings && verdict.keyFindings.length > 0) { %>
+      <div class="fc-section">
+        <div class="fc-section-title">Key Findings</div>
+        <ul>
+          <% verdict.keyFindings.forEach(function(finding) { %>
+            <li><%= finding %></li>
+          <% }); %>
+        </ul>
+      </div>
+    <% } %>
+
+    <!-- ═══ SOURCES ═══ -->
+    <% if (verdict.sources && verdict.sources.length > 0) { %>
+      <div class="fc-section">
+        <div class="fc-section-title">Sources</div>
+        <ul>
+          <% verdict.sources.forEach(function(source) { %>
+            <li><a href="<%= source.url %>"><%= source.title %></a> — <%= source.relevance %></li>
+          <% }); %>
+        </ul>
+      </div>
+    <% } %>
+
+    <!-- ═══ ORIGINAL CLAIM ═══ -->
+    <div class="fc-section">
+      <div class="fc-section-title">Original Claim</div>
+      <p><%= originalMessage %></p>
+    </div>
+
+    <!-- ═══ AGENT REPORTS ═══ -->
+    <% if (agentReports && Array.isArray(agentReports) && agentReports.length > 0) { %>
+      <div class="fc-section">
+        <div class="fc-section-title">Agent Reports</div>
+        <div class="accordion fc-accordion" id="agentReportsAccordion">
+          <% agentReports.forEach(function(report, idx) { %>
+            <div class="accordion-item fc-accordion-item">
+              <h2 class="accordion-header">
+                <button class="accordion-button fc-accordion-btn collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#agentReport<%= idx %>" aria-expanded="false" aria-controls="agentReport<%= idx %>">
+                  <span class="fc-agent-role-label"><%= report.agentRole %></span>
+                  <span class="fc-agent-confidence-badge"><%= report.confidenceScore %>%</span>
+                </button>
+              </h2>
+              <div id="agentReport<%= idx %>" class="accordion-collapse collapse" data-bs-parent="#agentReportsAccordion">
+                <div class="accordion-body fc-accordion-body">
+                  <p class="fc-agent-summary"><%= report.summary %></p>
+                  <p class="fc-agent-assessment"><%= report.overallAssessment %></p>
+                  <% if (report.findings && report.findings.length > 0) { %>
+                    <div class="fc-findings">
+                      <% report.findings.forEach(function(finding) { %>
+                        <div class="fc-finding-card">
+                          <div class="fc-finding-header">
+                            <span class="fc-finding-claim"><%= finding.claim %></span>
+                            <span class="fc-finding-assessment fc-assessment-<%= finding.assessment %>"><%= finding.assessment %></span>
+                          </div>
+                          <% if (finding.sources && finding.sources.length > 0) { %>
+                            <div class="fc-finding-sources">
+                              <% finding.sources.forEach(function(src) { %>
+                                <div class="fc-finding-source">
+                                  <a href="<%= src.url %>" target="_blank" rel="noopener"><%= src.title %></a>
+                                  <span class="fc-source-credibility"><%= src.credibility %></span>
+                                  <% if (src.relevantSnippet) { %>
+                                    <blockquote><%= src.relevantSnippet %></blockquote>
+                                  <% } %>
+                                </div>
+                              <% }); %>
+                            </div>
+                          <% } %>
+                        </div>
+                      <% }); %>
+                    </div>
+                  <% } %>
+                </div>
+              </div>
+            </div>
+          <% }); %>
+        </div>
+      </div>
+    <% } %>
+
+    <footer class="fc-footer">
+      <% if (pipelineDurationMs) { %>
+        <div class="fc-footer-item">
+          <span class="fc-footer-label">Duration</span>
+          <span><%= (pipelineDurationMs / 1000).toFixed(1) %>s</span>
+        </div>
+      <% } %>
+      <% if (totalCostUsd) { %>
+        <div class="fc-footer-item">
+          <span class="fc-footer-label">Cost</span>
+          <span>$<%= totalCostUsd.toFixed(2) %></span>
+        </div>
+      <% } %>
+      <% if (verdict.deepReasoningActivated) { %>
+        <div class="fc-footer-item">
+          <span class="fc-footer-label">Deep Reasoning</span>
+          <span>Active</span>
+        </div>
+      <% } %>
+      <div class="fc-footer-item">
+        <span class="fc-footer-label">ID</span>
+        <span><%= id %></span>
+      </div>
+    </footer>
+
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
