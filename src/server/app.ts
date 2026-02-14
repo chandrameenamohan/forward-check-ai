@@ -63,6 +63,11 @@ export function createApp(repo?: InvestigationRepository, eventBus?: PipelineEve
     });
   });
 
+  // Chat page
+  app.get("/chat", (_req: Request, res: Response) => {
+    res.render("chat");
+  });
+
   // Investigation API routes (only when repo is provided)
   if (repo) {
     app.use(createInvestigateRouter(repo));

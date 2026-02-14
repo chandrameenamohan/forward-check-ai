@@ -69,7 +69,7 @@
 ## Phase 1: Chat Page Scaffold
 
 ### Task 1.1: Chat page route and EJS skeleton
-- [ ]
+- [x]
 **Objective:** Add `GET /chat` route that renders a new `chat.ejs` template with the existing design system.
 **Details:**
 - Create `src/server/views/chat.ejs` — full HTML page skeleton
