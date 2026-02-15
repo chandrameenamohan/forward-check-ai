@@ -2,7 +2,6 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import type { ClaudeClient } from "../../../src/services/claude-client.js";
 import type { ToolRegistry } from "../../../src/tools/tool-registry.js";
 import type { InvestigationRepository } from "../../../src/db/investigation-repository.js";
-import type { AgentReport } from "../../../src/schemas/agent-report.js";
 import {
   makeClassifierResult,
   makeSearchStrategy,
@@ -10,6 +9,10 @@ import {
   makeChallengeReport,
   makeFinalVerdict,
 } from "../../fixtures/index.js";
+import {
+  PipelineEventBus,
+  type PipelineEvent,
+} from "../../../src/orchestrator/pipeline-events.js";
 
 // ── Mock Agent Modules ─────────────────────────────────────────
 
@@ -67,7 +70,7 @@ import { runPatternMatching } from "../../../src/agents/investigators/pattern-ma
 import { runDevilsAdvocate } from "../../../src/agents/devils-advocate-agent.js";
 import { runJudge } from "../../../src/agents/judge-agent.js";
 import { enforceConfidenceGates } from "../../../src/formatter/confidence-gates.js";
-import { enrichMessageWithUrl } from "../../../src/services/url-extractor.js";
+import { detectUrl, enrichMessageWithUrl } from "../../../src/services/url-extractor.js";
 import { InvestigationPipeline } from "../../../src/orchestrator/pipeline.js";
 
 const mockedRunClassifier = vi.mocked(runClassifier);
@@ -78,6 +81,7 @@ const mockedRunPatternMatching = vi.mocked(runPatternMatching);
 const mockedRunDevilsAdvocate = vi.mocked(runDevilsAdvocate);
 const mockedRunJudge = vi.mocked(runJudge);
 const mockedEnforceConfidenceGates = vi.mocked(enforceConfidenceGates);
+const mockedDetectUrl = vi.mocked(detectUrl);
 const mockedEnrichMessageWithUrl = vi.mocked(enrichMessageWithUrl);
 
 // ── Helper: create mock dependencies ───────────────────────────
@@ -140,9 +144,12 @@ Title: Test Article
 Article content:
 This article claims the earth is flat.`;
 
+    mockedDetectUrl.mockReturnValue("https://example.com/article");
     mockedEnrichMessageWithUrl.mockResolvedValue({
       enrichedMessage: enrichedText,
       sourceUrl: "https://example.com/article",
+      title: "Test Article",
+      wordCount: 50,
     });
 
     setupFullPipelineMocks();
@@ -160,9 +167,12 @@ Title: Test Article
 Article content:
 Scientists discover new species in the Amazon.`;
 
+    mockedDetectUrl.mockReturnValue("https://example.com/article");
     mockedEnrichMessageWithUrl.mockResolvedValue({
       enrichedMessage: enrichedText,
       sourceUrl: "https://example.com/article",
+      title: "Test Article",
+      wordCount: 30,
     });
 
     setupFullPipelineMocks();
@@ -174,7 +184,8 @@ Scientists discover new species in the Amazon.`;
   });
 
   it("should work unchanged for plain text messages", async () => {
-    // No URL detected — enrichMessageWithUrl returns null
+    // No URL detected — detectUrl returns null
+    mockedDetectUrl.mockReturnValue(null);
     mockedEnrichMessageWithUrl.mockResolvedValue(null);
 
     setupFullPipelineMocks();
@@ -190,9 +201,12 @@ Scientists discover new species in the Amazon.`;
   });
 
   it("should store source_url in database when URL detected", async () => {
+    mockedDetectUrl.mockReturnValue("https://example.com/news/123");
     mockedEnrichMessageWithUrl.mockResolvedValue({
       enrichedMessage: "[Article from example.com]\nTitle: Test\n\nContent here",
       sourceUrl: "https://example.com/news/123",
+      title: "Test",
+      wordCount: 10,
     });
 
     setupFullPipelineMocks();
@@ -207,7 +221,8 @@ Scientists discover new species in the Amazon.`;
   });
 
   it("should handle URL extraction failure gracefully and fall back to raw message", async () => {
-    // enrichMessageWithUrl returns null when extraction fails (logs warning internally)
+    // detectUrl finds a URL, but enrichMessageWithUrl returns null on failure
+    mockedDetectUrl.mockReturnValue("https://broken-url.example.com/article");
     mockedEnrichMessageWithUrl.mockResolvedValue(null);
 
     setupFullPipelineMocks();
@@ -220,5 +235,87 @@ Scientists discover new species in the Amazon.`;
 
     // No source URL should be stored
     expect(mockRepo.updateSourceUrl).not.toHaveBeenCalled();
+  });
+});
+
+// ── URL fetch SSE event tests ───────────────────────────────────
+
+describe("InvestigationPipeline — URL fetch SSE events", () => {
+  let pipeline: InvestigationPipeline;
+  let mockClient: ClaudeClient;
+  let mockRegistry: ToolRegistry;
+  let mockRepo: InvestigationRepository;
+  let eventBus: PipelineEventBus;
+  let emittedEvents: PipelineEvent[];
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockClient = {} as ClaudeClient;
+    mockRegistry = {} as ToolRegistry;
+    mockRepo = createMockRepo();
+    eventBus = new PipelineEventBus({ historyTtlMs: 60_000, cleanupIntervalMs: 60_000 });
+    emittedEvents = [];
+    eventBus.subscribe("test-investigation-id", (event) => {
+      emittedEvents.push(event);
+    });
+    pipeline = new InvestigationPipeline(mockClient, mockRegistry, mockRepo, undefined, eventBus);
+  });
+
+  it("should emit url-fetch:start and url-fetch:complete events for URL input", async () => {
+    mockedDetectUrl.mockReturnValue("https://example.com/article");
+    mockedEnrichMessageWithUrl.mockResolvedValue({
+      enrichedMessage: "[Article from example.com]\nTitle: Test Article\n\nSome article content here with facts.",
+      sourceUrl: "https://example.com/article",
+      title: "Test Article",
+      wordCount: 250,
+    });
+
+    setupFullPipelineMocks();
+
+    await pipeline.investigate("https://example.com/article");
+
+    const fetchStartEvents = emittedEvents.filter((e) => e.kind === "url-fetch:start");
+    const fetchCompleteEvents = emittedEvents.filter((e) => e.kind === "url-fetch:complete");
+
+    expect(fetchStartEvents).toHaveLength(1);
+    expect(fetchCompleteEvents).toHaveLength(1);
+
+    const startEvent = fetchStartEvents[0]!;
+    expect(startEvent).toMatchObject({
+      kind: "url-fetch:start",
+      investigationId: "test-investigation-id",
+      url: "https://example.com/article",
+    });
+
+    const completeEvent = fetchCompleteEvents[0]!;
+    expect(completeEvent).toMatchObject({
+      kind: "url-fetch:complete",
+      investigationId: "test-investigation-id",
+      url: "https://example.com/article",
+      title: "Test Article",
+      wordCount: 250,
+    });
+
+    // url-fetch events should come BEFORE classifier:start
+    const startIdx = emittedEvents.indexOf(startEvent);
+    const completeIdx = emittedEvents.indexOf(completeEvent);
+    const classifierStartIdx = emittedEvents.findIndex((e) => e.kind === "classifier:start");
+    expect(startIdx).toBeLessThan(classifierStartIdx);
+    expect(completeIdx).toBeLessThan(classifierStartIdx);
+  });
+
+  it("should not emit url-fetch events for plain text input", async () => {
+    mockedDetectUrl.mockReturnValue(null);
+    mockedEnrichMessageWithUrl.mockResolvedValue(null);
+
+    setupFullPipelineMocks();
+
+    await pipeline.investigate("PM Modi announced Rs 5000 direct transfer");
+
+    const fetchStartEvents = emittedEvents.filter((e) => e.kind === "url-fetch:start");
+    const fetchCompleteEvents = emittedEvents.filter((e) => e.kind === "url-fetch:complete");
+
+    expect(fetchStartEvents).toHaveLength(0);
+    expect(fetchCompleteEvents).toHaveLength(0);
   });
 });

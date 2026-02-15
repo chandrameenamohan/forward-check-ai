@@ -19,6 +19,18 @@ interface PipelineStartEvent extends BaseEvent {
   sourceUrl?: string;
 }
 
+interface UrlFetchStartEvent extends BaseEvent {
+  kind: "url-fetch:start";
+  url: string;
+}
+
+interface UrlFetchCompleteEvent extends BaseEvent {
+  kind: "url-fetch:complete";
+  url: string;
+  title: string;
+  wordCount: number;
+}
+
 interface ClassifierStartEvent extends BaseEvent {
   kind: "classifier:start";
 }
@@ -102,6 +114,8 @@ interface PipelineErrorEvent extends BaseEvent {
 
 export type PipelineEvent =
   | PipelineStartEvent
+  | UrlFetchStartEvent
+  | UrlFetchCompleteEvent
   | ClassifierStartEvent
   | ClassifierCompleteEvent
   | StrategistStartEvent

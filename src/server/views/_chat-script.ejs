@@ -295,6 +295,22 @@
           resetPipelineTimeout();
         });
 
+        // ── URL fetch ──
+        evtSource.addEventListener('url-fetch:start', function(e) {
+          var data = JSON.parse(e.data);
+          hideSpinner();
+          resetPipelineTimeout();
+          var domain = '';
+          try { domain = new URL(data.url).hostname; } catch (_) { domain = data.url; }
+          showPipelineStatus('Reading article from ' + domain + '...', 'info');
+        });
+        evtSource.addEventListener('url-fetch:complete', function(e) {
+          var data = JSON.parse(e.data);
+          resetPipelineTimeout();
+          var words = data.wordCount || 0;
+          showPipelineStatus('Article loaded (' + words + ' words). Investigating...', 'info');
+        });
+
         // ── Classifier ──
         evtSource.addEventListener('classifier:start', function(e) {
           var data = JSON.parse(e.data);

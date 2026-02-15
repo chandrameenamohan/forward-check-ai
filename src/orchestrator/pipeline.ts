@@ -6,7 +6,7 @@ import type { AgentReport } from "../schemas/agent-report.js";
 import type { PipelineStage } from "../bot/status-updater.js";
 import type { PipelineEventBus } from "./pipeline-events.js";
 import { ClaimCache } from "../services/claim-cache.js";
-import { enrichMessageWithUrl } from "../services/url-extractor.js";
+import { detectUrl, enrichMessageWithUrl } from "../services/url-extractor.js";
 import { runClassifier } from "../agents/classifier-agent.js";
 import { handleNonFactual } from "../agents/non-factual-handler.js";
 import { runStrategist } from "../agents/strategist-agent.js";
@@ -121,10 +121,19 @@ export class InvestigationPipeline {
     let sourceUrl = options?.sourceUrl;
 
     if (!sourceUrl) {
-      const urlResult = await enrichMessageWithUrl(message);
-      if (urlResult) {
-        effectiveMessage = urlResult.enrichedMessage;
-        sourceUrl = urlResult.sourceUrl;
+      const detectedUrl = detectUrl(message);
+      if (detectedUrl) {
+        this.emitEvent({ kind: "url-fetch:start", investigationId, url: detectedUrl, timestamp: Date.now() });
+        const urlResult = await enrichMessageWithUrl(message);
+        if (urlResult) {
+          effectiveMessage = urlResult.enrichedMessage;
+          sourceUrl = urlResult.sourceUrl;
+          this.emitEvent({
+            kind: "url-fetch:complete", investigationId,
+            url: urlResult.sourceUrl, title: urlResult.title,
+            wordCount: urlResult.wordCount, timestamp: Date.now(),
+          });
+        }
       }
     } else if (options?.extractedUrlContent) {
       effectiveMessage = options.extractedUrlContent;

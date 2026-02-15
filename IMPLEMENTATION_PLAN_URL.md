@@ -223,7 +223,7 @@
 - All existing chat tests pass. `npx tsc --noEmit` passes.
 
 ### Task 2.3: Add URL extraction SSE events
-- [ ]
+- [x]
 **Objective:** Add SSE events for URL extraction status so the web chat and live page show "Reading article..." during extraction.
 **Details:**
 - Edit `src/orchestrator/pipeline-events.ts`:

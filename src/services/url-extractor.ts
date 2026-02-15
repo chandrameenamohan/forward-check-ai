@@ -118,7 +118,7 @@ export async function fetchUrlContent(
  */
 export async function enrichMessageWithUrl(
   message: string,
-): Promise<{ enrichedMessage: string; sourceUrl: string } | null> {
+): Promise<{ enrichedMessage: string; sourceUrl: string; title: string; wordCount: number } | null> {
   const url = detectUrl(message);
   if (!url) {
     return null;
@@ -156,5 +156,7 @@ export async function enrichMessageWithUrl(
   return {
     enrichedMessage: parts.join("\n"),
     sourceUrl: url,
+    title: extraction.title,
+    wordCount: extraction.wordCount,
   };
 }

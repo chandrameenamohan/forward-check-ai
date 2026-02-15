@@ -175,6 +175,22 @@
         hideSpinner();
       });
 
+      // ── URL fetch events ──
+
+      evtSource.addEventListener('url-fetch:start', function(e) {
+        var data = JSON.parse(e.data);
+        hideSpinner();
+        var domain = '';
+        try { domain = new URL(data.url).hostname; } catch (_) { domain = data.url; }
+        showStatus('Reading article from ' + domain + '...', 'info');
+      });
+
+      evtSource.addEventListener('url-fetch:complete', function(e) {
+        var data = JSON.parse(e.data);
+        var words = data.wordCount || 0;
+        showStatus('Article loaded (' + words + ' words). Investigating...', 'info');
+      });
+
       // ── Classifier events ──
 
       evtSource.addEventListener('classifier:start', function(e) {
