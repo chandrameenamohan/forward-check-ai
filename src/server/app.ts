@@ -116,6 +116,8 @@ export function createApp(repo?: InvestigationRepository, eventBus?: PipelineEve
 
   // Feedback routes (optional — works without InvestigationRepository)
   if (feedbackRepo) {
+    const feedbackRateLimiter = createRateLimiter(5, 900_000);
+    app.use("/api/feedback", feedbackRateLimiter);
     app.use(createFeedbackRouter(feedbackRepo, githubService));
   }
 

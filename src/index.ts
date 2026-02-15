@@ -3,7 +3,9 @@ import { createLogger } from "./config/logger.js";
 import { createDatabase } from "./db/connection.js";
 import { runMigrations } from "./db/migrations.js";
 import { InvestigationRepository } from "./db/investigation-repository.js";
+import { FeedbackRepository } from "./db/feedback-repository.js";
 import { ClaudeClient } from "./services/claude-client.js";
+import { GitHubIssueService } from "./services/github-issues.js";
 import { ToolRegistry } from "./tools/tool-registry.js";
 import {
   braveWebSearch,
@@ -36,6 +38,22 @@ logger.info({ path: config.DATABASE_PATH }, "Database initialized");
 
 // 4. Create investigation repository
 const repo = new InvestigationRepository(db);
+
+// 4b. Create feedback repository
+const feedbackRepo = new FeedbackRepository(db);
+
+// 4c. Conditionally create GitHub issue service
+let githubService: GitHubIssueService | undefined;
+if (config.GITHUB_TOKEN) {
+  githubService = new GitHubIssueService({
+    token: config.GITHUB_TOKEN,
+    owner: config.GITHUB_REPO_OWNER,
+    repo: config.GITHUB_REPO_NAME,
+  });
+  logger.info("GitHub issue service initialized");
+} else {
+  logger.warn("GITHUB_TOKEN not set — feedback will be saved locally only");
+}
 
 // 5. Create Claude client
 const client = new ClaudeClient(config.ANTHROPIC_API_KEY);
@@ -77,7 +95,7 @@ const eventBus = new PipelineEventBus();
 const pipeline = new InvestigationPipeline(client, toolRegistry, repo, undefined, eventBus);
 
 // 9. Create Express app with routes (with event bus for SSE endpoint)
-const app = createApp(repo, eventBus, pipeline);
+const app = createApp(repo, eventBus, pipeline, feedbackRepo, githubService);
 
 // 10. Create Telegram bot and wire message handler
 const bot = createBot(config.TELEGRAM_BOT_TOKEN);

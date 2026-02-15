@@ -3,6 +3,7 @@ import { createApp } from "../../../../src/server/app.js";
 import { createDatabase } from "../../../../src/db/connection.js";
 import { runMigrations } from "../../../../src/db/migrations.js";
 import { FeedbackRepository } from "../../../../src/db/feedback-repository.js";
+import { cleanupRateLimiter } from "../../../../src/server/middleware/rate-limit.js";
 import type { GitHubIssueService, CreateIssueResult } from "../../../../src/services/github-issues.js";
 import type { Server } from "node:http";
 import type Database from "better-sqlite3";
@@ -46,6 +47,7 @@ describe("Feedback routes", () => {
     if (db) {
       db.close();
     }
+    cleanupRateLimiter();
     try {
       unlinkSync(dbPath);
       unlinkSync(dbPath + "-wal");
@@ -202,6 +204,31 @@ describe("Feedback routes", () => {
     expect(feedback).not.toBeNull();
     expect(feedback!.github_issue_url).toBe("https://github.com/test/repo/issues/42");
     expect(feedback!.github_issue_number).toBe(42);
+  });
+
+  it("POST /api/feedback should be rate limited to 5 requests per 15 minutes", async () => {
+    const port = await startServer();
+    const makeRequest = () =>
+      fetch(`http://127.0.0.1:${port}/api/feedback`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "bug",
+          title: "Rate limit test title",
+          description: "This is a valid description for rate limit testing purposes",
+        }),
+      });
+
+    // Send 5 requests — all should succeed
+    for (let i = 0; i < 5; i++) {
+      const res = await makeRequest();
+      expect(res.status).toBe(201);
+    }
+
+    // 6th request should be rate limited
+    const res = await makeRequest();
+    expect(res.status).toBe(429);
+    expect(res.headers.get("retry-after")).toBeDefined();
   });
 
   it("GET /feedback should return 200", async () => {

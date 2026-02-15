@@ -159,7 +159,7 @@
 ## Phase 4: Feedback Pipeline — Wiring
 
 ### Task 4.1: Wire feedback services into Express app and index.ts
-- [ ]
+- [x]
 **Objective:** Integrate the feedback repository, GitHub issue service, and feedback routes into the application.
 **Details:**
 - Modify `src/server/app.ts`:
