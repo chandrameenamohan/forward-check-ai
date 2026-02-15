@@ -6,6 +6,7 @@ import type { AgentReport } from "../schemas/agent-report.js";
 import type { PipelineStage } from "../bot/status-updater.js";
 import type { PipelineEventBus } from "./pipeline-events.js";
 import { ClaimCache } from "../services/claim-cache.js";
+import { enrichMessageWithUrl } from "../services/url-extractor.js";
 import { runClassifier } from "../agents/classifier-agent.js";
 import { handleNonFactual } from "../agents/non-factual-handler.js";
 import { runStrategist } from "../agents/strategist-agent.js";
@@ -28,6 +29,10 @@ export interface InvestigateOptions {
   telegramMessageId?: string;
   /** If provided, reuse this investigation ID instead of creating a new DB record. */
   investigationId?: string;
+  /** Pre-detected source URL (skip auto-detection). */
+  sourceUrl?: string;
+  /** Pre-extracted URL content (used with sourceUrl). */
+  extractedUrlContent?: string;
 }
 
 export interface InvestigateResult {
@@ -87,7 +92,7 @@ export class InvestigationPipeline {
       logger.warn({ err, investigationId }, "onInvestigationCreated callback failed, continuing");
     }
 
-    this.emitEvent({ kind: "pipeline:start", investigationId, message, timestamp: Date.now() });
+    this.emitEvent({ kind: "pipeline:start", investigationId, message, sourceUrl: options?.sourceUrl, timestamp: Date.now() });
 
     try {
       return await this.runPipeline(message, investigationId, startTime, options);
@@ -111,11 +116,29 @@ export class InvestigationPipeline {
   ): Promise<InvestigateResult> {
     let totalCostUsd = 0;
 
+    // ── URL pre-processing ───────────────────────────────────
+    let effectiveMessage = message;
+    let sourceUrl = options?.sourceUrl;
+
+    if (!sourceUrl) {
+      const urlResult = await enrichMessageWithUrl(message);
+      if (urlResult) {
+        effectiveMessage = urlResult.enrichedMessage;
+        sourceUrl = urlResult.sourceUrl;
+      }
+    } else if (options?.extractedUrlContent) {
+      effectiveMessage = options.extractedUrlContent;
+    }
+
+    if (sourceUrl) {
+      this.repo.updateSourceUrl(investigationId, sourceUrl);
+    }
+
     // ── Classify ─────────────────────────────────────────────
     this.emitEvent({ kind: "classifier:start", investigationId, timestamp: Date.now() });
 
     const { result: classifierResult, costUsd: classifierCost } =
-      await runClassifier(message, this.client);
+      await runClassifier(effectiveMessage, this.client);
     totalCostUsd += classifierCost;
 
     this.emitEvent({

@@ -121,22 +121,12 @@
       <!-- ============================================ -->
 
       <!-- Forwarded message arrow (right) -->
-      <line x1="310" y1="210" x2="435" y2="210" stroke="#555" stroke-width="1.5" marker-end="url(#arrow-right)"/>
-      <text x="372" y="200" text-anchor="middle" font-size="11" fill="#888">Forwarded message</text>
+      <line x1="310" y1="200" x2="543" y2="200" stroke="#555" stroke-width="1.5" marker-end="url(#arrow-right)"/>
+      <text x="426" y="190" text-anchor="middle" font-size="11" fill="#888">Forwarded message</text>
 
       <!-- Verdict arrow (left) -->
-      <line x1="435" y1="340" x2="310" y2="340" stroke="#555" stroke-width="1.5" marker-end="url(#arrow-left)"/>
-      <text x="372" y="330" text-anchor="middle" font-size="11" fill="#888">Verdict</text>
-
-      <!-- ============================================ -->
-      <!-- SEARCH APIs BOX (left of orchestrator)       -->
-      <!-- Equivalent to Anthropic's "Citations subagent" -->
-      <!-- ============================================ -->
-      <rect x="370" y="410" width="150" height="115" rx="8" fill="#FFF" stroke="#CFCFCF" stroke-width="1"/>
-      <text x="445" y="445" text-anchor="middle" font-size="12" font-weight="600" fill="#1A1A1A">Search APIs</text>
-      <line x1="400" y1="457" x2="490" y2="457" stroke="#E8E8E8" stroke-width="0.75"/>
-      <text x="445" y="477" text-anchor="middle" font-size="11" fill="#666">Brave Web Search</text>
-      <text x="445" y="496" text-anchor="middle" font-size="11" fill="#666">Google Fact Check</text>
+      <line x1="543" y1="260" x2="310" y2="260" stroke="#555" stroke-width="1.5" marker-end="url(#arrow-left)"/>
+      <text x="426" y="250" text-anchor="middle" font-size="11" fill="#888">Verdict</text>
 
       <!-- ============================================ -->
       <!-- PIPELINE ORCHESTRATOR (large blue box)       -->
@@ -203,36 +193,38 @@
       <text x="934" y="443" text-anchor="middle" font-size="10" fill="#777">(Sonnet 4.5)</text>
 
       <!-- ============================================ -->
+      <!-- SEARCH APIs BOX (right of investigators)     -->
+      <!-- Equivalent to Anthropic's "Citations subagent" -->
+      <!-- ============================================ -->
+      <rect x="1020" y="392" width="150" height="100" rx="8" fill="#FFF" stroke="#CFCFCF" stroke-width="1"/>
+      <text x="1095" y="422" text-anchor="middle" font-size="12" font-weight="600" fill="#1A1A1A">Search APIs</text>
+      <line x1="1040" y1="434" x2="1150" y2="434" stroke="#E8E8E8" stroke-width="0.75"/>
+      <text x="1095" y="455" text-anchor="middle" font-size="11" fill="#666">Brave Web Search</text>
+      <text x="1095" y="474" text-anchor="middle" font-size="11" fill="#666">Google Fact Check</text>
+
+      <!-- ============================================ -->
       <!-- CONNECTING ARROWS                            -->
       <!-- ============================================ -->
 
       <!-- Pipeline Orchestrator ↔ Data Storage (horizontal bidirectional) -->
-      <!-- Right arrow -->
-      <line x1="975" y1="205" x2="1005" y2="205" stroke="#555" stroke-width="1.5" marker-end="url(#arrow-right)"/>
-      <!-- Left arrow -->
-      <line x1="1005" y1="225" x2="975" y2="225" stroke="#555" stroke-width="1.5" marker-end="url(#arrow-left)"/>
+      <line x1="975" y1="200" x2="1005" y2="200" stroke="#555" stroke-width="1.5" marker-end="url(#arrow-right)"/>
+      <line x1="1005" y1="220" x2="975" y2="220" stroke="#555" stroke-width="1.5" marker-end="url(#arrow-left)"/>
 
       <!-- Pipeline Orchestrator → Source Verifier (down + up pair) -->
-      <line x1="618" y1="310" x2="618" y2="400" stroke="#555" stroke-width="1.5" marker-end="url(#arrow-down)"/>
-      <line x1="630" y1="400" x2="630" y2="310" stroke="#555" stroke-width="1.5" marker-end="url(#arrow-up)"/>
+      <line x1="619" y1="310" x2="619" y2="396" stroke="#555" stroke-width="1.5" marker-end="url(#arrow-down)"/>
+      <line x1="631" y1="396" x2="631" y2="310" stroke="#555" stroke-width="1.5" marker-end="url(#arrow-up)"/>
 
       <!-- Pipeline Orchestrator → Domain Expert (down + up pair) -->
-      <line x1="773" y1="310" x2="773" y2="400" stroke="#555" stroke-width="1.5" marker-end="url(#arrow-down)"/>
-      <line x1="785" y1="400" x2="785" y2="310" stroke="#555" stroke-width="1.5" marker-end="url(#arrow-up)"/>
+      <line x1="774" y1="310" x2="774" y2="396" stroke="#555" stroke-width="1.5" marker-end="url(#arrow-down)"/>
+      <line x1="786" y1="396" x2="786" y2="310" stroke="#555" stroke-width="1.5" marker-end="url(#arrow-up)"/>
 
       <!-- Pipeline Orchestrator → Pattern Matcher (down + up pair) -->
-      <line x1="928" y1="310" x2="928" y2="400" stroke="#555" stroke-width="1.5" marker-end="url(#arrow-down)"/>
-      <line x1="940" y1="400" x2="940" y2="310" stroke="#555" stroke-width="1.5" marker-end="url(#arrow-up)"/>
+      <line x1="929" y1="310" x2="929" y2="396" stroke="#555" stroke-width="1.5" marker-end="url(#arrow-down)"/>
+      <line x1="941" y1="396" x2="941" y2="310" stroke="#555" stroke-width="1.5" marker-end="url(#arrow-up)"/>
 
-      <!-- Pipeline Orchestrator ↔ Search APIs -->
-      <!-- Down-left from orchestrator to Search APIs -->
-      <line x1="570" y1="310" x2="490" y2="430" stroke="#555" stroke-width="1.5" marker-end="url(#arrow-right)" transform="rotate(0)"/>
-      <!-- Actually let me use a path for cleaner routing -->
-      <path d="M 565 310 L 520 410" stroke="#555" stroke-width="1.5" fill="none" marker-end="url(#arrow-down)"/>
-      <path d="M 508 410 L 555 310" stroke="#555" stroke-width="1.5" fill="none" marker-end="url(#arrow-up)"/>
-
-      <!-- Search APIs ↔ Investigators (horizontal arrows) -->
-      <line x1="520" y1="440" x2="555" y2="440" stroke="#555" stroke-width="1.5" marker-end="url(#arrow-right)"/>
+      <!-- Investigators ↔ Search APIs (horizontal) -->
+      <line x1="1003" y1="425" x2="1018" y2="425" stroke="#555" stroke-width="1.5" marker-end="url(#arrow-right)"/>
+      <line x1="1018" y1="445" x2="1003" y2="445" stroke="#555" stroke-width="1.5" marker-end="url(#arrow-left)"/>
 
       <!-- ============================================ -->
       <!-- ANNOTATION: 3-Tier Model Labels              -->

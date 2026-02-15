@@ -120,7 +120,7 @@
 - All existing DB tests pass. `npx tsc --noEmit` passes.
 
 ### Task 1.2: Add URL pre-processing to pipeline
-- [ ]
+- [x]
 **Objective:** Add URL detection and content extraction as a pre-processing step in the pipeline, before the Classifier runs.
 **Details:**
 - Edit `src/orchestrator/pipeline.ts`:

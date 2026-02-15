@@ -16,6 +16,7 @@ interface BaseEvent {
 interface PipelineStartEvent extends BaseEvent {
   kind: "pipeline:start";
   message: string;
+  sourceUrl?: string;
 }
 
 interface ClassifierStartEvent extends BaseEvent {
