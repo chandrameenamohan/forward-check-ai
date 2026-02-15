@@ -186,7 +186,7 @@
 ## Phase 2: Entry Point Integration
 
 ### Task 2.1: Add URL detection to Telegram bot message handler
-- [ ]
+- [x]
 **Objective:** Detect URLs in Telegram messages and send a "Reading article..." status before the pipeline runs.
 **Details:**
 - Edit `src/bot/message-handler.ts`:
