@@ -585,7 +585,7 @@ describe("Chat page — GET /chat", () => {
     const res = await fetch(`http://127.0.0.1:${port}/chat`);
     const html = await res.text();
     expect(html).toContain('<meta name="description"');
-    expect(html).toContain("Six AI agents investigate it in 60 seconds");
+    expect(html).toContain("manipulation hiding inside");
     expect(html).toContain('rel="canonical"');
     expect(html).toContain("/chat");
   });

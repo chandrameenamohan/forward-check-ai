@@ -114,8 +114,8 @@ describe("Landing page routes", () => {
     const res = await fetch(`http://127.0.0.1:${port}/`);
     const html = await res.text();
 
-    expect(html).toContain("Six AI agents investigate");
-    expect(html).toContain("60 seconds");
+    expect(html).toContain("Six AI agents");
+    expect(html).toContain("manipulation hiding inside");
   });
 
   it("GET / should contain investigation demo element", async () => {
