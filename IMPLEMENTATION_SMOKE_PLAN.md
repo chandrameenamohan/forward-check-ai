@@ -71,7 +71,7 @@
 **Note:** This task costs ~$0.60 in Anthropic API credits per run.
 
 ### Task S2.2: Submit non-factual message and verify short-circuit
-- [ ]
+- [x]
 **Objective:** Submit a greeting/opinion and verify the pipeline short-circuits without running the full 6-agent pipeline.
 **Steps:**
 1. Submit greeting: `curl -s -X POST $PROD_URL/api/chat/message -H "Content-Type: application/json" -d '{"message":"Hello! How are you doing today? This is a friendly message."}'`
