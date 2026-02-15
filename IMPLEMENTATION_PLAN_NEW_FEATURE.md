@@ -216,7 +216,7 @@
 ## Phase 6: Feedback Pipeline — Telegram Commands
 
 ### Task 6.1: Add /bug and /feedback Telegram commands
-- [ ]
+- [x]
 **Objective:** Add Telegram bot commands for submitting bugs and feedback directly from the bot.
 **Details:**
 - Modify `src/bot/message-handler.ts`:

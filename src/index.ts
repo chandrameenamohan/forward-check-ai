@@ -102,7 +102,7 @@ const bot = createBot(config.TELEGRAM_BOT_TOKEN);
 const baseUrl = config.NODE_ENV === "production"
   ? `https://forwardcheck.ai`
   : `http://localhost:${config.PORT}`;
-createMessageHandler(bot, pipeline, baseUrl);
+createMessageHandler(bot, pipeline, baseUrl, feedbackRepo, githubService);
 
 // 11. Start Express server
 let server: Server;
