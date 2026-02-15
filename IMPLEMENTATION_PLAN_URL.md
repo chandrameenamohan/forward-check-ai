@@ -167,7 +167,7 @@
 - All existing pipeline tests pass. `npx tsc --noEmit` passes.
 
 ### Task 1.3: Update Classifier prompt for article content
-- [ ]
+- [x]
 **Objective:** Add guidance to the Classifier system prompt so it handles URL-enriched messages correctly.
 **Details:**
 - Edit `src/agents/classifier-agent.ts` — add to `CLASSIFIER_SYSTEM_PROMPT` (in the classification rules section):
