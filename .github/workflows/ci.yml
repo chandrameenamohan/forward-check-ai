@@ -1,0 +1,63 @@
+name: Quality Gate
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - name: Typecheck
+        run: npx tsc --noEmit
+
+      - name: Unit tests with coverage
+        run: npx vitest run --coverage tests/unit/**
+
+      - name: Check coverage threshold
+        run: |
+          COVERAGE=$(node -e "
+            const c = require('./coverage/coverage-summary.json');
+            const t = c.total;
+            const avg = (t.lines.pct + t.statements.pct + t.functions.pct + t.branches.pct) / 4;
+            console.log(avg.toFixed(2));
+          ")
+          echo "Coverage: ${COVERAGE}%"
+          node -e "if (${COVERAGE} < 60) { console.error('Coverage ${COVERAGE}% is below 60% threshold'); process.exit(1); }"
+
+      - name: Upload coverage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage/
+          retention-days: 14
+
+      - name: Coverage summary
+        if: github.event_name == 'pull_request'
+        run: |
+          node -e "
+            const c = require('./coverage/coverage-summary.json');
+            const t = c.total;
+            console.log('## Coverage Report');
+            console.log('| Metric | Coverage |');
+            console.log('|--------|----------|');
+            console.log('| Lines | ' + t.lines.pct + '% |');
+            console.log('| Statements | ' + t.statements.pct + '% |');
+            console.log('| Functions | ' + t.functions.pct + '% |');
+            console.log('| Branches | ' + t.branches.pct + '% |');
+          " >> $GITHUB_STEP_SUMMARY

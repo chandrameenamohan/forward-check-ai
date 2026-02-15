@@ -30,4 +30,21 @@ export function runMigrations(db: Database.Database): void {
   } catch {
     /* column already exists */
   }
+
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS feedback (
+      id TEXT PRIMARY KEY,
+      type TEXT NOT NULL,
+      title TEXT NOT NULL,
+      description TEXT NOT NULL,
+      source_channel TEXT NOT NULL,
+      user_agent TEXT,
+      telegram_username TEXT,
+      telegram_user_id TEXT,
+      github_issue_url TEXT,
+      github_issue_number INTEGER,
+      ip_address TEXT,
+      created_at TEXT NOT NULL DEFAULT (datetime('now'))
+    )
+  `);
 }

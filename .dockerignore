@@ -1,0 +1,11 @@
+node_modules
+data
+.env
+.git
+.ralph-logs
+coverage
+tmp
+*.db
+*.db-wal
+*.db-shm
+.DS_Store
