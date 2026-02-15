@@ -262,7 +262,7 @@
 ## Phase 3: UI Updates
 
 ### Task 3.1: Update chat page placeholder and add URL support hint
-- [ ]
+- [x]
 **Objective:** Update the web chat textarea placeholder to mention URL support.
 **Details:**
 - Edit `src/server/views/chat.ejs`:
