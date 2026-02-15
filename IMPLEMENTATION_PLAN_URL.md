@@ -326,7 +326,7 @@
 ## Phase 4: End-to-End Testing
 
 ### Task 4.1: Integration test with real URL
-- [ ]
+- [x]
 **Objective:** Validate the complete pipeline works end-to-end with a real URL input using real Anthropic API calls.
 **Details:**
 - Create `tests/integration/url-pipeline-e2e.test.ts`
