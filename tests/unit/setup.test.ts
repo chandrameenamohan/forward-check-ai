@@ -25,8 +25,8 @@ describe("Project scaffolding", () => {
     expect(pkg.type).toBe("module");
   });
 
-  it("src/index.ts exists with a placeholder export", async () => {
-    const mod = await import("../../src/index.js");
-    expect(mod).toBeDefined();
+  it("src/index.ts exists", () => {
+    const raw = readFileSync(resolve(ROOT, "src/index.ts"), "utf-8");
+    expect(raw).toContain("loadEnv");
   });
 });
