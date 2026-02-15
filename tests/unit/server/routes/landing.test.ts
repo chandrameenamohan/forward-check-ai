@@ -477,4 +477,16 @@ describe("Landing page routes", () => {
     expect(html).toContain("Check in Your Browser");
   });
 
+  // ── Task 7.1: Navigation links to feedback page ──
+
+  it("GET / should contain feedback link in footer", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/`);
+    const html = await res.text();
+
+    expect(html).toContain('href="/feedback"');
+    expect(html).toContain("Report a Bug");
+    expect(html).toContain("fc-footer-link");
+  });
+
 });

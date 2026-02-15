@@ -8,8 +8,11 @@ import { createInvestigateRouter } from "./routes/investigate.js";
 import { createVerdictRouter } from "./routes/verdict.js";
 import { createLiveStreamRouter } from "./routes/live-stream.js";
 import { createChatRouter } from "./routes/chat.js";
+import { createFeedbackRouter } from "./routes/feedback.js";
 import type { PipelineEventBus } from "../orchestrator/pipeline-events.js";
 import type { InvestigationPipeline } from "../orchestrator/pipeline.js";
+import type { FeedbackRepository } from "../db/feedback-repository.js";
+import type { GitHubIssueService } from "../services/github-issues.js";
 import { createRateLimiter } from "./middleware/rate-limit.js";
 
 const logger = createLogger({ level: "info" });
@@ -25,7 +28,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
  * @param eventBus - Optional PipelineEventBus for SSE live-stream routes.
  *                   When provided with repo, mounts /api/live/:id/stream route.
  */
-export function createApp(repo?: InvestigationRepository, eventBus?: PipelineEventBus, pipeline?: InvestigationPipeline): express.Express {
+export function createApp(repo?: InvestigationRepository, eventBus?: PipelineEventBus, pipeline?: InvestigationPipeline, feedbackRepo?: FeedbackRepository, githubService?: GitHubIssueService): express.Express {
   const app = express();
 
   // JSON body parsing
@@ -109,6 +112,13 @@ export function createApp(repo?: InvestigationRepository, eventBus?: PipelineEve
         res.json({ id, liveUrl: `/live/${id}`, streamUrl: `/api/live/${id}/stream` });
       });
     });
+  }
+
+  // Feedback routes (optional — works without InvestigationRepository)
+  if (feedbackRepo) {
+    const feedbackRateLimiter = createRateLimiter(5, 900_000);
+    app.use("/api/feedback", feedbackRateLimiter);
+    app.use(createFeedbackRouter(feedbackRepo, githubService));
   }
 
   // 404 handler

@@ -68,6 +68,36 @@ describe("Environment configuration", () => {
     expect(config.NODE_ENV).toBe("production");
   });
 
+  it("should use default values for GITHUB_REPO_OWNER and GITHUB_REPO_NAME", () => {
+    const config = loadEnv(validEnv);
+
+    expect(config.GITHUB_REPO_OWNER).toBe("chandrameenamohan");
+    expect(config.GITHUB_REPO_NAME).toBe("forward-check-ai");
+  });
+
+  it("should accept optional GITHUB_TOKEN", () => {
+    const config = loadEnv({ ...validEnv, GITHUB_TOKEN: "ghp_test-token" });
+
+    expect(config.GITHUB_TOKEN).toBe("ghp_test-token");
+  });
+
+  it("should allow overriding GITHUB_REPO_OWNER and GITHUB_REPO_NAME", () => {
+    const config = loadEnv({
+      ...validEnv,
+      GITHUB_REPO_OWNER: "custom-owner",
+      GITHUB_REPO_NAME: "custom-repo",
+    });
+
+    expect(config.GITHUB_REPO_OWNER).toBe("custom-owner");
+    expect(config.GITHUB_REPO_NAME).toBe("custom-repo");
+  });
+
+  it("should leave GITHUB_TOKEN undefined when not provided", () => {
+    const config = loadEnv(validEnv);
+
+    expect(config.GITHUB_TOKEN).toBeUndefined();
+  });
+
   it("should export the envSchema", () => {
     expect(loadEnv).toBeDefined();
     expect(envSchema).toBeDefined();
