@@ -23,3 +23,12 @@ https://www.youtube.com/watch?v=y7eCB2F89K8
 
 What is Bayesian logic? And Bayesian statistics? How does the theory work? Sir David Spiegelhalter, Emeritus Professor of Statistics at the University of Cambridge, explains all.
 https://www.youtube.com/watch?v=1LzdESG6-2E
+
+
+### Add Human in Loop
+
+We can have option for advance user/enterprise (Media houses) Where they can put the person in between. Who has the expertise of it. They put there finding and the result come. 
+
+
+### Doing to Witnesing
+Taking spritual principle where practional moves from doing to witnesing
