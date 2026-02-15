@@ -74,7 +74,7 @@
 - `npx vitest run` passes
 
 ### Task 1.3: Create feedback repository
-- [ ]
+- [x]
 **Objective:** Create a repository class for the feedback table following the InvestigationRepository pattern.
 **Details:**
 - Create `src/db/feedback-repository.ts`
