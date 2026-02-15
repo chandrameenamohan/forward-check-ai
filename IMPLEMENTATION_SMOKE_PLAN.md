@@ -26,7 +26,7 @@
 ## Phase S1: Web Endpoint Smoke Tests
 
 ### Task S1.1: Verify all web pages and static assets
-- [ ]
+- [x]
 **Objective:** Confirm every user-facing page and static asset loads with correct HTTP status.
 **Steps:**
 1. `curl -s -o /dev/null -w "%{http_code}" $PROD_URL/` — expect `200`
