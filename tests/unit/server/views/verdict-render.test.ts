@@ -97,6 +97,7 @@ function renderVerdict(overrides?: Record<string, unknown>): string {
     totalCostUsd: 0.55,
     createdAt: "2026-02-13T10:00:00.000Z",
     completedAt: "2026-02-13T10:02:00.000Z",
+    sourceUrl: null,
     ...overrides,
   };
 
@@ -163,5 +164,20 @@ describe("Verdict page EJS template", () => {
     const html = renderVerdict({ verdict: noNuanceVerdict });
     expect(html).toBeTruthy();
     expect(html).toContain("likely-false");
+  });
+
+  it("should render source URL when present", () => {
+    const html = renderVerdict({ sourceUrl: "https://www3.nhk.or.jp/nhkworld/en/news/20260215_03/" });
+    expect(html).toContain("fc-source-url");
+    expect(html).toContain("https://www3.nhk.or.jp/nhkworld/en/news/20260215_03/");
+    expect(html).toContain('target="_blank"');
+    expect(html).toContain('rel="noopener noreferrer"');
+    expect(html).toContain("Source:");
+  });
+
+  it("should not render source URL section when absent", () => {
+    const html = renderVerdict({ sourceUrl: null });
+    expect(html).not.toContain('<div class="fc-source-url">');
+    expect(html).not.toContain('<span class="fc-source-label">');
   });
 });

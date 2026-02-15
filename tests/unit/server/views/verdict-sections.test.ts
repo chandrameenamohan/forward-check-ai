@@ -103,6 +103,7 @@ function renderVerdict(overrides?: Record<string, unknown>): string {
     totalCostUsd: 0.55,
     createdAt: "2026-02-13T10:00:00.000Z",
     completedAt: "2026-02-13T10:02:00.000Z",
+    sourceUrl: null,
     ...overrides,
   };
 

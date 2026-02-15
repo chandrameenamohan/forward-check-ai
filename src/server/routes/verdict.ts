@@ -54,6 +54,7 @@ export function createVerdictRouter(
       totalCostUsd: investigation.total_cost_usd,
       createdAt: investigation.created_at,
       completedAt: investigation.completed_at,
+      sourceUrl: investigation.source_url,
     });
   });
 

@@ -277,7 +277,7 @@
 - All existing chat page tests pass.
 
 ### Task 3.2: Show source URL on verdict page
-- [ ]
+- [x]
 **Objective:** When an investigation originated from a URL, display the source URL on the verdict page.
 **Details:**
 - Edit `src/server/routes/verdict.ts`:

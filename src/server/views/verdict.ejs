@@ -197,6 +197,13 @@
       <p><%= originalMessage %></p>
     </div>
 
+    <% if (sourceUrl) { %>
+    <div class="fc-source-url">
+      <span class="fc-source-label">Source:</span>
+      <a href="<%= sourceUrl %>" target="_blank" rel="noopener noreferrer"><%= sourceUrl %></a>
+    </div>
+    <% } %>
+
     <!-- ═══ AGENT REPORTS ═══ -->
     <% if (agentReports && Array.isArray(agentReports) && agentReports.length > 0) { %>
       <div class="fc-section">
