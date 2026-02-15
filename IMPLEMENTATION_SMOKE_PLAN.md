@@ -39,7 +39,7 @@
 **Pass criteria:** All status codes match. Pages contain expected content.
 
 ### Task S1.2: Verify API input validation
-- [ ]
+- [x]
 **Objective:** Confirm API endpoints reject invalid input correctly.
 **Steps:**
 1. Empty body: `curl -s -X POST $PROD_URL/api/chat/message -H "Content-Type: application/json" -d '{}'` — expect 400, error about message required
