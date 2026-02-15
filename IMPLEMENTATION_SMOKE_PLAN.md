@@ -83,7 +83,7 @@
 **Pass criteria:** Completes in < 60 seconds. Cost < $0.05. No investigator/DA/judge agents invoked.
 
 ### Task S2.3: Verify SSE live streaming
-- [ ]
+- [x]
 **Objective:** Submit a claim and verify the SSE stream delivers real-time agent progress events.
 **Steps:**
 1. Submit claim: `curl -s -X POST $PROD_URL/api/chat/message -H "Content-Type: application/json" -d '{"message":"Albert Einstein failed math in school and was a poor student"}'`
