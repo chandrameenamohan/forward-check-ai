@@ -23,4 +23,11 @@ export function runMigrations(db: Database.Database): void {
       pipeline_duration_ms INTEGER
     )
   `);
+
+  // Migration: add source_url column for URL-based investigations
+  try {
+    db.exec(`ALTER TABLE investigations ADD COLUMN source_url TEXT`);
+  } catch {
+    /* column already exists */
+  }
 }

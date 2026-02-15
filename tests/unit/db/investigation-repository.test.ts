@@ -195,4 +195,54 @@ describe("InvestigationRepository", () => {
     const investigation = repo.getById(id);
     expect(investigation?.challenge_report).toEqual(challengeReport);
   });
+
+  it("should store and retrieve source_url", async () => {
+    const { InvestigationRepository } = await import(
+      "../../../src/db/investigation-repository.js"
+    );
+    const repo = new InvestigationRepository(db);
+
+    const id = repo.create(
+      "Check this: https://example.com/article",
+      undefined,
+      undefined,
+      "https://example.com/article",
+    );
+    const investigation = repo.getById(id);
+
+    expect(investigation).not.toBeNull();
+    expect(investigation?.source_url).toBe("https://example.com/article");
+  });
+
+  it("should default source_url to null", async () => {
+    const { InvestigationRepository } = await import(
+      "../../../src/db/investigation-repository.js"
+    );
+    const repo = new InvestigationRepository(db);
+
+    const id = repo.create("Plain text claim without URL");
+    const investigation = repo.getById(id);
+
+    expect(investigation).not.toBeNull();
+    expect(investigation?.source_url).toBeNull();
+  });
+
+  it("should update source_url via updateSourceUrl method", async () => {
+    const { InvestigationRepository } = await import(
+      "../../../src/db/investigation-repository.js"
+    );
+    const repo = new InvestigationRepository(db);
+
+    const id = repo.create("Some claim");
+    // Initially null
+    let investigation = repo.getById(id);
+    expect(investigation?.source_url).toBeNull();
+
+    // Update source_url
+    repo.updateSourceUrl(id, "https://example.com/news/article-123");
+    investigation = repo.getById(id);
+    expect(investigation?.source_url).toBe(
+      "https://example.com/news/article-123",
+    );
+  });
 });

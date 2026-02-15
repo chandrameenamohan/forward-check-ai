@@ -97,7 +97,7 @@
 ## Phase 1: Database & Pipeline Integration
 
 ### Task 1.1: Add source_url column to investigations table
-- [ ]
+- [x]
 **Objective:** Add a nullable `source_url` column to the investigations table and update the repository.
 **Details:**
 - Edit `src/db/migrations.ts` — add a safe `ALTER TABLE` migration:
