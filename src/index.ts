@@ -114,15 +114,31 @@ server = app.listen(config.PORT, () => {
   );
 });
 
-// 12. Start bot long polling
-bot.start({
-  onStart: (botInfo) => {
-    logger.info(
-      { username: botInfo.username, id: botInfo.id },
-      "Telegram bot started",
-    );
-  },
-});
+// 12. Start bot long polling (with retry on 409 conflict during deploys)
+function startBotWithRetry(retries = 5, delayMs = 3000): void {
+  bot.start({
+    onStart: (botInfo) => {
+      logger.info(
+        { username: botInfo.username, id: botInfo.id },
+        "Telegram bot started",
+      );
+    },
+  }).catch((err: unknown) => {
+    const is409 =
+      err instanceof Error &&
+      (err.message.includes("409") || err.message.includes("Conflict"));
+    if (is409 && retries > 0) {
+      logger.warn(
+        { retriesLeft: retries },
+        "Telegram bot 409 conflict — old instance still polling, retrying...",
+      );
+      setTimeout(() => startBotWithRetry(retries - 1, delayMs * 2), delayMs);
+    } else {
+      logger.error({ err }, "Telegram bot polling failed — server continues without bot");
+    }
+  });
+}
+startBotWithRetry();
 
 // 13. Graceful shutdown
 function shutdown(signal: string): void {
