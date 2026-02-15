@@ -56,7 +56,7 @@
 ## Phase S2: End-to-End Investigation Flow
 
 ### Task S2.1: Submit claim via web chat and verify full pipeline
-- [ ]
+- [x]
 **Objective:** Submit a factual claim via the chat API, watch it flow through the 6-agent pipeline, and verify the verdict page renders.
 **Steps:**
 1. Submit claim: `curl -s -X POST $PROD_URL/api/chat/message -H "Content-Type: application/json" -d '{"message":"The Great Wall of China is visible from space with the naked eye"}'`
