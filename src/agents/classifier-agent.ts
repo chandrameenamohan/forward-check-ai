@@ -39,7 +39,11 @@ Domain detection:
 - "technology": Tech products, AI, cybersecurity
 - "general": Anything not fitting the above domains
 
-For compound claims (isCompound: true), extract the primary/most significant claim as extractedClaim.`;
+For compound claims (isCompound: true), extract the primary/most significant claim as extractedClaim.
+
+URL-enriched messages:
+- If the message contains article content extracted from a URL (indicated by "[Article from ...]" header), classify based on the ARTICLE'S factual claims, not the URL itself. Extract the primary factual claim from the article content.
+- Articles from news sources are typically "factual_claim" unless the article is clearly an opinion piece or satire.`;
 
 /** Result returned by runClassifier */
 export interface ClassifierOutput {

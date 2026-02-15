@@ -4,6 +4,7 @@ import type { FeedbackRepository } from "../db/feedback-repository.js";
 import type { GitHubIssueService } from "../services/github-issues.js";
 import { StatusUpdater } from "./status-updater.js";
 import { formatTelegramVerdict } from "../formatter/telegram-formatter.js";
+import { detectUrl } from "../services/url-extractor.js";
 import { createLogger } from "../config/logger.js";
 
 const logger = createLogger({ level: "info" });
@@ -139,6 +140,13 @@ export function createMessageHandler(
       { chatId, isForwarded },
       isForwarded ? "Received forwarded message" : "Received direct text message",
     );
+
+    // Detect URL in message — send "Reading article..." status before pipeline runs
+    const detectedUrl = detectUrl(text);
+    if (detectedUrl) {
+      logger.info({ url: detectedUrl, chatId }, "URL detected in message");
+      await ctx.api.sendMessage(chatId, "🔗 Reading article...");
+    }
 
     // Send initial status and create updater for progress
     const statusUpdater = new StatusUpdater(ctx.api, chatId);

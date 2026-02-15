@@ -7,6 +7,7 @@ const logger = createLogger({ level: "info" });
  * Pipeline stages that the StatusUpdater can display.
  */
 export type PipelineStage =
+  | "fetching"
   | "planning"
   | "searching"
   | "analyzing"
@@ -17,6 +18,7 @@ export type PipelineStage =
  * Human-readable status messages for each pipeline stage.
  */
 export const PIPELINE_STAGES: Record<PipelineStage, string> = {
+  fetching: "📄 Reading article content...",
   planning: "🔍 Planning investigation strategy...",
   searching: "🌐 Searching sources...",
   analyzing: "🧠 Analyzing domain expertise...",

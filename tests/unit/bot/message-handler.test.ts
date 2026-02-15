@@ -5,6 +5,12 @@ import type { InvestigationPipeline, InvestigateResult } from "../../../src/orch
 import { createMessageHandler } from "../../../src/bot/message-handler.js";
 import { makeFinalVerdict } from "../../fixtures/index.js";
 
+vi.mock("../../../src/services/url-extractor.js", () => ({
+  detectUrl: vi.fn(),
+  enrichMessageWithUrl: vi.fn(),
+  fetchUrlContent: vi.fn(),
+}));
+
 const FAKE_TOKEN = "123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11";
 
 const fakeBotInfo: UserFromGetMe = {
@@ -468,5 +474,71 @@ describe("createMessageHandler", () => {
         (c.payload["text"] as string).includes("/live/"),
     );
     expect(liveSend).toBeUndefined();
+  });
+
+  it("should detect URL in message and send reading status", async () => {
+    const { detectUrl } = await import("../../../src/services/url-extractor.js");
+    vi.mocked(detectUrl).mockReturnValue("https://example.com/article");
+
+    const mockPipeline = {
+      investigate: vi.fn().mockResolvedValue({
+        verdict: makeFakeVerdict(),
+        investigationId: "inv-url-001",
+        totalCostUsd: 0.50,
+        durationMs: 10000,
+      } satisfies InvestigateResult),
+    } as unknown as InvestigationPipeline;
+
+    createMessageHandler(bot, mockPipeline, BASE_URL);
+
+    const update = makeMessageUpdate({
+      text: "https://example.com/article",
+    });
+
+    await bot.handleUpdate(update);
+
+    // Should have sent a "Reading article..." status message before the normal investigation status
+    const readingStatus = apiCalls.find(
+      (c) =>
+        c.method === "sendMessage" &&
+        (c.payload["text"] as string).includes("Reading article"),
+    );
+    expect(readingStatus).toBeDefined();
+
+    // Pipeline should still be called
+    expect(mockPipeline.investigate).toHaveBeenCalledTimes(1);
+  });
+
+  it("should not send reading status for plain text messages", async () => {
+    const { detectUrl } = await import("../../../src/services/url-extractor.js");
+    vi.mocked(detectUrl).mockReturnValue(null);
+
+    const mockPipeline = {
+      investigate: vi.fn().mockResolvedValue({
+        verdict: makeFakeVerdict(),
+        investigationId: "inv-text-001",
+        totalCostUsd: 0.25,
+        durationMs: 5000,
+      } satisfies InvestigateResult),
+    } as unknown as InvestigationPipeline;
+
+    createMessageHandler(bot, mockPipeline, BASE_URL);
+
+    const update = makeMessageUpdate({
+      text: "PM Modi gives Rs 5000 to all citizens",
+    });
+
+    await bot.handleUpdate(update);
+
+    // Should NOT have sent a "Reading article..." message
+    const readingStatus = apiCalls.find(
+      (c) =>
+        c.method === "sendMessage" &&
+        (c.payload["text"] as string).includes("Reading article"),
+    );
+    expect(readingStatus).toBeUndefined();
+
+    // Pipeline should still be called
+    expect(mockPipeline.investigate).toHaveBeenCalledTimes(1);
   });
 });

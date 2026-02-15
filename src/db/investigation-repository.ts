@@ -18,6 +18,7 @@ interface InvestigationRow {
   completed_at: string | null;
   total_cost_usd: number;
   pipeline_duration_ms: number | null;
+  source_url: string | null;
 }
 
 /** Parsed investigation with JSON fields deserialized. */
@@ -37,6 +38,7 @@ export interface Investigation {
   completed_at: string | null;
   total_cost_usd: number;
   pipeline_duration_ms: number | null;
+  source_url: string | null;
 }
 
 function parseJsonColumn(value: string | null): unknown {
@@ -65,6 +67,7 @@ function toInvestigation(row: InvestigationRow): Investigation {
     completed_at: row.completed_at,
     total_cost_usd: row.total_cost_usd,
     pipeline_duration_ms: row.pipeline_duration_ms,
+    source_url: row.source_url ?? null,
   };
 }
 
@@ -79,14 +82,21 @@ export class InvestigationRepository {
     originalMessage: string,
     telegramChatId?: string,
     telegramMessageId?: string,
+    sourceUrl?: string,
   ): string {
     const id = nanoid();
     this.db
       .prepare(
-        `INSERT INTO investigations (id, original_message, telegram_chat_id, telegram_message_id)
-         VALUES (?, ?, ?, ?)`,
+        `INSERT INTO investigations (id, original_message, telegram_chat_id, telegram_message_id, source_url)
+         VALUES (?, ?, ?, ?, ?)`,
       )
-      .run(id, originalMessage, telegramChatId ?? null, telegramMessageId ?? null);
+      .run(
+        id,
+        originalMessage,
+        telegramChatId ?? null,
+        telegramMessageId ?? null,
+        sourceUrl ?? null,
+      );
     return id;
   }
 
@@ -96,6 +106,12 @@ export class InvestigationRepository {
       .get(id) as InvestigationRow | undefined;
     if (!row) return null;
     return toInvestigation(row);
+  }
+
+  updateSourceUrl(id: string, sourceUrl: string): void {
+    this.db
+      .prepare("UPDATE investigations SET source_url = ? WHERE id = ?")
+      .run(sourceUrl, id);
   }
 
   updateStatus(id: string, status: string): void {

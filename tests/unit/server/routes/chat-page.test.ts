@@ -67,7 +67,15 @@ describe("Chat page — GET /chat", () => {
     const res = await fetch(`http://127.0.0.1:${port}/chat`);
     const html = await res.text();
     expect(html).toContain("<textarea");
-    expect(html).toContain("Paste a message that seems off");
+    expect(html).toContain("Paste a claim, a news article URL, or a suspicious message");
+  });
+
+  it("GET /chat should contain updated placeholder mentioning URL", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/chat`);
+    const html = await res.text();
+    expect(html).toContain("URL");
+    expect(html).toContain("placeholder=");
   });
 
   it("GET /chat should contain Investigate This submit button", async () => {

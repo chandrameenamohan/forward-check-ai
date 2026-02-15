@@ -24,6 +24,13 @@ export function runMigrations(db: Database.Database): void {
     )
   `);
 
+  // Migration: add source_url column for URL-based investigations
+  try {
+    db.exec(`ALTER TABLE investigations ADD COLUMN source_url TEXT`);
+  } catch {
+    /* column already exists */
+  }
+
   db.exec(`
     CREATE TABLE IF NOT EXISTS feedback (
       id TEXT PRIMARY KEY,
