@@ -297,7 +297,7 @@
 - No errors during creation
 
 ### Task 8.2: Set up branch protection rules via CLI
-- [ ]
+- [x]
 **Objective:** Configure branch protection for main and develop branches.
 **Details:**
 - **Main branch** (via `gh api`):
