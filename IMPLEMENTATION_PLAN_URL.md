@@ -206,7 +206,7 @@
 - All existing bot tests pass. `npx tsc --noEmit` passes.
 
 ### Task 2.2: Add URL detection to web chat route
-- [ ]
+- [x]
 **Objective:** Handle URL submissions through the web chat API endpoint.
 **Details:**
 - Edit `src/server/routes/chat.ts`:

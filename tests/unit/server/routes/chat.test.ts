@@ -196,4 +196,47 @@ describe("Chat API routes — POST /api/chat/message", () => {
     expect(res.status).toBe(400);
     expect(body.error).toBeDefined();
   });
+
+  it("POST /api/chat/message should accept URL input and return 201", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/api/chat/message`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: "https://www3.nhk.or.jp/nhkworld/en/news/20260215_03/" }),
+    });
+    const body = (await res.json()) as { id: string; status: string; streamUrl: string };
+
+    expect(res.status).toBe(201);
+    expect(body.id).toBeDefined();
+    expect(body.status).toBe("pending");
+    expect(body.streamUrl).toMatch(/^\/api\/live\/.+\/stream$/);
+
+    // Verify the URL message was stored in DB
+    const investigation = repo.getById(body.id);
+    expect(investigation).not.toBeNull();
+    expect(investigation!.original_message).toContain("nhk.or.jp");
+
+    // Pipeline should be called with the URL message
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    expect(mockPipeline.investigate).toHaveBeenCalled();
+  });
+
+  it("POST /api/chat/message should still work with plain text", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/api/chat/message`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: "WHO declares green tea cures all forms of cancer" }),
+    });
+    const body = (await res.json()) as { id: string; status: string; streamUrl: string };
+
+    expect(res.status).toBe(201);
+    expect(body.id).toBeDefined();
+    expect(body.status).toBe("pending");
+
+    // Verify plain text stored correctly
+    const investigation = repo.getById(body.id);
+    expect(investigation).not.toBeNull();
+    expect(investigation!.original_message).toBe("WHO declares green tea cures all forms of cancer");
+  });
 });

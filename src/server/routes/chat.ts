@@ -2,6 +2,7 @@ import { Router } from "express";
 import type { Request, Response } from "express";
 import type { InvestigationRepository } from "../../db/investigation-repository.js";
 import type { InvestigationPipeline } from "../../orchestrator/pipeline.js";
+import { detectUrl } from "../../services/url-extractor.js";
 import { createLogger } from "../../config/logger.js";
 
 const logger = createLogger({ level: "info" });
@@ -47,6 +48,12 @@ export function createChatRouter(
         error: `Message must be between ${MIN_MESSAGE_LENGTH} and ${MAX_MESSAGE_LENGTH} characters`,
       });
       return;
+    }
+
+    // Detect URL in input for logging — pipeline handles extraction
+    const url = detectUrl(trimmed);
+    if (url) {
+      logger.info({ url }, "URL detected in chat message");
     }
 
     // Create investigation in DB with null telegram fields
