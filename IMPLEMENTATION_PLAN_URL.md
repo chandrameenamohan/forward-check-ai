@@ -38,7 +38,7 @@
 - Test: `"should strip trailing punctuation from URL"`
 
 ### Task 0.2: Create URL content fetcher
-- [ ]
+- [x]
 **Objective:** Build an async function that fetches a URL and extracts readable article text using Mozilla Readability.
 **Details:**
 - Install dependencies: `npm install @mozilla/readability jsdom` and `npm install -D @types/jsdom`
