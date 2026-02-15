@@ -301,7 +301,7 @@
 - All existing verdict tests pass.
 
 ### Task 3.3: Show source URL on live investigation page
-- [ ]
+- [x]
 **Objective:** When a live investigation originated from a URL, show the source on the live page.
 **Details:**
 - Edit `src/server/routes/live-stream.ts`:

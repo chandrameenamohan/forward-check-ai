@@ -629,4 +629,32 @@ describe("Live verdict page routes", () => {
     expect(html).toContain("fc-card-entering");
     expect(html).toContain("prefers-reduced-motion");
   });
+
+  // ── Task 3.3 (URL): Show source URL on live investigation page ──
+
+  it("GET /live/:id should render source URL when present", async () => {
+    const port = await startServer();
+    const id = repo.create("URL claim test");
+    repo.updateSourceUrl(id, "https://www3.nhk.or.jp/nhkworld/en/news/20260215_03/");
+
+    const res = await fetch(`http://127.0.0.1:${port}/live/${id}`);
+    const html = await res.text();
+
+    expect(html).toContain("fc-live-source");
+    expect(html).toContain("www3.nhk.or.jp");
+    expect(html).toContain("https://www3.nhk.or.jp/nhkworld/en/news/20260215_03/");
+    expect(html).toContain('target="_blank"');
+    expect(html).toContain('rel="noopener noreferrer"');
+  });
+
+  it("GET /live/:id should not render source URL section when absent", async () => {
+    const port = await startServer();
+    const id = repo.create("Plain text claim — no URL");
+
+    const res = await fetch(`http://127.0.0.1:${port}/live/${id}`);
+    const html = await res.text();
+
+    // CSS class exists in stylesheet, but the HTML element should not be rendered
+    expect(html).not.toContain('<div class="fc-live-source">');
+  });
 });

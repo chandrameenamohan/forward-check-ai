@@ -48,6 +48,7 @@ export function createLiveStreamRouter(
       id: investigation.id,
       originalMessage: investigation.original_message,
       status: investigation.status,
+      sourceUrl: investigation.source_url,
     });
   });
 
