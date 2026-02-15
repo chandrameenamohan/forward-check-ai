@@ -9,6 +9,7 @@ export const envSchema = z.object({
   GITHUB_TOKEN: z.string().optional(),
   GITHUB_REPO_OWNER: z.string().default("chandrameenamohan"),
   GITHUB_REPO_NAME: z.string().default("forward-check-ai"),
+  BASE_URL: z.string().optional(),
   PORT: z
     .string()
     .default("3000")
