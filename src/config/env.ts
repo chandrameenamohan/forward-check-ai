@@ -6,6 +6,9 @@ export const envSchema = z.object({
   TELEGRAM_BOT_TOKEN: z.string().min(1, "TELEGRAM_BOT_TOKEN is required"),
   BRAVE_SEARCH_API_KEY: z.string().optional(),
   GOOGLE_FACTCHECK_API_KEY: z.string().optional(),
+  GITHUB_TOKEN: z.string().optional(),
+  GITHUB_REPO_OWNER: z.string().default("chandrameenamohan"),
+  GITHUB_REPO_NAME: z.string().default("forward-check-ai"),
   PORT: z
     .string()
     .default("3000")
