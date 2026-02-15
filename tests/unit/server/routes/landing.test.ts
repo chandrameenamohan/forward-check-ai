@@ -97,7 +97,7 @@ describe("Landing page routes", () => {
     const res = await fetch(`http://127.0.0.1:${port}/`);
     const html = await res.text();
 
-    expect(html).toContain("t.me/ForwardCheckBot");
+    expect(html).toContain("t.me/forward_check_beta_bot");
     expect(html).toContain("Try it on Telegram");
   });
 
@@ -302,7 +302,7 @@ describe("Landing page routes", () => {
 
     expect(html).toContain("fc-final-cta");
     expect(html).toContain("Open in Telegram");
-    expect(html).toContain("t.me/ForwardCheckBot");
+    expect(html).toContain("t.me/forward_check_beta_bot");
   });
 
   it("GET / should contain final CTA headline", async () => {
