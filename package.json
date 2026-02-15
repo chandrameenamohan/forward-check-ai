@@ -10,7 +10,8 @@
     "test:coverage": "vitest run --coverage",
     "typecheck": "tsc --noEmit",
     "quality": "bash scripts/quality-gate.sh",
-    "quality:full": "bash scripts/quality-full.sh"
+    "quality:full": "bash scripts/quality-full.sh",
+    "deploy": "bash scripts/deploy.sh"
   },
   "keywords": [],
   "author": "",
