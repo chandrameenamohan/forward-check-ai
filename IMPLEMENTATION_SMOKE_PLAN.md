@@ -131,7 +131,7 @@
 **Pass criteria:** No 500 errors. No crashes. Server stays healthy after burst.
 
 ### Task S4.2: Response time benchmarks
-- [ ]
+- [x]
 **Objective:** Measure and document baseline response times for key endpoints.
 **Steps:**
 1. Health endpoint (5 samples): `for i in $(seq 1 5); do curl -s -o /dev/null -w "%{time_total}\n" $PROD_URL/health; done` — compute average, expect < 1s
