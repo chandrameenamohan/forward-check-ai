@@ -352,7 +352,7 @@
 - Test timeout: 240 seconds
 
 ### Task 4.2: Regression test — text-only flow unchanged
-- [ ]
+- [x]
 **Objective:** Verify that the existing text-only pipeline is completely unaffected by URL support changes.
 **Details:**
 - Create `tests/integration/text-regression-e2e.test.ts`
