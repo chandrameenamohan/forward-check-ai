@@ -54,7 +54,9 @@ export function createChatRouter(
     logger.info({ id, messageLength: trimmed.length }, "Chat investigation created");
 
     // Trigger pipeline in the background (do NOT await)
+    // Pass the pre-created investigation ID so pipeline reuses it instead of creating a duplicate
     pipeline.investigate(trimmed, {
+      investigationId: id,
       onInvestigationCreated: () => {
         // Investigation already created above — no-op
       },
