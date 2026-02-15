@@ -184,7 +184,7 @@
 ## Phase 5: Feedback Pipeline — Frontend
 
 ### Task 5.1: Create feedback page UI
-- [ ]
+- [x]
 **Objective:** Build the `/feedback` page with a form for submitting bugs, feedback, and feature requests.
 **Details:**
 - Create `src/server/views/feedback.ejs` — full HTML page
