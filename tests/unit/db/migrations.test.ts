@@ -122,4 +122,62 @@ describe("Database migrations", () => {
     expect(row?.id).toBe("test-id");
     expect(row?.original_message).toBe("test message");
   });
+
+  it("should create feedback table with all columns", async () => {
+    const { createDatabase } = await import("../../../src/db/connection.js");
+    const { runMigrations } = await import("../../../src/db/migrations.js");
+
+    const dir = join(tmpdir(), "forwardcheck-test");
+    mkdirSync(dir, { recursive: true });
+    const dbPath = join(dir, `test-${randomUUID()}.db`);
+    const db = createDatabase(dbPath);
+    testDbs.push({ db, path: dbPath });
+
+    runMigrations(db);
+
+    const columns = db.pragma("table_info(feedback)") as {
+      name: string;
+      type: string;
+      notnull: number;
+      dflt_value: string | null;
+      pk: number;
+    }[];
+
+    const columnNames = columns.map((c) => c.name);
+
+    expect(columnNames).toContain("id");
+    expect(columnNames).toContain("type");
+    expect(columnNames).toContain("title");
+    expect(columnNames).toContain("description");
+    expect(columnNames).toContain("source_channel");
+    expect(columnNames).toContain("user_agent");
+    expect(columnNames).toContain("telegram_username");
+    expect(columnNames).toContain("telegram_user_id");
+    expect(columnNames).toContain("github_issue_url");
+    expect(columnNames).toContain("github_issue_number");
+    expect(columnNames).toContain("ip_address");
+    expect(columnNames).toContain("created_at");
+
+    // Verify id is primary key
+    const idCol = columns.find((c) => c.name === "id");
+    expect(idCol?.pk).toBe(1);
+    expect(idCol?.type).toBe("TEXT");
+
+    // Verify NOT NULL constraints
+    const typeCol = columns.find((c) => c.name === "type");
+    expect(typeCol?.notnull).toBe(1);
+
+    const titleCol = columns.find((c) => c.name === "title");
+    expect(titleCol?.notnull).toBe(1);
+
+    const descriptionCol = columns.find((c) => c.name === "description");
+    expect(descriptionCol?.notnull).toBe(1);
+
+    const sourceChannelCol = columns.find((c) => c.name === "source_channel");
+    expect(sourceChannelCol?.notnull).toBe(1);
+
+    const createdAtCol = columns.find((c) => c.name === "created_at");
+    expect(createdAtCol?.notnull).toBe(1);
+    expect(createdAtCol?.dflt_value).toBe("datetime('now')");
+  });
 });

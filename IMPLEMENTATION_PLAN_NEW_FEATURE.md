@@ -47,7 +47,7 @@
 - `npx vitest run` passes
 
 ### Task 1.2: Add feedback table migration
-- [ ]
+- [x]
 **Objective:** Add a `feedback` table to the SQLite database for storing user feedback locally.
 **Details:**
 - Modify `src/db/migrations.ts` — add a second `CREATE TABLE IF NOT EXISTS` statement:
