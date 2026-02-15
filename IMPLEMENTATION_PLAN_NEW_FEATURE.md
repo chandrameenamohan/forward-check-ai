@@ -256,7 +256,7 @@
 ## Phase 7: Navigation Links & Cleanup
 
 ### Task 7.1: Add navigation links to feedback page
-- [ ]
+- [x]
 **Objective:** Add links to the feedback page from the landing page footer and chat page topbar.
 **Details:**
 - Modify `src/server/views/landing.ejs`:
