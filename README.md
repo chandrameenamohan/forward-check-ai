@@ -8,7 +8,7 @@ Someone forwards you a viral message. "PM Modi is giving Rs 5000 to everyone!" Y
 
 **ForwardCheck-AI is a Telegram bot that fact-checks forwarded messages in under 60 seconds.** Six AI agents work like an investigative newsroom — a classifier, a strategist, three parallel investigators, a devil's advocate, and a judge — to deliver a nuanced verdict with manipulation analysis. Not just "true" or "false." It shows you _how_ a message is trying to trick you.
 
-[Try it on Telegram](https://t.me/ForwardCheckBot) | [See a Live Verdict](https://forwardcheck.ai/v/demo) | [Hackathon Info](HACKATHON_INFO.md)
+[Try it on Telegram](https://t.me/forward_check_beta_bot) | [See a Live Verdict](https://forwardcheck.ai/v/demo) | [Hackathon Info](HACKATHON_INFO.md)
 
 ---
 
