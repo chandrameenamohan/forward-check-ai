@@ -26,6 +26,8 @@ export interface InvestigateOptions {
   onInvestigationCreated?: (investigationId: string) => void | Promise<void>;
   telegramChatId?: string;
   telegramMessageId?: string;
+  /** If provided, reuse this investigation ID instead of creating a new DB record. */
+  investigationId?: string;
 }
 
 export interface InvestigateResult {
@@ -76,9 +78,8 @@ export class InvestigationPipeline {
       };
     }
 
-    const investigationId = this.repo.create(
-      message, options?.telegramChatId, options?.telegramMessageId,
-    );
+    const investigationId = options?.investigationId
+      ?? this.repo.create(message, options?.telegramChatId, options?.telegramMessageId);
 
     try {
       await options?.onInvestigationCreated?.(investigationId);

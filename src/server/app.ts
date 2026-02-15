@@ -7,8 +7,10 @@ import type { InvestigationRepository } from "../db/investigation-repository.js"
 import { createInvestigateRouter } from "./routes/investigate.js";
 import { createVerdictRouter } from "./routes/verdict.js";
 import { createLiveStreamRouter } from "./routes/live-stream.js";
+import { createChatRouter } from "./routes/chat.js";
 import type { PipelineEventBus } from "../orchestrator/pipeline-events.js";
 import type { InvestigationPipeline } from "../orchestrator/pipeline.js";
+import { createRateLimiter } from "./middleware/rate-limit.js";
 
 const logger = createLogger({ level: "info" });
 
@@ -61,6 +63,11 @@ export function createApp(repo?: InvestigationRepository, eventBus?: PipelineEve
     });
   });
 
+  // Chat page
+  app.get("/chat", (_req: Request, res: Response) => {
+    res.render("chat");
+  });
+
   // Investigation API routes (only when repo is provided)
   if (repo) {
     app.use(createInvestigateRouter(repo));
@@ -69,6 +76,13 @@ export function createApp(repo?: InvestigationRepository, eventBus?: PipelineEve
     // SSE live-stream route (requires both repo and event bus)
     if (eventBus) {
       app.use(createLiveStreamRouter(repo, eventBus));
+    }
+
+    // Chat API route (requires both repo and pipeline)
+    if (pipeline) {
+      const chatRateLimiter = createRateLimiter(10, 60_000);
+      app.use("/api/chat/message", chatRateLimiter);
+      app.use(createChatRouter(repo, pipeline));
     }
   }
 

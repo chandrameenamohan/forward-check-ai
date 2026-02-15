@@ -1,0 +1,241 @@
+      // ── Verdict reveal ──
+
+      var CATEGORY_COLORS = {
+        'likely-true': '#22c55e',
+        'partially-true': '#eab308',
+        'unverified': '#6b7280',
+        'likely-false': '#ef4444',
+        'satire': '#a855f7',
+        'opinion': '#3b82f6'
+      };
+
+      function showVerdictReveal(data) {
+        var reveal = document.getElementById('fc-verdict-reveal');
+        if (!reveal) return;
+
+        var verdict = data.verdict || {};
+        var category = verdict.category || 'unverified';
+        var confidence = verdict.confidence || 0;
+        var summary = verdict.summary || '';
+        var decomp = verdict.confidenceDecomposition || {};
+        var verdictColor = CATEGORY_COLORS[category] || '#6b7280';
+
+        reveal.style.setProperty('--fc-reveal-color', verdictColor);
+        reveal.style.display = 'block';
+
+        // 1. Dramatic pause
+        var pauseEl = document.getElementById('fc-verdict-reveal-pause');
+        if (pauseEl) {
+          pauseEl.style.display = 'block';
+          setTimeout(function() { pauseEl.style.display = 'none'; }, 1000);
+        }
+
+        // 2. Badge
+        setTimeout(function() {
+          var badgeEl = document.getElementById('fc-verdict-reveal-badge');
+          var dotEl = document.getElementById('fc-verdict-reveal-dot');
+          var catEl = document.getElementById('fc-verdict-reveal-category');
+          if (badgeEl) {
+            badgeEl.style.borderColor = verdictColor;
+            badgeEl.style.color = verdictColor;
+            badgeEl.style.background = verdictColor + '14';
+            badgeEl.classList.add('fc-reveal-badge-visible');
+          }
+          if (dotEl) {
+            dotEl.style.background = verdictColor;
+            dotEl.style.boxShadow = '0 0 8px ' + verdictColor;
+          }
+          if (catEl) catEl.textContent = category.replace(/-/g, ' ').toUpperCase();
+        }, 1000);
+
+        // 3. Confidence ring
+        setTimeout(function() {
+          var ringFill = document.getElementById('fc-reveal-ring-fill');
+          var confEl = document.getElementById('fc-verdict-reveal-confidence');
+          if (ringFill) {
+            var circumference = 2 * Math.PI * 65;
+            var dashLen = (confidence / 100) * circumference;
+            ringFill.style.stroke = verdictColor;
+            ringFill.style.filter = 'drop-shadow(0 0 6px ' + verdictColor + ')';
+            ringFill.style.strokeDasharray = dashLen.toFixed(1) + ' ' + circumference.toFixed(1);
+          }
+          if (confEl) {
+            var current = 0;
+            var step = Math.max(1, Math.floor(confidence / 40));
+            var countUp = setInterval(function() {
+              current += step;
+              if (current >= confidence) { current = confidence; clearInterval(countUp); }
+              confEl.textContent = String(current);
+            }, 45);
+          }
+        }, 1800);
+
+        // 4. Summary
+        setTimeout(function() {
+          var summaryEl = document.getElementById('fc-verdict-reveal-summary');
+          if (summaryEl) {
+            summaryEl.textContent = summary;
+            summaryEl.classList.add('fc-reveal-summary-visible');
+          }
+        }, 2600);
+
+        // 5. Decomposition bars
+        setTimeout(function() {
+          var barsEl = document.getElementById('fc-verdict-reveal-bars');
+          if (barsEl) barsEl.classList.add('fc-reveal-bars-visible');
+          var evBar = document.getElementById('fc-reveal-bar-evidence');
+          var srcBar = document.getElementById('fc-reveal-bar-source');
+          var cmpBar = document.getElementById('fc-reveal-bar-complexity');
+          var cntBar = document.getElementById('fc-reveal-bar-counter');
+          if (evBar) evBar.style.width = (decomp.evidenceStrength || 0) + '%';
+          if (srcBar) srcBar.style.width = (decomp.sourceReliability || 0) + '%';
+          if (cmpBar) cmpBar.style.width = (decomp.claimComplexity || 0) + '%';
+          if (cntBar) cntBar.style.width = (decomp.counterArgumentResilience || 0) + '%';
+        }, 3200);
+
+        // 5b. Manipulation techniques (tag pills)
+        setTimeout(function() {
+          var techniques = verdict.manipulationTechniques || [];
+          var techEl = document.getElementById('fc-verdict-techniques');
+          if (techEl && techniques.length > 0) {
+            var html = '';
+            techniques.forEach(function(t) {
+              var sevClass = t.severity >= 70 ? 'fc-technique-pill--high' :
+                             t.severity >= 40 ? 'fc-technique-pill--medium' : 'fc-technique-pill--low';
+              html += '<span class="fc-technique-pill ' + sevClass + '">' +
+                escapeHtml(t.technique) + '<span class="fc-technique-sev">' + t.severity + '</span></span>';
+            });
+            techEl.innerHTML = html;
+            techEl.style.display = 'flex';
+            techEl.classList.add('fc-reveal-techniques-visible');
+          }
+
+          // Deep Reasoning badge
+          var drBadge = document.getElementById('fc-verdict-deep-reasoning');
+          if (drBadge && verdict.deepReasoningActivated) {
+            drBadge.style.display = 'inline-flex';
+            drBadge.classList.add('fc-reveal-techniques-visible');
+          }
+        }, 3600);
+
+        // 6. Action buttons (chat page uses 3 buttons, not countdown)
+        setTimeout(function() {
+          // Hide the live page CTA + countdown
+          var liveCta = document.getElementById('fc-verdict-reveal-cta');
+          if (liveCta) liveCta.style.display = 'none';
+          var liveCountdown = document.getElementById('fc-verdict-countdown');
+          if (liveCountdown) liveCountdown.style.display = 'none';
+
+          // Show chat action buttons
+          var actionsEl = document.getElementById('fc-chat-actions');
+          if (actionsEl) {
+            actionsEl.style.display = 'block';
+            actionsEl.classList.add('fc-reveal-actions-visible');
+          }
+
+          // Set "See the Full Breakdown" link
+          var fullLink = document.getElementById('fc-chat-action-full');
+          if (fullLink) fullLink.href = '/v/' + investigationId;
+
+          // Pipeline metadata
+          var metaEl = document.getElementById('fc-chat-actions-meta');
+          if (metaEl) {
+            metaEl.textContent = 'Investigated in ' + elapsedSeconds + ' seconds | API cost: $' + totalCost.toFixed(2);
+          }
+        }, 4000);
+      }
+
+      // ── Reset chat (Check Another Claim) ──
+
+      function resetChat() {
+        // Hide investigation area
+        var invArea = document.getElementById('fc-chat-investigation');
+        if (invArea) invArea.style.display = 'none';
+
+        // Show header + input
+        var chatHeader = document.querySelector('.fc-chat-header');
+        if (chatHeader) chatHeader.style.display = '';
+        var inputArea = document.getElementById('fc-chat-input-area');
+        if (inputArea) inputArea.style.display = '';
+
+        // Clear textarea
+        var ta = document.getElementById('fc-chat-textarea');
+        if (ta) {
+          ta.value = '';
+          ta.style.height = 'auto';
+        }
+
+        // Reset verdict reveal
+        var reveal = document.getElementById('fc-verdict-reveal');
+        if (reveal) reveal.style.display = 'none';
+        var actions = document.getElementById('fc-chat-actions');
+        if (actions) { actions.style.display = 'none'; actions.classList.remove('fc-reveal-actions-visible'); }
+
+        // Reset non-factual card
+        var nonfactual = document.getElementById('fc-chat-nonfactual');
+        if (nonfactual) nonfactual.style.display = 'none';
+
+        // Reset progress bar
+        ['classify','strategize','investigate','challenge','judge','verdict'].forEach(function(s) {
+          var seg = document.getElementById('fc-seg-' + s);
+          if (seg) { seg.classList.remove('fc-progress-segment--active', 'fc-progress-segment--complete'); }
+        });
+
+        // Reset agent cards
+        ['fc-card-classifier','fc-card-strategist','fc-card-inv-source','fc-card-inv-domain','fc-card-inv-pattern','fc-card-da','fc-card-judge'].forEach(function(id) {
+          var card = document.getElementById(id);
+          if (card) {
+            card.classList.remove('fc-agent--active','fc-agent--complete','fc-agent--failed');
+            card.classList.add('fc-agent--idle');
+          }
+        });
+
+        // Reset state variables
+        elapsedSeconds = 0;
+        totalCost = 0;
+        invCompletedCount = 0;
+        investigationId = null;
+        cardEntered = {};
+        if (elapsedTimer) { clearInterval(elapsedTimer); elapsedTimer = null; }
+        clearPipelineTimeout();
+        if (evtSource) { evtSource.close(); evtSource = null; }
+        if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+
+        // Focus textarea
+        if (ta) ta.focus();
+      }
+
+      // ── Share verdict URL ──
+
+      function shareVerdict() {
+        var url = window.location.origin + '/v/' + investigationId;
+        var shareBtn = document.getElementById('fc-chat-action-share');
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(url).then(function() {
+            if (shareBtn) {
+              shareBtn.textContent = 'Copied!';
+              setTimeout(function() { shareBtn.textContent = 'Share This Verdict'; }, 2000);
+            }
+          });
+        } else {
+          // Fallback: create temp input
+          var tmp = document.createElement('input');
+          tmp.value = url;
+          document.body.appendChild(tmp);
+          tmp.select();
+          document.execCommand('copy');
+          document.body.removeChild(tmp);
+          if (shareBtn) {
+            shareBtn.textContent = 'Copied!';
+            setTimeout(function() { shareBtn.textContent = 'Share This Verdict'; }, 2000);
+          }
+        }
+      }
+
+      // Wire action buttons
+      var resetBtn = document.getElementById('fc-chat-action-reset');
+      if (resetBtn) resetBtn.addEventListener('click', resetChat);
+      var shareBtn2 = document.getElementById('fc-chat-action-share');
+      if (shareBtn2) shareBtn2.addEventListener('click', shareVerdict);
+      var nonfactualResetBtn = document.getElementById('fc-chat-nonfactual-reset');
+      if (nonfactualResetBtn) nonfactualResetBtn.addEventListener('click', resetChat);

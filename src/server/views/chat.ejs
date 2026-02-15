@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Check Any Claim — ForwardCheck-AI</title>
+  <meta name="description" content="Paste a suspicious message. Six AI agents investigate it in 60 seconds. You get the truth, the tricks, and the confidence score.">
+  <link rel="canonical" href="https://forwardcheck.ai/chat">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Check Any Claim — ForwardCheck-AI">
+  <meta property="og:description" content="Paste a suspicious message. Six AI agents investigate it in 60 seconds. You get the truth, the tricks, and the confidence score.">
+  <meta property="og:url" content="https://forwardcheck.ai/chat">
+  <meta property="og:image" content="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1200' height='630' viewBox='0 0 1200 630'%3E%3Crect width='1200' height='630' fill='%230a0a0f'/%3E%3Cpath d='M600 180c8 0 16 3 22 8l120 80c10 7 16 18 16 30v100c0 40-30 80-60 100l-80 50c-10 6-22 6-32 0l-80-50c-30-20-60-60-60-100V348c0-12 6-23 16-30l120-80c6-5 14-8 22-8z' fill='none' stroke='%2322c55e' stroke-width='4'/%3E%3Cpath d='M556 370l30 30 60-60' fill='none' stroke='%2322c55e' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ctext x='600' y='560' text-anchor='middle' fill='%23e8e8ef' font-family='sans-serif' font-size='28' font-weight='bold'%3EForwardCheck-AI%3C/text%3E%3C/svg%3E">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Check Any Claim — ForwardCheck-AI">
+  <meta name="twitter:description" content="Paste a suspicious message. Six AI agents investigate it in 60 seconds. You get the truth, the tricks, and the confidence score.">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Instrument+Serif:ital@0;1&family=Satoshi:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 2l12 7v9c0 7-5 13-12 16C9 31 4 25 4 18V9l12-7z' fill='%230a0a0f' stroke='%2322c55e' stroke-width='2'/%3E%3Cpath d='M11 16l3 3 7-7' fill='none' stroke='%2322c55e' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <%- include('_chat-styles') %>
+  <%- include('_live-styles') %>
+</head>
+<body>
+  <a class="fc-skip-link" href="#fc-chat-textarea">Skip to main content</a>
+
+  <div class="fc-chat-wrapper">
+
+    <nav class="fc-topbar" aria-label="Site navigation">
+      <a class="fc-topbar-brand" href="/">ForwardCheck</a>
+      <a class="fc-topbar-link" href="/">Home</a>
+    </nav>
+
+    <main class="fc-chat-main">
+
+      <!-- ═══ HEADER ═══ -->
+      <div class="fc-chat-header">
+        <h1 class="fc-chat-headline">Paste. Investigate. Share the verdict.</h1>
+        <p class="fc-chat-subtitle">Six AI agents spend 60 seconds tearing your message apart. You get the truth, the tricks, and the confidence score &mdash; ready to share.</p>
+      </div>
+
+      <!-- ═══ INPUT AREA ═══ -->
+      <div class="fc-chat-input-area fc-chat-card" id="fc-chat-input-area">
+        <div class="fc-chat-textarea-wrap">
+          <textarea
+            id="fc-chat-textarea"
+            class="fc-chat-textarea"
+            placeholder="Paste a message that seems off... or type a claim you want checked"
+            aria-label="Enter a claim to fact-check"
+            rows="3"
+          ></textarea>
+          <button
+            type="button"
+            class="fc-chat-clear"
+            id="fc-chat-clear"
+            aria-label="Clear input"
+            style="display: none;"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+        <div class="fc-chat-input-footer">
+          <span class="fc-chat-counter" id="fc-chat-counter" aria-live="polite">0 / 5,000</span>
+          <button
+            type="submit"
+            class="fc-chat-submit"
+            id="fc-chat-submit"
+            disabled
+            aria-label="Submit claim for investigation"
+          >
+            <svg class="fc-chat-submit-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            Investigate This
+          </button>
+        </div>
+      </div>
+
+      <!-- ═══ ERROR DISPLAY ═══ -->
+      <div class="fc-chat-error" id="fc-chat-error" role="alert" style="display: none;"></div>
+
+      <!-- ═══ INVESTIGATION AREA (hidden until POST success) ═══ -->
+      <div id="fc-chat-investigation" role="region" aria-label="Investigation progress" style="display: none;">
+
+        <!-- Original claim -->
+        <div class="fc-live-message fc-chat-card">
+          <div class="fc-live-message-label">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 17 20 12 15 7"/><path d="M4 18v-2a4 4 0 0 1 4-4h12"/></svg>
+            Your claim
+          </div>
+          <p class="fc-live-message-text" id="fc-chat-claim-text"></p>
+        </div>
+
+        <!-- Progress header -->
+        <div class="fc-progress-header fc-chat-card" role="status" aria-live="polite">
+          <div class="fc-progress-header-top">
+            <span class="fc-progress-header-title">Investigating your claim...</span>
+            <span class="fc-elapsed" id="fc-elapsed" aria-label="Elapsed time">0:00</span>
+          </div>
+          <div class="fc-progress-bar" id="fc-progress-bar" role="progressbar" aria-label="Investigation progress" aria-valuemin="0" aria-valuemax="6" aria-valuenow="0">
+            <div class="fc-progress-segment" id="fc-seg-classify"><div class="fc-progress-segment-fill"></div></div>
+            <div class="fc-progress-segment" id="fc-seg-strategize"><div class="fc-progress-segment-fill"></div></div>
+            <div class="fc-progress-segment" id="fc-seg-investigate"><div class="fc-progress-segment-fill"></div></div>
+            <div class="fc-progress-segment" id="fc-seg-challenge"><div class="fc-progress-segment-fill"></div></div>
+            <div class="fc-progress-segment" id="fc-seg-judge"><div class="fc-progress-segment-fill"></div></div>
+            <div class="fc-progress-segment" id="fc-seg-verdict"><div class="fc-progress-segment-fill"></div></div>
+          </div>
+          <div class="fc-progress-labels">
+            <span class="fc-progress-label">Classify</span>
+            <span class="fc-progress-label">Strategize</span>
+            <span class="fc-progress-label">Investigate</span>
+            <span class="fc-progress-label">Challenge</span>
+            <span class="fc-progress-label">Judge</span>
+            <span class="fc-progress-label">Verdict</span>
+          </div>
+          <div class="fc-cost-tracker" id="fc-cost-tracker">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v12M9 9.5a2.5 2.5 0 0 1 5 0c0 1.5-2.5 2-2.5 4M9 14.5a2.5 2.5 0 0 0 5 0"/></svg>
+            API cost: <span id="fc-cost-value">$0.00</span>
+          </div>
+        </div>
+
+        <!-- Pipeline area -->
+        <div class="fc-live-pipeline">
+          <div class="fc-connecting-spinner" id="fc-chat-connecting-spinner">
+            <div class="fc-connecting-spinner-ring"></div>
+            <span>Tapping into your investigation...</span>
+          </div>
+
+          <div id="fc-agent-cards" class="fc-agent-cards">
+            <%- include('_live-agent-cards') %>
+          </div>
+
+          <div id="fc-chat-pipeline-status" class="fc-pipeline-status" role="status" aria-live="polite" style="display:none;"></div>
+        </div>
+
+        <!-- Non-factual response card (shown when classifier detects non-factual) -->
+        <div class="fc-chat-nonfactual fc-chat-card" id="fc-chat-nonfactual" style="display:none;">
+          <div class="fc-chat-nonfactual-icon" id="fc-chat-nonfactual-icon"></div>
+          <p class="fc-chat-nonfactual-text" id="fc-chat-nonfactual-text"></p>
+          <button class="fc-chat-action fc-chat-action--outline fc-chat-nonfactual-btn" id="fc-chat-nonfactual-reset" type="button">Check Another Claim</button>
+        </div>
+
+      </div>
+
+    </main>
+
+  </div>
+
+  <script>
+  (function() {
+    var textarea = document.getElementById('fc-chat-textarea');
+    var counter = document.getElementById('fc-chat-counter');
+    var submit = document.getElementById('fc-chat-submit');
+    var clear = document.getElementById('fc-chat-clear');
+    var inputArea = document.getElementById('fc-chat-input-area');
+
+    var MIN = 10;
+    var MAX = 5000;
+
+    function formatCount(n) {
+      return n.toLocaleString();
+    }
+
+    function updateState() {
+      var text = textarea.value;
+      var len = text.trim().length;
+      var rawLen = text.length;
+
+      counter.textContent = formatCount(rawLen) + ' / 5,000';
+
+      if (rawLen > 0 && len < MIN) {
+        counter.classList.add('fc-chat-counter--warn');
+        counter.classList.remove('fc-chat-counter--over');
+      } else if (rawLen > MAX) {
+        counter.classList.remove('fc-chat-counter--warn');
+        counter.classList.add('fc-chat-counter--over');
+      } else {
+        counter.classList.remove('fc-chat-counter--warn');
+        counter.classList.remove('fc-chat-counter--over');
+      }
+
+      submit.disabled = len < MIN || rawLen > MAX;
+
+      clear.style.display = rawLen > 0 ? 'flex' : 'none';
+
+      textarea.style.height = 'auto';
+      var scrollH = textarea.scrollHeight;
+      textarea.style.height = Math.min(scrollH, 200) + 'px';
+    }
+
+    textarea.addEventListener('input', updateState);
+
+    clear.addEventListener('click', function() {
+      textarea.value = '';
+      updateState();
+      textarea.focus();
+    });
+
+    textarea.addEventListener('focus', function() {
+      inputArea.classList.add('fc-chat-input-area--focus');
+    });
+
+    textarea.addEventListener('blur', function() {
+      inputArea.classList.remove('fc-chat-input-area--focus');
+    });
+
+<%- include('_chat-script') %>
+  })();
+  </script>
+</body>
+</html>

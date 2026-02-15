@@ -459,4 +459,22 @@ describe("Landing page routes", () => {
     expect(html).toContain("/v/demo");
   });
 
+  // ── Task 7.2: Landing page CTA update — add "Check in Browser" button ──
+
+  it("GET / should contain link to /chat", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/`);
+    const html = await res.text();
+
+    expect(html).toContain('href="/chat"');
+  });
+
+  it("GET / should contain Check in Your Browser CTA text", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/`);
+    const html = await res.text();
+
+    expect(html).toContain("Check in Your Browser");
+  });
+
 });

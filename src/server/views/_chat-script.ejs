@@ -1,0 +1,399 @@
+      // ── Form submission handler ──
+      var submitting = false;
+      var investigationId = null;
+      var evtSource = null;
+
+      function handleSubmit() {
+        if (submitting) return;
+        var text = textarea.value.trim();
+        if (text.length < MIN || textarea.value.length > MAX) return;
+
+        submitting = true;
+        submit.disabled = true;
+        submit.innerHTML = '<span class="fc-chat-spinner"></span> Sending...';
+        clearError();
+
+        fetch('/api/chat/message', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: textarea.value })
+        })
+        .then(function(res) {
+          if (res.ok) return res.json().then(function(data) { return { ok: true, data: data }; });
+          if (res.status === 429) {
+            var retryAfter = res.headers.get('Retry-After');
+            var secs = retryAfter ? parseInt(retryAfter, 10) : 60;
+            return { ok: false, rateLimit: true, seconds: secs };
+          }
+          return res.json().then(function(data) { return { ok: false, error: data.error }; });
+        })
+        .then(function(result) {
+          submitting = false;
+          resetSubmitButton();
+
+          if (result.ok) {
+            investigationId = result.data.id;
+            var streamUrl = result.data.streamUrl || ('/api/live/' + investigationId + '/stream');
+            showInvestigationArea(textarea.value);
+            connectSSE(streamUrl);
+            return;
+          }
+
+          if (result.rateLimit) {
+            showError("You've checked too many claims in the last minute. Take a breath — try again in " + result.seconds + " seconds.");
+            return;
+          }
+
+          showError(result.error || 'Something went wrong. Try again.');
+        })
+        .catch(function() {
+          submitting = false;
+          resetSubmitButton();
+          showError('Lost connection. Check your internet and try again.');
+        });
+      }
+
+      function resetSubmitButton() {
+        submit.innerHTML = '<svg class="fc-chat-submit-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Investigate This';
+        updateState();
+      }
+
+      // ── Show / hide investigation area ──
+
+      function showInvestigationArea(claimText) {
+        var chatHeader = document.querySelector('.fc-chat-header');
+        if (chatHeader) chatHeader.style.display = 'none';
+        if (inputArea) inputArea.style.display = 'none';
+        if (errorEl) errorEl.style.display = 'none';
+
+        var invArea = document.getElementById('fc-chat-investigation');
+        if (invArea) invArea.style.display = 'block';
+
+        var msgText = document.getElementById('fc-chat-claim-text');
+        if (msgText) msgText.textContent = claimText;
+      }
+
+      // ── Error display ──
+
+      var errorEl = document.getElementById('fc-chat-error');
+
+      function showError(msg) {
+        if (!errorEl) return;
+        errorEl.textContent = msg;
+        errorEl.style.display = 'block';
+        inputArea.classList.add('fc-chat-input-area--error');
+        inputArea.classList.add('fc-chat-shake');
+        setTimeout(function() {
+          inputArea.classList.remove('fc-chat-shake');
+        }, 500);
+      }
+
+      function clearError() {
+        if (!errorEl) return;
+        errorEl.style.display = 'none';
+        errorEl.textContent = '';
+        inputArea.classList.remove('fc-chat-input-area--error');
+      }
+
+      // Clear error on new input
+      textarea.addEventListener('input', function() {
+        clearError();
+      });
+
+      // Submit on button click
+      submit.addEventListener('click', handleSubmit);
+
+      // Submit on Ctrl+Enter / Cmd+Enter
+      textarea.addEventListener('keydown', function(e) {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+          e.preventDefault();
+          if (!submit.disabled) handleSubmit();
+        }
+      });
+
+      // ═══ SSE CLIENT — connects after successful POST ═══
+      // ── Elapsed time counter ──
+      var elapsedSeconds = 0;
+      var elapsedEl = document.getElementById('fc-elapsed');
+      var elapsedTimer = null;
+
+      function startElapsedTimer() {
+        elapsedSeconds = 0;
+        elapsedTimer = setInterval(function() {
+          elapsedSeconds++;
+          var mins = Math.floor(elapsedSeconds / 60);
+          var secs = elapsedSeconds % 60;
+          if (elapsedEl) {
+            elapsedEl.textContent = mins + ':' + (secs < 10 ? '0' : '') + secs;
+          }
+        }, 1000);
+      }
+
+      // ── Cost tracker ──
+      var totalCost = 0;
+      var costEl = document.getElementById('fc-cost-value');
+      function addCost(costUsd) {
+        if (typeof costUsd === 'number') {
+          totalCost += costUsd;
+          if (costEl) {
+            costEl.textContent = '$' + totalCost.toFixed(2);
+          }
+        }
+      }
+
+      // ── Progress bar ──
+      function setSegmentActive(step) {
+        var seg = document.getElementById('fc-seg-' + step);
+        if (seg) {
+          seg.classList.add('fc-progress-segment--active');
+          seg.classList.remove('fc-progress-segment--complete');
+        }
+      }
+      function setSegmentComplete(step) {
+        var seg = document.getElementById('fc-seg-' + step);
+        if (seg) {
+          seg.classList.remove('fc-progress-segment--active');
+          seg.classList.add('fc-progress-segment--complete');
+        }
+      }
+
+      // ── Spinner ──
+      var spinner = document.getElementById('fc-chat-connecting-spinner');
+      var spinnerHidden = false;
+      function hideSpinner() {
+        if (!spinnerHidden && spinner) {
+          spinner.style.display = 'none';
+          spinnerHidden = true;
+        }
+      }
+
+      // ── Pipeline status messages ──
+      var pipelineStatusEl = document.getElementById('fc-chat-pipeline-status');
+      function showPipelineStatus(text, type) {
+        if (pipelineStatusEl) {
+          pipelineStatusEl.textContent = text;
+          pipelineStatusEl.className = 'fc-pipeline-status fc-pipeline-status--' + (type || 'info');
+          pipelineStatusEl.style.display = 'block';
+        }
+      }
+
+<%- include('_chat-sse-handlers') %>
+
+      // ── Pipeline timeout detection (120s no events) ──
+      var pipelineTimeout = null;
+      var PIPELINE_TIMEOUT_MS = 120 * 1000;
+
+      function startPipelineTimeout() {
+        clearPipelineTimeout();
+        pipelineTimeout = setTimeout(function() {
+          showPipelineStatus(
+            'This investigation is taking longer than expected. You can wait or check back at /v/' + investigationId,
+            'warning'
+          );
+        }, PIPELINE_TIMEOUT_MS);
+      }
+
+      function resetPipelineTimeout() {
+        if (pipelineTimeout) {
+          clearTimeout(pipelineTimeout);
+          pipelineTimeout = setTimeout(function() {
+            showPipelineStatus(
+              'This investigation is taking longer than expected. You can wait or check back at /v/' + investigationId,
+              'warning'
+            );
+          }, PIPELINE_TIMEOUT_MS);
+        }
+      }
+
+      function clearPipelineTimeout() {
+        if (pipelineTimeout) {
+          clearTimeout(pipelineTimeout);
+          pipelineTimeout = null;
+        }
+      }
+
+      // ── Polling fallback for browsers without EventSource ──
+
+      var POLL_INTERVAL_MS = 3000;
+      var POLL_TIMEOUT = 180 * 1000; // 3 minutes
+      var pollTimer = null;
+      var pollStartTime = null;
+
+      function pollInvestigation() {
+        showPipelineStatus('Real-time updates unavailable. Checking for updates every few seconds.', 'warning');
+        pollStartTime = Date.now();
+
+        pollTimer = setInterval(function() {
+          // Stop polling after 3 minutes
+          if (Date.now() - pollStartTime > POLL_TIMEOUT) {
+            clearInterval(pollTimer);
+            pollTimer = null;
+            showPipelineStatus(
+              'This investigation is taking longer than expected. You can wait or check back at /v/' + investigationId,
+              'warning'
+            );
+            return;
+          }
+
+          fetch('/api/investigation/' + investigationId)
+            .then(function(res) {
+              if (!res.ok) return null;
+              return res.json();
+            })
+            .then(function(data) {
+              if (!data) return;
+
+              if (data.status === 'completed' || data.status === 'completed_non_factual') {
+                clearInterval(pollTimer);
+                pollTimer = null;
+                clearInterval(elapsedTimer);
+
+                if (data.status === 'completed' && data.final_verdict) {
+                  // Parse verdict if stored as JSON string
+                  var verdict = typeof data.final_verdict === 'string'
+                    ? JSON.parse(data.final_verdict) : data.final_verdict;
+                  showVerdictReveal({ verdict: verdict, totalCostUsd: data.total_cost_usd || 0 });
+                  setSegmentComplete('classify');
+                  setSegmentComplete('strategize');
+                  setSegmentComplete('investigate');
+                  setSegmentComplete('challenge');
+                  setSegmentComplete('judge');
+                  setSegmentComplete('verdict');
+                } else if (data.status === 'completed_non_factual' && data.classifier_result) {
+                  var classResult = typeof data.classifier_result === 'string'
+                    ? JSON.parse(data.classifier_result) : data.classifier_result;
+                  showNonFactualResponse(classResult.category || 'other');
+                }
+              } else if (data.status === 'investigating') {
+                // Update progress bar to show something is happening
+                setSegmentComplete('classify');
+              }
+            })
+            .catch(function() {
+              // Silently ignore poll errors — will retry next interval
+            });
+        }, POLL_INTERVAL_MS);
+      }
+
+      // ── Connect to SSE stream (or fall back to polling) ──
+
+      function connectSSE(streamUrl) {
+        startElapsedTimer();
+
+        // Check if EventSource is available
+        if (typeof EventSource === 'undefined') {
+          pollInvestigation();
+          return;
+        }
+
+        startPipelineTimeout();
+        evtSource = new EventSource(streamUrl);
+
+        // ── Pipeline lifecycle ──
+        evtSource.addEventListener('pipeline:start', function(e) {
+          hideSpinner();
+          resetPipelineTimeout();
+        });
+
+        // ── Classifier ──
+        evtSource.addEventListener('classifier:start', function(e) {
+          var data = JSON.parse(e.data);
+          resetPipelineTimeout();
+          updateClassifier('start', data);
+        });
+        evtSource.addEventListener('classifier:complete', function(e) {
+          var data = JSON.parse(e.data);
+          resetPipelineTimeout();
+          updateClassifier('complete', data);
+        });
+
+        // ── Strategist ──
+        evtSource.addEventListener('strategist:start', function(e) {
+          var data = JSON.parse(e.data);
+          resetPipelineTimeout();
+          updateStrategist('start', data);
+        });
+        evtSource.addEventListener('strategist:complete', function(e) {
+          var data = JSON.parse(e.data);
+          resetPipelineTimeout();
+          updateStrategist('complete', data);
+        });
+
+        // ── Investigators ──
+        evtSource.addEventListener('investigators:start', function(e) {
+          var data = JSON.parse(e.data);
+          resetPipelineTimeout();
+          updateInvestigators('start', data);
+        });
+        evtSource.addEventListener('investigator:searching', function(e) {
+          var data = JSON.parse(e.data);
+          resetPipelineTimeout();
+          updateInvestigators('searching', data);
+        });
+        evtSource.addEventListener('investigator:complete', function(e) {
+          var data = JSON.parse(e.data);
+          resetPipelineTimeout();
+          updateInvestigators('complete', data);
+        });
+
+        // ── Disagreement ──
+        evtSource.addEventListener('disagreement:detected', function(e) {
+          var data = JSON.parse(e.data);
+          resetPipelineTimeout();
+          updateInvestigators('disagreement', data);
+        });
+
+        // ── Devil's Advocate ──
+        evtSource.addEventListener('da:start', function(e) {
+          var data = JSON.parse(e.data);
+          resetPipelineTimeout();
+          updateDA('start', data);
+        });
+        evtSource.addEventListener('da:complete', function(e) {
+          var data = JSON.parse(e.data);
+          resetPipelineTimeout();
+          updateDA('complete', data);
+        });
+
+        // ── Judge ──
+        evtSource.addEventListener('judge:start', function(e) {
+          var data = JSON.parse(e.data);
+          resetPipelineTimeout();
+          updateJudge('start', data);
+        });
+        evtSource.addEventListener('judge:complete', function(e) {
+          var data = JSON.parse(e.data);
+          resetPipelineTimeout();
+          updateJudge('complete', data);
+        });
+
+        // ── Pipeline complete — verdict reveal ──
+        evtSource.addEventListener('pipeline:complete', function(e) {
+          var data = JSON.parse(e.data);
+          hideSpinner();
+          clearPipelineTimeout();
+          updateJudge('verdict', data);
+          evtSource.close();
+        });
+
+        // ── Pipeline error ──
+        evtSource.addEventListener('pipeline:error', function(e) {
+          var data = JSON.parse(e.data);
+          hideSpinner();
+          clearPipelineTimeout();
+          clearInterval(elapsedTimer);
+          showPipelineStatus('Something broke. Here\u2019s what happened: ' + (data.error || 'Unknown error'), 'error');
+          evtSource.close();
+        });
+
+        // ── Connection error ──
+        evtSource.onerror = function() {
+          showPipelineStatus('Connection dropped. Reconnecting...', 'warning');
+        };
+
+        evtSource.onopen = function() {
+          if (pipelineStatusEl && pipelineStatusEl.textContent === 'Connection dropped. Reconnecting...') {
+            pipelineStatusEl.style.display = 'none';
+          }
+        };
+      }

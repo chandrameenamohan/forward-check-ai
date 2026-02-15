@@ -1,0 +1,656 @@
+<%- include('_design-tokens') %>
+<style>
+    /* ═══ ACCESSIBILITY ═══ */
+
+    /* Skip-to-content link — hidden until focused */
+    .fc-skip-link {
+      position: absolute;
+      top: -100%;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 0.6rem 1.4rem;
+      background: var(--fc-accent-green);
+      color: var(--fc-bg);
+      font-family: 'Satoshi', sans-serif;
+      font-weight: 700;
+      font-size: 0.85rem;
+      border-radius: 0 0 8px 8px;
+      text-decoration: none;
+      z-index: 1000;
+      transition: top 0.2s ease;
+    }
+    .fc-skip-link:focus {
+      top: 0;
+      outline: none;
+    }
+
+    /* Focus-visible outlines for all interactive elements */
+    .fc-chat-textarea:focus-visible {
+      outline: 2px solid var(--fc-accent-green);
+      outline-offset: 2px;
+    }
+    .fc-chat-submit:focus-visible,
+    .fc-chat-clear:focus-visible,
+    .fc-chat-action:focus-visible,
+    .fc-chat-nonfactual-btn:focus-visible,
+    .fc-topbar-brand:focus-visible,
+    .fc-topbar-link:focus-visible {
+      outline: 2px solid var(--fc-accent-green);
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+
+    /* ═══ ENTRANCE ANIMATIONS ═══ */
+
+    @keyframes fc-chat-entrance {
+      from {
+        opacity: 0;
+        transform: translateY(18px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .fc-chat-header {
+      animation: fc-chat-entrance 0.6s ease-out both;
+    }
+    .fc-chat-input-area {
+      animation: fc-chat-entrance 0.6s ease-out 0.15s both;
+    }
+
+    /* ═══ CHAT PAGE LAYOUT ═══ */
+
+    .fc-chat-wrapper {
+      position: relative;
+      z-index: 1;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 1.25rem 3rem;
+      min-height: 100vh;
+    }
+
+    /* ─── Topbar ─── */
+    .fc-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 0;
+      border-bottom: 1px solid var(--fc-border);
+      margin-bottom: 2rem;
+    }
+    .fc-topbar-brand {
+      font-family: 'DM Mono', monospace;
+      font-weight: 500;
+      font-size: 0.85rem;
+      letter-spacing: 0.04em;
+      color: var(--fc-accent-green);
+      text-decoration: none;
+    }
+    .fc-topbar-link {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--fc-text-dim);
+      text-decoration: none;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      transition: color 0.2s ease;
+    }
+    .fc-topbar-link:hover {
+      color: var(--fc-text-muted);
+    }
+
+    /* ─── Main content area ─── */
+    .fc-chat-main {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    /* ─── Chat header (headline + subtitle) ─── */
+    .fc-chat-header {
+      text-align: center;
+      padding: 3rem 0 1rem;
+    }
+    .fc-chat-headline {
+      font-family: 'Instrument Serif', serif;
+      font-size: 2.4rem;
+      font-weight: 400;
+      line-height: 1.15;
+      color: var(--fc-text);
+      margin-bottom: 0.75rem;
+    }
+    .fc-chat-subtitle {
+      font-size: 1rem;
+      color: var(--fc-text-muted);
+      max-width: 540px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    /* ─── Glass-morphism card (reusable) ─── */
+    .fc-chat-card {
+      background: rgba(18, 18, 26, 0.7);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--fc-border);
+      border-radius: 10px;
+      padding: 1.5rem;
+    }
+
+    /* ═══ INPUT AREA ═══ */
+
+    .fc-chat-input-area {
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    .fc-chat-input-area--focus {
+      border-color: var(--fc-accent-green);
+      box-shadow: 0 0 20px rgba(34, 197, 94, 0.1), 0 0 40px rgba(34, 197, 94, 0.05);
+    }
+
+    /* ─── Textarea wrapper ─── */
+    .fc-chat-textarea-wrap {
+      position: relative;
+    }
+
+    .fc-chat-textarea {
+      width: 100%;
+      min-height: 80px;
+      max-height: 200px;
+      padding: 0;
+      padding-right: 2rem;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--fc-text);
+      font-family: 'Satoshi', -apple-system, sans-serif;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      resize: none;
+      overflow-y: auto;
+    }
+    .fc-chat-textarea::placeholder {
+      color: var(--fc-text-dim);
+      font-style: italic;
+    }
+
+    /* ─── Clear button ─── */
+    .fc-chat-clear {
+      position: absolute;
+      top: 0;
+      right: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      border: none;
+      background: var(--fc-surface-raised);
+      color: var(--fc-text-dim);
+      cursor: pointer;
+      transition: color 0.2s ease, background 0.2s ease;
+    }
+    .fc-chat-clear:hover {
+      color: var(--fc-text);
+      background: var(--fc-border);
+    }
+
+    /* ─── Input footer (counter + submit) ─── */
+    .fc-chat-input-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 0.75rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--fc-border);
+    }
+
+    /* ─── Character counter ─── */
+    .fc-chat-counter {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--fc-text-dim);
+      letter-spacing: 0.03em;
+      transition: color 0.2s ease;
+    }
+    .fc-chat-counter--warn {
+      color: var(--fc-accent-amber);
+    }
+    .fc-chat-counter--over {
+      color: var(--fc-accent-red);
+    }
+
+    /* ─── Submit button ─── */
+    .fc-chat-submit {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.55rem 1.4rem;
+      background: var(--fc-accent-green);
+      color: var(--fc-bg);
+      font-family: 'Satoshi', sans-serif;
+      font-weight: 700;
+      font-size: 0.85rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: box-shadow 0.3s ease, opacity 0.2s ease, transform 0.15s ease;
+      flex-shrink: 0;
+    }
+    .fc-chat-submit:hover:not(:disabled) {
+      box-shadow: 0 0 20px rgba(34, 197, 94, 0.35);
+    }
+    .fc-chat-submit:active:not(:disabled) {
+      transform: scale(0.97);
+    }
+    .fc-chat-submit:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+    .fc-chat-submit-icon {
+      flex-shrink: 0;
+    }
+
+    /* ─── Error display ─── */
+    .fc-chat-error {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--fc-accent-red);
+      background: rgba(239, 68, 68, 0.06);
+      border: 1px solid var(--fc-accent-red);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      line-height: 1.5;
+    }
+    .fc-chat-input-area--error {
+      border-color: var(--fc-accent-red);
+      box-shadow: 0 0 20px rgba(239, 68, 68, 0.1);
+    }
+
+    /* ─── Shake animation ─── */
+    @keyframes fc-chat-shake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-6px); }
+      40% { transform: translateX(6px); }
+      60% { transform: translateX(-4px); }
+      80% { transform: translateX(4px); }
+    }
+    .fc-chat-shake {
+      animation: fc-chat-shake 0.4s ease;
+    }
+
+    /* ─── Inline spinner ─── */
+    .fc-chat-spinner {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(10, 10, 15, 0.3);
+      border-top-color: var(--fc-bg);
+      border-radius: 50%;
+      animation: fc-chat-spin 0.6s linear infinite;
+      vertical-align: middle;
+    }
+    @keyframes fc-chat-spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* ═══ VERDICT EXTRAS (manipulation techniques + deep reasoning) ═══ */
+
+    .fc-verdict-techniques {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: center;
+      margin-top: 1.25rem;
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    .fc-verdict-techniques.fc-reveal-techniques-visible {
+      animation: fc-reveal-fade-up 0.5s ease-out forwards;
+    }
+    @keyframes fc-reveal-fade-up {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .fc-technique-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.3rem 0.7rem;
+      border-radius: 20px;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.02em;
+      border: 1px solid;
+    }
+    .fc-technique-pill--high {
+      color: var(--fc-accent-red);
+      border-color: var(--fc-accent-red);
+      background: rgba(239, 68, 68, 0.08);
+    }
+    .fc-technique-pill--medium {
+      color: var(--fc-accent-amber);
+      border-color: var(--fc-accent-amber);
+      background: rgba(234, 179, 8, 0.08);
+    }
+    .fc-technique-pill--low {
+      color: var(--fc-text-muted);
+      border-color: var(--fc-border);
+      background: rgba(255, 255, 255, 0.03);
+    }
+    .fc-technique-sev {
+      font-size: 0.55rem;
+      opacity: 0.7;
+    }
+
+    .fc-verdict-deep-reasoning {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-top: 0.75rem;
+      padding: 0.35rem 0.85rem;
+      border: 1px solid var(--fc-accent-purple, #a855f7);
+      border-radius: 6px;
+      color: var(--fc-accent-purple, #a855f7);
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.03em;
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    .fc-verdict-deep-reasoning.fc-reveal-techniques-visible {
+      animation: fc-reveal-fade-up 0.5s ease-out forwards;
+    }
+
+    /* ═══ CHAT ACTION BUTTONS (post-verdict) ═══ */
+
+    .fc-chat-actions {
+      margin-top: 1.5rem;
+      text-align: center;
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    .fc-chat-actions.fc-reveal-actions-visible {
+      animation: fc-reveal-fade-up 0.5s ease-out forwards;
+    }
+    .fc-chat-actions-meta {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--fc-text-dim);
+      letter-spacing: 0.03em;
+      margin-bottom: 1rem;
+    }
+    .fc-chat-actions-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      justify-content: center;
+    }
+    .fc-chat-action {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.6rem 1.4rem;
+      font-family: 'Satoshi', sans-serif;
+      font-weight: 600;
+      font-size: 0.85rem;
+      border-radius: 8px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: box-shadow 0.3s ease, transform 0.15s ease, background 0.2s ease, color 0.2s ease;
+    }
+    .fc-chat-action:active {
+      transform: scale(0.97);
+    }
+
+    /* Primary — green fill */
+    .fc-chat-action--primary {
+      background: var(--fc-accent-green);
+      color: var(--fc-bg);
+      border: none;
+    }
+    .fc-chat-action--primary:hover {
+      box-shadow: 0 0 20px rgba(34, 197, 94, 0.35);
+      color: var(--fc-bg);
+    }
+
+    /* Outline — green border */
+    .fc-chat-action--outline {
+      background: transparent;
+      color: var(--fc-accent-green);
+      border: 1px solid var(--fc-accent-green);
+    }
+    .fc-chat-action--outline:hover {
+      background: rgba(34, 197, 94, 0.08);
+      box-shadow: 0 0 16px rgba(34, 197, 94, 0.15);
+    }
+
+    /* Ghost — subtle */
+    .fc-chat-action--ghost {
+      background: transparent;
+      color: var(--fc-text-muted);
+      border: 1px solid var(--fc-border);
+    }
+    .fc-chat-action--ghost:hover {
+      color: var(--fc-text);
+      border-color: var(--fc-text-dim);
+    }
+
+    /* ═══ NON-FACTUAL RESPONSE CARD ═══ */
+
+    .fc-chat-nonfactual {
+      text-align: center;
+      border-color: var(--fc-accent-blue, #3b82f6);
+      border-left: 3px solid var(--fc-accent-blue, #3b82f6);
+      margin-top: 1.5rem;
+    }
+    .fc-chat-nonfactual-icon {
+      font-size: 2rem;
+      margin-bottom: 0.75rem;
+    }
+    .fc-chat-nonfactual-text {
+      font-size: 0.95rem;
+      color: var(--fc-text-muted);
+      line-height: 1.6;
+      margin-bottom: 1.25rem;
+    }
+    .fc-chat-nonfactual-btn {
+      margin: 0 auto;
+    }
+
+    /* ─── Responsive: desktop (≥769px) ─── */
+    @media (min-width: 769px) {
+      .fc-chat-wrapper {
+        max-width: 900px;
+        padding: 0 2rem 4rem;
+      }
+      .fc-chat-header {
+        padding: 4rem 0 1.5rem;
+      }
+      .fc-chat-headline {
+        font-size: 2.8rem;
+      }
+      .fc-chat-subtitle {
+        font-size: 1.05rem;
+        max-width: 580px;
+      }
+      .fc-chat-main {
+        gap: 2.25rem;
+      }
+      .fc-chat-card {
+        padding: 1.75rem;
+        border-radius: 12px;
+      }
+      .fc-chat-textarea {
+        min-height: 100px;
+        font-size: 1rem;
+      }
+      .fc-chat-submit {
+        padding: 0.6rem 1.6rem;
+        font-size: 0.9rem;
+      }
+      .fc-chat-counter {
+        font-size: 0.72rem;
+      }
+      .fc-chat-error {
+        font-size: 0.82rem;
+        padding: 0.85rem 1.15rem;
+      }
+      .fc-chat-action {
+        padding: 0.65rem 1.6rem;
+        font-size: 0.9rem;
+      }
+      .fc-chat-nonfactual {
+        padding: 2rem;
+      }
+      .fc-chat-nonfactual-icon {
+        font-size: 2.4rem;
+      }
+      .fc-chat-nonfactual-text {
+        font-size: 1rem;
+      }
+      .fc-technique-pill {
+        font-size: 0.68rem;
+        padding: 0.35rem 0.8rem;
+      }
+      .fc-verdict-deep-reasoning {
+        font-size: 0.68rem;
+        padding: 0.4rem 0.95rem;
+      }
+      .fc-chat-actions-meta {
+        font-size: 0.68rem;
+      }
+    }
+
+    /* ─── Responsive: tablet (≤768px) ─── */
+    @media (max-width: 768px) {
+      .fc-chat-wrapper {
+        padding: 0 1rem 2rem;
+      }
+      .fc-chat-header {
+        padding: 2rem 0 0.75rem;
+      }
+      .fc-chat-headline {
+        font-size: 1.8rem;
+      }
+      .fc-chat-subtitle {
+        font-size: 0.9rem;
+      }
+      .fc-chat-card {
+        padding: 1.15rem;
+      }
+      .fc-chat-submit {
+        padding: 0.5rem 1.15rem;
+        font-size: 0.82rem;
+        min-height: 44px;
+      }
+      .fc-chat-clear {
+        width: 44px;
+        height: 44px;
+      }
+      .fc-chat-actions-row {
+        flex-direction: column;
+      }
+      .fc-chat-action {
+        font-size: 0.82rem;
+        padding: 0.55rem 1.15rem;
+        min-height: 44px;
+      }
+      .fc-chat-nonfactual-btn {
+        min-height: 44px;
+      }
+    }
+
+    /* ─── Responsive: small mobile (≤375px) ─── */
+    @media (max-width: 375px) {
+      .fc-chat-wrapper {
+        padding: 0 0.75rem 1.5rem;
+      }
+      .fc-chat-header {
+        padding: 1.5rem 0 0.5rem;
+      }
+      .fc-chat-headline {
+        font-size: 1.5rem;
+      }
+      .fc-chat-subtitle {
+        font-size: 0.85rem;
+      }
+      .fc-chat-card {
+        padding: 1rem;
+        border-radius: 8px;
+      }
+      .fc-chat-textarea {
+        font-size: 0.9rem;
+        min-height: 70px;
+      }
+      .fc-chat-submit {
+        padding: 0.5rem 1rem;
+        font-size: 0.78rem;
+        min-height: 44px;
+      }
+      .fc-chat-counter {
+        font-size: 0.6rem;
+      }
+      .fc-chat-error {
+        font-size: 0.72rem;
+        padding: 0.6rem 0.8rem;
+      }
+      .fc-chat-nonfactual-text {
+        font-size: 0.85rem;
+      }
+      .fc-chat-actions-meta {
+        font-size: 0.6rem;
+      }
+      .fc-technique-pill {
+        font-size: 0.6rem;
+        padding: 0.25rem 0.55rem;
+      }
+      /* Input area: sticky at bottom on small mobile only */
+      .fc-chat-input-area {
+        position: sticky;
+        bottom: 0;
+        z-index: 10;
+        border-radius: 10px 10px 0 0;
+        padding-bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+      }
+    }
+
+    /* ─── Reduced motion ─── */
+    @media (prefers-reduced-motion: reduce) {
+      .fc-skip-link {
+        transition: none;
+      }
+      .fc-chat-header,
+      .fc-chat-input-area {
+        animation: none;
+        opacity: 1;
+        transform: none;
+      }
+      .fc-chat-card,
+      .fc-chat-input-area,
+      .fc-chat-submit,
+      .fc-chat-clear,
+      .fc-chat-counter,
+      .fc-topbar-link {
+        transition: none;
+      }
+      .fc-chat-shake {
+        animation: none;
+      }
+      .fc-chat-spinner {
+        animation: none;
+      }
+      .fc-verdict-techniques.fc-reveal-techniques-visible,
+      .fc-verdict-deep-reasoning.fc-reveal-techniques-visible,
+      .fc-chat-actions.fc-reveal-actions-visible {
+        animation: none;
+        opacity: 1;
+        transform: none;
+      }
+      .fc-chat-action {
+        transition: none;
+      }
+    }
+</style>
