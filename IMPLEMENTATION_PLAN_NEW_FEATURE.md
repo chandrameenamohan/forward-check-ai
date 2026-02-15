@@ -101,7 +101,7 @@
 ## Phase 2: Feedback Pipeline — GitHub Service
 
 ### Task 2.1: Create GitHub issue service
-- [ ]
+- [x]
 **Objective:** Create a service that creates GitHub issues via the REST API using raw `fetch` (zero new dependencies).
 **Details:**
 - Create `src/services/github-issues.ts`
