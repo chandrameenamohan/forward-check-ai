@@ -115,7 +115,7 @@
 ## Phase S4: Load & Performance Testing
 
 ### Task S4.1: Concurrent endpoint stress test
-- [ ]
+- [x]
 **Objective:** Verify the server handles concurrent requests without crashing or returning errors.
 **Steps:**
 1. Health endpoint — 50 concurrent requests: `for i in $(seq 1 50); do curl -s -o /dev/null -w "%{http_code}\n" $PROD_URL/health & done | sort | uniq -c`
