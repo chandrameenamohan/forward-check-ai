@@ -63,7 +63,7 @@
 - No TypeScript errors: `npx tsc --noEmit`
 
 ### Task 0.3: Create render-scenes.sh script
-- [ ]
+- [x]
 **Objective:** Create a shell script that renders all 6 scene videos individually.
 **Details:**
 - Create `render-scenes.sh` in the Remotion project root
