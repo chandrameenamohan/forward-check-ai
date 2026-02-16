@@ -13,7 +13,7 @@ const logger = createLogger({ level: "info" });
 const FEEDBACK_MIN_LENGTH = 10;
 
 /** Maximum time (ms) to wait for the pipeline before timing out. */
-const PIPELINE_TIMEOUT_MS = 120_000;
+const PIPELINE_TIMEOUT_MS = 300_000;
 
 /**
  * Wrap a promise with a timeout. Rejects with a clear error if the deadline is exceeded.
