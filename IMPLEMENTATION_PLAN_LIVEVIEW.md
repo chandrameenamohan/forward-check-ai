@@ -338,7 +338,7 @@ The "See Live Verdict" page shows users the 6-agent pipeline working on their cl
 **Details:**
 - Add to `live.ejs` footer area:
   - "Try it yourself" section with QR code image (`/public/telegram-bot-qr-code.jpg`)
-  - Direct link to `https://t.me/forward_check_beta_bot`
+  - Direct link to `https://t.me/forward_check_opus_bot`
   - "Forward any suspicious message. Watch this page come alive."
 - Serve `public/` directory as static files in Express (if not already)
 - Use `frontend-design` skill for the QR code section styling

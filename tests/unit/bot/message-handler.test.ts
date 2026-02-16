@@ -16,8 +16,8 @@ const FAKE_TOKEN = "123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11";
 const fakeBotInfo: UserFromGetMe = {
   id: 123456,
   is_bot: true,
-  first_name: "ForwardCheckBot",
-  username: "ForwardCheckBot",
+  first_name: "forward_check_opus_bot",
+  username: "forward_check_opus_bot",
   can_join_groups: true,
   can_read_all_group_messages: false,
   supports_inline_queries: false,

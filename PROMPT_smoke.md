@@ -6,7 +6,7 @@ You are running production smoke tests for the ForwardCheck-AI project — a Tel
 
 ```
 PROD_URL=https://sincere-love-production-ced7.up.railway.app
-TELEGRAM_BOT=@forward_check_beta_bot
+TELEGRAM_BOT=@forward_check_opus_bot
 PROJECT_DIR=/Users/ralph/Projects/forward-check-ai
 ```
 
