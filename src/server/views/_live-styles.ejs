@@ -108,7 +108,7 @@
       color: var(--fc-accent-green);
     }
 
-    /* ─── Progress header ─── */
+    /* ─── Progress header (sticky so it stays visible during auto-scroll) ─── */
     .fc-progress-header {
       background: var(--fc-surface);
       border: 1px solid var(--fc-border);
@@ -116,6 +116,9 @@
       padding: 1.25rem 1.5rem 1rem;
       margin-bottom: 1.5rem;
       backdrop-filter: blur(16px);
+      position: sticky;
+      top: 0;
+      z-index: 20;
     }
     .fc-progress-header-top {
       display: flex;
@@ -274,6 +277,7 @@
       padding: 1.25rem 1.5rem;
       backdrop-filter: blur(12px);
       transition: border-color 0.5s ease, opacity 0.5s ease, box-shadow 0.5s ease, background 0.5s ease;
+      scroll-margin-top: 140px;
     }
     .fc-agent-card-header {
       display: flex;
@@ -442,6 +446,7 @@
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 0.6rem;
+      scroll-margin-top: 140px;
     }
     .fc-investigator-row .fc-agent-card {
       padding: 1rem 1rem;
@@ -684,6 +689,7 @@
       margin-top: 2rem;
       text-align: center;
       position: relative;
+      scroll-margin-top: 140px;
     }
 
     /* Dramatic pause overlay */

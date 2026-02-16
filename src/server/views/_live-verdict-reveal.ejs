@@ -36,6 +36,10 @@
         // Show the container
         reveal.style.display = 'block';
 
+        // Auto-scroll to verdict (ignores user-scroll suppression for the climax)
+        var verdictBehavior = prefersReducedMotion() ? 'instant' : 'smooth';
+        reveal.scrollIntoView({ behavior: verdictBehavior, block: 'start' });
+
         // 1. Brief dramatic pause (1s)
         var pauseEl = document.getElementById('fc-verdict-reveal-pause');
         if (pauseEl) {

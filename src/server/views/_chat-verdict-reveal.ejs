@@ -23,6 +23,10 @@
         reveal.style.setProperty('--fc-reveal-color', verdictColor);
         reveal.style.display = 'block';
 
+        // Auto-scroll to verdict (ignores user-scroll suppression for the climax)
+        var verdictBehavior = prefersReducedMotion() ? 'instant' : 'smooth';
+        reveal.scrollIntoView({ behavior: verdictBehavior, block: 'start' });
+
         // 1. Dramatic pause
         var pauseEl = document.getElementById('fc-verdict-reveal-pause');
         if (pauseEl) {
