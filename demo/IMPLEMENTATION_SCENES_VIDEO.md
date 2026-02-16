@@ -113,7 +113,7 @@
 - Visual: All keyframes match spec timing
 
 ### Task 1.2: Validate and fix TheSpread scene (Scene 2)
-- [ ]
+- [x]
 **Objective:** Render Scene2_TheSpread independently, verify audio/visual sync, fix any issues.
 **Details:**
 - Render: `npx remotion render src/index.ts Scene2_TheSpread /Users/ralph/Projects/forward-check-ai/demo/scenes/scene2_thespread.mp4 --codec h264 --crf 18`
