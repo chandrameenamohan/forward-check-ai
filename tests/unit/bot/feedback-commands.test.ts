@@ -5,6 +5,7 @@ import type { InvestigationPipeline, InvestigateResult } from "../../../src/orch
 import { createMessageHandler } from "../../../src/bot/message-handler.js";
 import { makeFinalVerdict } from "../../fixtures/index.js";
 import type { FeedbackRepository } from "../../../src/db/feedback-repository.js";
+import type { InvestigationRepository } from "../../../src/db/investigation-repository.js";
 import type { GitHubIssueService, CreateIssueResult } from "../../../src/services/github-issues.js";
 
 const FAKE_TOKEN = "123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11";
@@ -61,6 +62,22 @@ function createMockFeedbackRepo(): FeedbackRepository {
     getById: vi.fn(),
     getRecent: vi.fn(),
   } as unknown as FeedbackRepository;
+}
+
+function createMockInvestigationRepo(): InvestigationRepository {
+  return {
+    create: vi.fn().mockReturnValue("inv-id-123"),
+    getById: vi.fn(),
+    getRecent: vi.fn(),
+    updateStatus: vi.fn(),
+    updateClassifierResult: vi.fn(),
+    updateSearchStrategy: vi.fn(),
+    updateAgentReports: vi.fn(),
+    updateDaReport: vi.fn(),
+    updateFinalVerdict: vi.fn(),
+    updateCost: vi.fn(),
+    updateDuration: vi.fn(),
+  } as unknown as InvestigationRepository;
 }
 
 function createMockGitHubService(result?: CreateIssueResult): GitHubIssueService {
@@ -121,7 +138,7 @@ describe("Telegram feedback commands", () => {
     const githubService = createMockGitHubService();
     const pipeline = createMockPipeline();
 
-    createMessageHandler(bot, pipeline, BASE_URL, feedbackRepo, githubService);
+    createMessageHandler(bot, pipeline, BASE_URL, createMockInvestigationRepo(), feedbackRepo, githubService);
 
     const update = makeCommandUpdate("bug", "The bot crashes when I send an image with text overlay and it produces no output");
     await bot.handleUpdate(update);
@@ -158,7 +175,7 @@ describe("Telegram feedback commands", () => {
     const githubService = createMockGitHubService();
     const pipeline = createMockPipeline();
 
-    createMessageHandler(bot, pipeline, BASE_URL, feedbackRepo, githubService);
+    createMessageHandler(bot, pipeline, BASE_URL, createMockInvestigationRepo(), feedbackRepo, githubService);
 
     const update = makeCommandUpdate("bug", "short");
     await bot.handleUpdate(update);
@@ -180,7 +197,7 @@ describe("Telegram feedback commands", () => {
     const githubService = createMockGitHubService();
     const pipeline = createMockPipeline();
 
-    createMessageHandler(bot, pipeline, BASE_URL, feedbackRepo, githubService);
+    createMessageHandler(bot, pipeline, BASE_URL, createMockInvestigationRepo(), feedbackRepo, githubService);
 
     const update = makeCommandUpdate("bug", "");
     await bot.handleUpdate(update);
@@ -203,7 +220,7 @@ describe("Telegram feedback commands", () => {
     const githubService = createMockGitHubService();
     const pipeline = createMockPipeline();
 
-    createMessageHandler(bot, pipeline, BASE_URL, feedbackRepo, githubService);
+    createMessageHandler(bot, pipeline, BASE_URL, createMockInvestigationRepo(), feedbackRepo, githubService);
 
     const update = makeCommandUpdate("feedback", "The verdict page looks great but I wish it showed more source details");
     await bot.handleUpdate(update);
@@ -230,7 +247,7 @@ describe("Telegram feedback commands", () => {
     const pipeline = createMockPipeline();
 
     // No GitHub service passed
-    createMessageHandler(bot, pipeline, BASE_URL, feedbackRepo, undefined);
+    createMessageHandler(bot, pipeline, BASE_URL, createMockInvestigationRepo(), feedbackRepo, undefined);
 
     const update = makeCommandUpdate("bug", "The bot crashes when processing large messages with many URLs included");
     await bot.handleUpdate(update);
