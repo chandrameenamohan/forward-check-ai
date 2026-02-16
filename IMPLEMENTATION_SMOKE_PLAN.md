@@ -3,7 +3,7 @@
 > Each task is atomic and single-objective. A task is complete when: commands executed, output verified, results documented, and task checked off.
 
 **Production URL:** `https://sincere-love-production-ced7.up.railway.app`
-**Telegram Bot:** `@forward_check_beta_bot`
+**Telegram Bot:** `@forward_check_opus_bot`
 **Telegram Web:** `https://web.telegram.org/a/#8464582121`
 
 ---
@@ -104,7 +104,7 @@
 **Objective:** Confirm the Telegram bot is running in production and responding to the Telegram API.
 **Steps:**
 1. Extract bot token from .env: `source .env && echo $TELEGRAM_BOT_TOKEN`
-2. Call Telegram getMe API: `curl -s "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/getMe"` — expect `ok: true`, verify username matches `forward_check_beta_bot`
+2. Call Telegram getMe API: `curl -s "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/getMe"` — expect `ok: true`, verify username matches `forward_check_opus_bot`
 3. Check Railway logs for "Telegram bot started": `railway service logs 2>&1 | grep -i "telegram" | tail -5`
 4. Verify no 409 conflict errors in recent logs: `railway service logs 2>&1 | grep -c "409"` — expect 0
 5. Call getUpdates with limit 0 to check polling health: `curl -s "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/getUpdates?limit=0&timeout=1"` — this will likely return 409 (since the bot is actively polling), which actually confirms the bot IS running

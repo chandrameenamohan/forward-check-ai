@@ -555,7 +555,7 @@ describe("Live verdict page routes", () => {
     const res = await fetch(`http://127.0.0.1:${port}/live/${id}`);
     const html = await res.text();
 
-    expect(html).toContain("https://t.me/forward_check_beta_bot");
+    expect(html).toContain("https://t.me/forward_check_opus_bot");
     expect(html).toContain("fc-try-it");
   });
 

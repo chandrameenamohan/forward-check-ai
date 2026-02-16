@@ -49,7 +49,7 @@
 - Add hero section to `landing.ejs`
 - **Headline (problem):** "Viral messages spread faster than the truth." (or similar — punchy, visual, 5th grade level)
 - **Subheadline (solution):** "Forward any suspicious message. Six AI agents investigate it in under 60 seconds." (the happy ending)
-- **Primary CTA button:** "Try it on Telegram" → links to bot `https://t.me/ForwardCheckBot` (configurable)
+- **Primary CTA button:** "Try it on Telegram" → links to bot `https://t.me/forward_check_opus_bot` (configurable)
 - **Secondary CTA:** "See a live verdict →" → links to `/v/<demo-id>` (configurable)
 - Hero visual: animated gradient mesh or subtle particle effect behind text (CSS only, no JS libraries)
 - Typography: Instrument Serif for headline, Satoshi for body
