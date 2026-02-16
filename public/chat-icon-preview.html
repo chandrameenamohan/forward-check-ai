@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ForwardCheck — Chat Icon Design</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath d='M256 40 L444 120 L444 332 L308 332 L192 440 L232 332 L68 332 L68 120 Z' fill='%230a0a0f' stroke='%2322c55e' stroke-width='36' stroke-linejoin='miter'/%3E%3Cpath d='M172 216 L236 276 L352 164' fill='none' stroke='%2322c55e' stroke-width='48' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0a0a0f;
+            --surface: #12121a;
+            --surface-raised: #1a1a26;
+            --border: #2a2a3a;
+            --border-light: #3a3a4a;
+            --text: #e8e8ef;
+            --text-muted: #8888a0;
+            --text-dim: #55556a;
+            --green: #22c55e;
+            --green-dim: rgba(34, 197, 94, 0.12);
+            --green-glow: rgba(34, 197, 94, 0.35);
+            --amber: #eab308;
+            --purple: #a855f7;
+            --blue: #3b82f6;
+            --red: #ef4444;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'DM Mono', 'SF Mono', monospace;
+            min-height: 100vh;
+            padding: 3rem 2rem;
+            line-height: 1.6;
+        }
+
+        .container { max-width: 1140px; margin: 0 auto; }
+
+        /* ─── Header ─── */
+        .page-head { margin-bottom: 4rem; border-bottom: 1px solid var(--border); padding-bottom: 2rem; }
+        .page-head h1 {
+            font-family: 'Instrument Serif', serif;
+            font-size: 3rem;
+            font-weight: 400;
+            line-height: 1.05;
+            margin-bottom: 0.6rem;
+        }
+        .page-head h1 .g { color: var(--green); }
+        .page-head .meta {
+            font-size: 0.65rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+        }
+        .page-head .meta span { color: var(--green); }
+
+        /* ─── Sections ─── */
+        .section { margin-bottom: 4.5rem; }
+        .section-tag {
+            display: inline-block;
+            font-size: 0.6rem;
+            color: var(--green);
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+            padding: 3px 10px;
+            background: var(--green-dim);
+            border-radius: 3px;
+            margin-bottom: 0.75rem;
+        }
+        .section-title {
+            font-family: 'Instrument Serif', serif;
+            font-size: 1.8rem;
+            font-weight: 400;
+            margin-bottom: 0.4rem;
+        }
+        .section-desc {
+            color: var(--text-muted);
+            font-size: 0.78rem;
+            margin-bottom: 2rem;
+            max-width: 640px;
+            line-height: 1.75;
+        }
+
+        /* ─── Card ─── */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+        }
+        .card-label {
+            font-size: 0.6rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 1.25rem;
+        }
+
+        /* ─── Hero ─── */
+        .hero {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 4rem 2rem;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            width: 320px; height: 320px;
+            background: radial-gradient(circle, var(--green-glow) 0%, transparent 70%);
+            border-radius: 50%;
+            opacity: 0.4;
+            animation: hero-pulse 4s ease-in-out infinite;
+        }
+        @keyframes hero-pulse {
+            0%, 100% { opacity: 0.3; transform: scale(0.95); }
+            50% { opacity: 0.5; transform: scale(1.05); }
+        }
+        .hero svg { position: relative; z-index: 1; }
+
+        /* ─── Icon Grid ─── */
+        .icon-row {
+            display: flex;
+            align-items: flex-end;
+            gap: 2.25rem;
+            flex-wrap: wrap;
+            padding: 0.5rem 0;
+        }
+        .icon-cell {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.6rem;
+        }
+        .icon-frame {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 14px;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        .icon-frame:hover {
+            border-color: rgba(34, 197, 94, 0.4);
+            box-shadow: 0 0 20px rgba(34, 197, 94, 0.08);
+        }
+        .icon-size {
+            font-size: 0.58rem;
+            color: var(--text-dim);
+            letter-spacing: 0.04em;
+        }
+
+        /* ─── Variant Grid ─── */
+        .variant-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+        .variant-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 2rem;
+            text-align: center;
+            transition: border-color 0.3s;
+        }
+        .variant-card:hover { border-color: var(--border-light); }
+        .variant-card.recommended {
+            border-color: rgba(34, 197, 94, 0.3);
+            box-shadow: 0 0 40px rgba(34, 197, 94, 0.06);
+        }
+        .variant-card.recommended .variant-badge { background: var(--green); color: var(--bg); }
+        .variant-badge {
+            display: inline-block;
+            font-size: 0.55rem;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            padding: 3px 10px;
+            background: var(--border);
+            color: var(--text-muted);
+            border-radius: 3px;
+            margin-bottom: 1.25rem;
+        }
+        .variant-icon { padding: 1.5rem 0 1.25rem; }
+        .variant-name {
+            font-family: 'Instrument Serif', serif;
+            font-size: 1.15rem;
+            margin-bottom: 0.3rem;
+        }
+        .variant-desc {
+            font-size: 0.68rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        /* ─── Context Mockups ─── */
+        .mockup-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        .mockup-label {
+            font-size: 0.58rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.75rem;
+        }
+        .mockup-frame {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.25rem;
+        }
+
+        /* Browser tab mock */
+        .browser-chrome {
+            background: var(--surface-raised);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .browser-tabs {
+            display: flex;
+            gap: 2px;
+            padding: 8px 8px 0;
+            background: #0e0e16;
+        }
+        .browser-tab {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 14px 7px 10px;
+            background: var(--surface-raised);
+            border-radius: 8px 8px 0 0;
+            font-size: 0.68rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+        .browser-tab.active {
+            background: var(--surface);
+            color: var(--text);
+        }
+        .browser-tab .dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--text-dim);
+        }
+        .browser-tab.active .dot { display: none; }
+        .browser-bar {
+            padding: 8px 14px;
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+            font-size: 0.65rem;
+            color: var(--text-dim);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .browser-bar .lock { color: var(--green); font-size: 0.6rem; }
+
+        /* Topbar mock */
+        .topbar-mock {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 18px;
+            background: rgba(18, 18, 26, 0.85);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            backdrop-filter: blur(12px);
+        }
+        .topbar-brand {
+            font-size: 0.82rem;
+            color: var(--green);
+            font-weight: 500;
+            letter-spacing: 0.02em;
+        }
+        .topbar-sep {
+            width: 1px;
+            height: 16px;
+            background: var(--border);
+        }
+        .topbar-link {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        /* PWA icon mock */
+        .pwa-mock {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+        .pwa-frame {
+            width: 72px; height: 72px;
+            border-radius: 16px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .pwa-name {
+            font-size: 0.62rem;
+            color: var(--text-muted);
+        }
+
+        /* Notification mock */
+        .notif-mock {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            background: var(--surface-raised);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+        }
+        .notif-text {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+        .notif-text strong { color: var(--text); font-weight: 500; }
+
+        /* ─── Code Section ─── */
+        .code-wrap {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--border);
+        }
+        .code-title {
+            font-size: 0.6rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        .code-copy {
+            font-size: 0.6rem;
+            color: var(--green);
+            background: var(--green-dim);
+            border: none;
+            padding: 3px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-family: inherit;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            transition: background 0.2s;
+        }
+        .code-copy:hover { background: rgba(34, 197, 94, 0.2); }
+        .code-copy.copied { color: var(--amber); }
+        .code-body {
+            padding: 16px;
+            overflow-x: auto;
+        }
+        .code-body pre {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.68rem;
+            color: var(--text-muted);
+            white-space: pre-wrap;
+            word-break: break-all;
+            line-height: 1.8;
+        }
+        .code-body .t { color: var(--green); }
+        .code-body .a { color: var(--amber); }
+        .code-body .v { color: var(--blue); }
+        .code-body .c { color: var(--text-dim); }
+
+        /* ─── Color On ─── */
+        .on-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 1rem;
+        }
+        .on-card {
+            border-radius: 10px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--border);
+        }
+        .on-label {
+            font-size: 0.58rem;
+            color: var(--text-dim);
+            text-align: center;
+            margin-top: 0.5rem;
+            letter-spacing: 0.04em;
+        }
+
+        /* ─── Responsive ─── */
+        @media (max-width: 768px) {
+            body { padding: 2rem 1rem; }
+            .page-head h1 { font-size: 2.2rem; }
+            .variant-grid { grid-template-columns: 1fr; }
+            .icon-row { gap: 1.25rem; }
+            .mockup-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <!-- ─── Page Header ─── -->
+        <div class="page-head">
+            <h1>ForwardCheck <span class="g">Chat Icon</span></h1>
+            <div class="meta">Icon Design System <span>&middot;</span> Shield Chat Concept <span>&middot;</span> Feb 2026</div>
+        </div>
+
+        <!-- ─── Hero Display ─── -->
+        <div class="section">
+            <div class="hero">
+                <svg width="280" height="280" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                            <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur"/>
+                            <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0.133  0 0 0 0 0.773  0 0 0 0 0.369  0 0 0 0.55 0" result="green"/>
+                            <feMerge>
+                                <feMergeNode in="green"/>
+                                <feMergeNode in="SourceGraphic"/>
+                            </feMerge>
+                        </filter>
+                    </defs>
+                    <path d="M256 40 L444 120 L444 332 L308 332 L192 440 L232 332 L68 332 L68 120 Z"
+                          fill="#0a0a0f" stroke="#22c55e" stroke-width="18" stroke-linejoin="miter" filter="url(#glow)"/>
+                    <path d="M172 216 L236 276 L352 164"
+                          fill="none" stroke="#22c55e" stroke-width="30" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"/>
+                </svg>
+            </div>
+        </div>
+
+        <!-- ─── Variant Comparison ─── -->
+        <div class="section">
+            <div class="section-tag">3 Variants</div>
+            <div class="section-title">Style Variants</div>
+            <div class="section-desc">
+                Three rendering styles for different contexts. The outlined variant is recommended for dark backgrounds and matches the existing ForwardCheck design system.
+            </div>
+
+            <div class="variant-grid">
+                <!-- Outlined (Recommended) -->
+                <div class="variant-card recommended">
+                    <div class="variant-badge">Recommended</div>
+                    <div class="variant-icon">
+                        <svg width="96" height="96" viewBox="0 0 512 512" fill="none">
+                            <path d="M256 40 L444 120 L444 332 L308 332 L192 440 L232 332 L68 332 L68 120 Z"
+                                  fill="#0a0a0f" stroke="#22c55e" stroke-width="20" stroke-linejoin="miter"/>
+                            <path d="M172 216 L236 276 L352 164"
+                                  fill="none" stroke="#22c55e" stroke-width="32" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="variant-name">Outlined</div>
+                    <div class="variant-desc">Green stroke on dark fill. Matches existing favicon language. Best for dark backgrounds.</div>
+                </div>
+
+                <!-- Solid Green -->
+                <div class="variant-card">
+                    <div class="variant-badge">Solid</div>
+                    <div class="variant-icon">
+                        <svg width="96" height="96" viewBox="0 0 512 512" fill="none">
+                            <path d="M256 40 L444 120 L444 332 L308 332 L192 440 L232 332 L68 332 L68 120 Z"
+                                  fill="#22c55e" stroke="none"/>
+                            <path d="M172 216 L236 276 L352 164"
+                                  fill="none" stroke="#0a0a0f" stroke-width="38" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="variant-name">Solid</div>
+                    <div class="variant-desc">Green fill with dark checkmark. Maximum visibility. Best for PWA icons and light backgrounds.</div>
+                </div>
+
+                <!-- Neon Glow -->
+                <div class="variant-card">
+                    <div class="variant-badge">Glow</div>
+                    <div class="variant-icon">
+                        <svg width="96" height="96" viewBox="0 0 512 512" fill="none">
+                            <defs>
+                                <filter id="card-glow" x="-40%" y="-40%" width="180%" height="180%">
+                                    <feGaussianBlur in="SourceGraphic" stdDeviation="8" result="blur"/>
+                                    <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0.133  0 0 0 0 0.773  0 0 0 0 0.369  0 0 0 0.6 0" result="green"/>
+                                    <feMerge><feMergeNode in="green"/><feMergeNode in="SourceGraphic"/></feMerge>
+                                </filter>
+                            </defs>
+                            <path d="M256 40 L444 120 L444 332 L308 332 L192 440 L232 332 L68 332 L68 120 Z"
+                                  fill="rgba(34,197,94,0.08)" stroke="#22c55e" stroke-width="16" stroke-linejoin="miter" filter="url(#card-glow)"/>
+                            <path d="M172 216 L236 276 L352 164"
+                                  fill="none" stroke="#22c55e" stroke-width="28" stroke-linecap="round" stroke-linejoin="round" filter="url(#card-glow)"/>
+                        </svg>
+                    </div>
+                    <div class="variant-name">Neon Glow</div>
+                    <div class="variant-desc">Glass fill with green glow. Hero and marketing use. Maximum drama for large displays.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ─── Size Scale (Outlined) ─── -->
+        <div class="section">
+            <div class="section-tag">Size Scale</div>
+            <div class="section-title">Outlined at Every Size</div>
+            <div class="section-desc">
+                Favicon-optimized version uses thicker strokes for crisp rendering at 16–32px. Standard strokes for 48px and above.
+            </div>
+
+            <div class="card">
+                <div class="card-label">Favicon Optimized (thicker strokes)</div>
+                <div class="icon-row">
+                    <div class="icon-cell">
+                        <div class="icon-frame">
+                            <svg width="16" height="16" viewBox="0 0 512 512" fill="none">
+                                <path d="M256 40 L444 120 L444 332 L308 332 L192 440 L232 332 L68 332 L68 120 Z" fill="#0a0a0f" stroke="#22c55e" stroke-width="36" stroke-linejoin="miter"/>
+                                <path d="M172 216 L236 276 L352 164" fill="none" stroke="#22c55e" stroke-width="48" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <span class="icon-size">16px</span>
+                    </div>
+                    <div class="icon-cell">
+                        <div class="icon-frame">
+                            <svg width="24" height="24" viewBox="0 0 512 512" fill="none">
+                                <path d="M256 40 L444 120 L444 332 L308 332 L192 440 L232 332 L68 332 L68 120 Z" fill="#0a0a0f" stroke="#22c55e" stroke-width="32" stroke-linejoin="miter"/>
+                                <path d="M172 216 L236 276 L352 164" fill="none" stroke="#22c55e" stroke-width="44" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <span class="icon-size">24px</span>
+                    </div>
+                    <div class="icon-cell">
+                        <div class="icon-frame">
+                            <svg width="32" height="32" viewBox="0 0 512 512" fill="none">
+                                <path d="M256 40 L444 120 L444 332 L308 332 L192 440 L232 332 L68 332 L68 120 Z" fill="#0a0a0f" stroke="#22c55e" stroke-width="28" stroke-linejoin="miter"/>
+                                <path d="M172 216 L236 276 L352 164" fill="none" stroke="#22c55e" stroke-width="40" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <span class="icon-size">32px</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-label">Standard (48px+)</div>
+                <div class="icon-row">
+                    <div class="icon-cell">
+                        <div class="icon-frame">
+                            <svg width="48" height="48" viewBox="0 0 512 512" fill="none">
+                                <path d="M256 40 L444 120 L444 332 L308 332 L192 440 L232 332 L68 332 L68 120 Z" fill="#0a0a0f" stroke="#22c55e" stroke-width="20" stroke-linejoin="miter"/>
+                                <path d="M172 216 L236 276 L352 164" fill="none" stroke="#22c55e" stroke-width="32" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <span class="icon-size">48px</span>
+                    </div>
+                    <div class="icon-cell">
+                        <div class="icon-frame">
+                            <svg width="64" height="64" viewBox="0 0 512 512" fill="none">
+                                <path d="M256 40 L444 120 L444 332 L308 332 L192 440 L232 332 L68 332 L68 120 Z" fill="#0a0a0f" stroke="#22c55e" stroke-width="20" stroke-linejoin="miter"/>
+                                <path d="M172 216 L236 276 L352 164" fill="none" stroke="#22c55e" stroke-width="32" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <span class="icon-size">64px</span>
+                    </div>
+                    <div class="icon-cell">
+                        <div class="icon-frame">
+                            <svg width="128" height="128" viewBox="0 0 512 512" fill="none">
+                                <path d="M256 40 L444 120 L444 332 L308 332 L192 440 L232 332 L68 332 L68 120 Z" fill="#0a0a0f" stroke="#22c55e" stroke-width="20" stroke-linejoin="miter"/>
+                                <path d="M172 216 L236 276 L352 164" fill="none" stroke="#22c55e" stroke-width="32" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <span class="icon-size">128px</span>
+                    </div>
+                    <div class="icon-cell">
+                        <div class="icon-frame">
+                            <svg width="192" height="192" viewBox="0 0 512 512" fill="none">
+                                <path d="M256 40 L444 120 L444 332 L308 332 L192 440 L232 332 L68 332 L68 120 Z" fill="#0a0a0f" stroke="#22c55e" stroke-width="20" stroke-linejoin="miter"/>
+                                <path d="M172 216 L236 276 L352 164" fill="none" stroke="#22c55e" stroke-width="32" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <span class="icon-size">192px</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ─── Solid Size Scale ─── -->
+        <div class="section">
+            <div class="section-tag">Solid Variant</div>
+            <div class="section-title">Solid at Every Size</div>
+            <div class="section-desc">
+                Maximum contrast version. Green fill with dark checkmark. Ideal for PWA manifest icons and contexts where the icon sits on varied backgrounds.
+            </div>
+
+            <div class="card">
+                <div class="icon-row">
+                    <div class="icon-cell">
+                        <div class="icon-frame">
+                            <svg width="16" height="16" viewBox="0 0 512 512" fill="none">
+                                <path d="M256 40 L444 120 L444 332 L308 332 L192 440 L232 332 L68 332 L68 120 Z" fill="#22c55e"/>
+                                <path d="M172 216 L236 276 L352 164" fill="none" stroke="#0a0a0f" stroke-width="52" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <span class="icon-size">16px</span>
+                    </div>
+                    <div class="icon-cell">
+                        <div class="icon-frame">
+                            <svg width="32" height="32" viewBox="0 0 512 512" fill="none">
+                                <path d="M256 40 L444 120 L444 332 L308 332 L192 440 L232 332 L68 332 L68 120 Z" fill="#22c55e"/>
+                                <path d="M172 216 L236 276 L352 164" fill="none" stroke="#0a0a0f" stroke-width="44" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <span class="icon-size">32px</span>
+                    </div>
+                    <div class="icon-cell">
+                        <div class="icon-frame">
+                            <svg width="48" height="48" viewBox="0 0 512 512" fill="none">
+                                <path d="M256 40 L444 120 L444 332 L308 332 L192 440 L232 332 L68 332 L68 120 Z" fill="#22c55e"/>
+                                <path d="M172 216 L236 276 L352 164" fill="none" stroke="#0a0a0f" stroke-width="38" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <span class="icon-size">48px</span>
+                    </div>
+                    <div class="icon-cell">
+                        <div class="icon-frame">
+                            <svg width="64" height="64" viewBox="0 0 512 512" fill="none">
+                                <path d="M256 40 L444 120 L444 332 L308 332 L192 440 L232 332 L68 332 L68 120 Z" fill="#22c55e"/>
+                                <path d="M172 216 L236 276 L352 164" fill="none" stroke="#0a0a0f" stroke-width="38" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <span class="icon-size">64px</span>
+                    </div>
+                    <div class="icon-cell">
+                        <div class="icon-frame">
+                            <svg width="128" height="128" viewBox="0 0 512 512" fill="none">
+                                <path d="M256 40 L444 120 L444 332 L308 332 L192 440 L232 332 L68 332 L68 120 Z" fill="#22c55e"/>
+                                <path d="M172 216 L236 276 L352 164" fill="none" stroke="#0a0a0f" stroke-width="38" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <span class="icon-size">128px</span>
+                    </div>
+                    <div class="icon-cell">
+                        <div class="icon-frame">
+                            <svg width="192" height="192" viewBox="0 0 512 512" fill="none">
+                                <path d="M256 40 L444 120 L444 332 L308 332 L192 440 L232 332 L68 332 L68 120 Z" fill="#22c55e"/>
+                                <path d="M172 216 L236 276 L352 164" fill="none" stroke="#0a0a0f" stroke-width="38" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <span class="icon-size">192px</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ─── On Different Backgrounds ─── -->
+        <div class="section">
+            <div class="section-tag">Contrast Test</div>
+            <div class="section-title">On Different Backgrounds</div>
+            <div class="section-desc">
+                The outlined variant on the ForwardCheck dark palette, and the solid variant on light and colored backgrounds.
+            </div>
+
+            <div class="on-grid">
+                <div>
+                    <div class="on-card" style="background: #0a0a0f;">
+                        <svg width="64" height="64" viewBox="0 0 512 512" fill="none">
+                            <path d="M256 40 L444 120 L444 332 L308 332 L192 440 L232 332 L68 332 L68 120 Z" fill="#0a0a0f" stroke="#22c55e" stroke-width="20" stroke-linejoin="miter"/>
+                            <path d="M172 216 L236 276 L352 164" fill="none" stroke="#22c55e" stroke-width="32" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="on-label">#0a0a0f — App BG</div>
+                </div>
+                <div>
+                    <div class="on-card" style="background: #12121a;">
+                        <svg width="64" height="64" viewBox="0 0 512 512" fill="none">
+                            <path d="M256 40 L444 120 L444 332 L308 332 L192 440 L232 332 L68 332 L68 120 Z" fill="#12121a" stroke="#22c55e" stroke-width="20" stroke-linejoin="miter"/>
+                            <path d="M172 216 L236 276 L352 164" fill="none" stroke="#22c55e" stroke-width="32" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="on-label">#12121a — Surface</div>
+                </div>
+                <div>
+                    <div class="on-card" style="background: #1a1a26;">
+                        <svg width="64" height="64" viewBox="0 0 512 512" fill="none">
+                            <path d="M256 40 L444 120 L444 332 L308 332 L192 440 L232 332 L68 332 L68 120 Z" fill="#1a1a26" stroke="#22c55e" stroke-width="20" stroke-linejoin="miter"/>
+                            <path d="M172 216 L236 276 L352 164" fill="none" stroke="#22c55e" stroke-width="32" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="on-label">#1a1a26 — Raised</div>
+                </div>
+                <div>
+                    <div class="on-card" style="background: #ffffff;">
+                        <svg width="64" height="64" viewBox="0 0 512 512" fill="none">
+                            <path d="M256 40 L444 120 L444 332 L308 332 L192 440 L232 332 L68 332 L68 120 Z" fill="#22c55e"/>
+                            <path d="M172 216 L236 276 L352 164" fill="none" stroke="#ffffff" stroke-width="38" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="on-label">#ffffff — White</div>
+                </div>
+                <div>
+                    <div class="on-card" style="background: #f3f4f6;">
+                        <svg width="64" height="64" viewBox="0 0 512 512" fill="none">
+                            <path d="M256 40 L444 120 L444 332 L308 332 L192 440 L232 332 L68 332 L68 120 Z" fill="#22c55e"/>
+                            <path d="M172 216 L236 276 L352 164" fill="none" stroke="#f3f4f6" stroke-width="38" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="on-label">#f3f4f6 — Light Gray</div>
+                </div>
+                <div>
+                    <div class="on-card" style="background: linear-gradient(135deg, #22c55e, #16a34a);">
+                        <svg width="64" height="64" viewBox="0 0 512 512" fill="none">
+                            <path d="M256 40 L444 120 L444 332 L308 332 L192 440 L232 332 L68 332 L68 120 Z" fill="rgba(255,255,255,0.2)" stroke="white" stroke-width="20" stroke-linejoin="miter"/>
+                            <path d="M172 216 L236 276 L352 164" fill="none" stroke="white" stroke-width="32" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="on-label">Green Gradient</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ─── Context Mockups ─── -->
+        <div class="section">
+            <div class="section-tag">In Context</div>
+            <div class="section-title">Usage Mockups</div>
+            <div class="section-desc">
+                How the icon appears in real-world contexts: browser tabs, app navigation, PWA home screen, and notifications.
+            </div>
+
+            <div class="mockup-grid">
+                <!-- Browser Tab -->
+                <div>
+                    <div class="mockup-label">Browser Tab</div>
+                    <div class="mockup-frame">
+                        <div class="browser-chrome">
+                            <div class="browser-tabs">
+                                <div class="browser-tab active">
+                                    <svg width="14" height="14" viewBox="0 0 512 512" fill="none">
+                                        <path d="M256 40 L444 120 L444 332 L308 332 L192 440 L232 332 L68 332 L68 120 Z" fill="#0a0a0f" stroke="#22c55e" stroke-width="36" stroke-linejoin="miter"/>
+                                        <path d="M172 216 L236 276 L352 164" fill="none" stroke="#22c55e" stroke-width="48" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                    ForwardCheck — Chat
+                                </div>
+                                <div class="browser-tab">
+                                    <span class="dot"></span>
+                                    New Tab
+                                </div>
+                            </div>
+                            <div class="browser-bar">
+                                <span class="lock">&#x1f512;</span>
+                                sincere-love-production-ced7.up.railway.app/chat
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- App Topbar -->
+                <div>
+                    <div class="mockup-label">App Navigation Bar</div>
+                    <div class="mockup-frame">
+                        <div class="topbar-mock">
+                            <svg width="22" height="22" viewBox="0 0 512 512" fill="none">
+                                <path d="M256 40 L444 120 L444 332 L308 332 L192 440 L232 332 L68 332 L68 120 Z" fill="#0a0a0f" stroke="#22c55e" stroke-width="28" stroke-linejoin="miter"/>
+                                <path d="M172 216 L236 276 L352 164" fill="none" stroke="#22c55e" stroke-width="40" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <span class="topbar-brand">ForwardCheck</span>
+                            <span class="topbar-sep"></span>
+                            <span class="topbar-link">Home</span>
+                            <span class="topbar-link">Feedback</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PWA Home Screen -->
+                <div>
+                    <div class="mockup-label">PWA Home Screen</div>
+                    <div class="mockup-frame" style="display: flex; justify-content: center;">
+                        <div class="pwa-mock">
+                            <div class="pwa-frame">
+                                <svg width="44" height="44" viewBox="0 0 512 512" fill="none">
+                                    <path d="M256 40 L444 120 L444 332 L308 332 L192 440 L232 332 L68 332 L68 120 Z" fill="#22c55e"/>
+                                    <path d="M172 216 L236 276 L352 164" fill="none" stroke="#0a0a0f" stroke-width="38" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </div>
+                            <span class="pwa-name">ForwardCheck</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notification -->
+                <div>
+                    <div class="mockup-label">Notification</div>
+                    <div class="mockup-frame">
+                        <div class="notif-mock">
+                            <svg width="28" height="28" viewBox="0 0 512 512" fill="none" style="flex-shrink: 0;">
+                                <path d="M256 40 L444 120 L444 332 L308 332 L192 440 L232 332 L68 332 L68 120 Z" fill="#22c55e"/>
+                                <path d="M172 216 L236 276 L352 164" fill="none" stroke="#0a0a0f" stroke-width="42" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <div class="notif-text">
+                                <strong>ForwardCheck</strong><br>
+                                Investigation complete — verdict: Mostly True (87%)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ─── SVG Code ─── -->
+        <div class="section">
+            <div class="section-tag">Implementation</div>
+            <div class="section-title">SVG Code</div>
+            <div class="section-desc">
+                Copy-paste ready SVG code and inline favicon data URI for direct integration into the ForwardCheck templates.
+            </div>
+
+            <!-- Inline Favicon -->
+            <div class="code-wrap">
+                <div class="code-header">
+                    <span class="code-title">Inline Favicon (paste into &lt;head&gt;)</span>
+                    <button class="code-copy" onclick="copyCode(this, 'favicon-code')">Copy</button>
+                </div>
+                <div class="code-body" id="favicon-code"><pre>&lt;<span class="t">link</span> <span class="a">rel</span>=<span class="v">"icon"</span> <span class="a">type</span>=<span class="v">"image/svg+xml"</span> <span class="a">href</span>=<span class="v">"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath d='M256 40 L444 120 L444 332 L308 332 L192 440 L232 332 L68 332 L68 120 Z' fill='%230a0a0f' stroke='%2322c55e' stroke-width='36' stroke-linejoin='miter'/%3E%3Cpath d='M172 216 L236 276 L352 164' fill='none' stroke='%2322c55e' stroke-width='48' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"</span>&gt;</pre></div>
+            </div>
+
+            <!-- Raw SVG - Outlined -->
+            <div class="code-wrap" style="margin-top: 1rem;">
+                <div class="code-header">
+                    <span class="code-title">Raw SVG — Outlined Variant</span>
+                    <button class="code-copy" onclick="copyCode(this, 'svg-outlined')">Copy</button>
+                </div>
+                <div class="code-body" id="svg-outlined"><pre>&lt;<span class="t">svg</span> <span class="a">viewBox</span>=<span class="v">"0 0 512 512"</span> <span class="a">fill</span>=<span class="v">"none"</span> <span class="a">xmlns</span>=<span class="v">"http://www.w3.org/2000/svg"</span>&gt;
+  &lt;<span class="t">path</span> <span class="a">d</span>=<span class="v">"M256 40 L444 120 L444 332 L308 332 L192 440 L232 332 L68 332 L68 120 Z"</span>
+        <span class="a">fill</span>=<span class="v">"#0a0a0f"</span> <span class="a">stroke</span>=<span class="v">"#22c55e"</span> <span class="a">stroke-width</span>=<span class="v">"20"</span> <span class="a">stroke-linejoin</span>=<span class="v">"miter"</span>/&gt;
+  &lt;<span class="t">path</span> <span class="a">d</span>=<span class="v">"M172 216 L236 276 L352 164"</span>
+        <span class="a">fill</span>=<span class="v">"none"</span> <span class="a">stroke</span>=<span class="v">"#22c55e"</span> <span class="a">stroke-width</span>=<span class="v">"32"</span>
+        <span class="a">stroke-linecap</span>=<span class="v">"round"</span> <span class="a">stroke-linejoin</span>=<span class="v">"round"</span>/&gt;
+&lt;/<span class="t">svg</span>&gt;</pre></div>
+            </div>
+
+            <!-- Raw SVG - Solid -->
+            <div class="code-wrap" style="margin-top: 1rem;">
+                <div class="code-header">
+                    <span class="code-title">Raw SVG — Solid Variant</span>
+                    <button class="code-copy" onclick="copyCode(this, 'svg-solid')">Copy</button>
+                </div>
+                <div class="code-body" id="svg-solid"><pre>&lt;<span class="t">svg</span> <span class="a">viewBox</span>=<span class="v">"0 0 512 512"</span> <span class="a">fill</span>=<span class="v">"none"</span> <span class="a">xmlns</span>=<span class="v">"http://www.w3.org/2000/svg"</span>&gt;
+  &lt;<span class="t">path</span> <span class="a">d</span>=<span class="v">"M256 40 L444 120 L444 332 L308 332 L192 440 L232 332 L68 332 L68 120 Z"</span>
+        <span class="a">fill</span>=<span class="v">"#22c55e"</span>/&gt;
+  &lt;<span class="t">path</span> <span class="a">d</span>=<span class="v">"M172 216 L236 276 L352 164"</span>
+        <span class="a">fill</span>=<span class="v">"none"</span> <span class="a">stroke</span>=<span class="v">"#0a0a0f"</span> <span class="a">stroke-width</span>=<span class="v">"38"</span>
+        <span class="a">stroke-linecap</span>=<span class="v">"round"</span> <span class="a">stroke-linejoin</span>=<span class="v">"round"</span>/&gt;
+&lt;/<span class="t">svg</span>&gt;</pre></div>
+            </div>
+        </div>
+
+        <!-- ─── Design Rationale ─── -->
+        <div class="section">
+            <div class="section-tag">Rationale</div>
+            <div class="section-title">Design Decisions</div>
+            <div class="card" style="max-width: 700px;">
+                <div style="font-size: 0.78rem; color: var(--text-muted); line-height: 2;">
+                    <strong style="color: var(--text);">Shape:</strong> Shield-shaped chat bubble — the angular peak at the top evokes a heraldic shield (trust/authority), while the sharp tail at bottom-left reads as "chat". The miter joins keep edges razor-sharp.<br><br>
+                    <strong style="color: var(--text);">Checkmark:</strong> Bold geometric verification mark centered in the body. Two strokes, round caps — instantly recognizable even at 16px.<br><br>
+                    <strong style="color: var(--text);">Color:</strong> Uses the existing ForwardCheck accent green (#22c55e) on the app's dark background (#0a0a0f). Maintains visual consistency with the existing shield favicon.<br><br>
+                    <strong style="color: var(--text);">Sizes:</strong> Favicon-optimized variant uses 1.8x thicker strokes (36/48 vs 20/32) to maintain legibility at 16-32px. Standard variant used at 48px and above for refined proportions.<br><br>
+                    <strong style="color: var(--text);">Concept:</strong> "Shield Chat" — a shield that IS a chat bubble. Investigation + conversation + verification in a single glyph. Forensic, not casual.
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function copyCode(btn, id) {
+            const el = document.getElementById(id);
+            const text = el.innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                btn.textContent = 'Copied';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.textContent = 'Copy';
+                    btn.classList.remove('copied');
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>
