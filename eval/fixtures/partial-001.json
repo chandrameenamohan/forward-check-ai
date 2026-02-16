@@ -1,0 +1,49 @@
+{
+  "claimId": "partial-001",
+  "claimText": "A Harvard study proved that eating chocolate every day prevents heart disease",
+  "capturedAt": "2025-05-01T00:00:00.000Z",
+  "brave": [
+    {
+      "title": "Harvard study finds cocoa flavanols may benefit heart health",
+      "url": "https://www.health.harvard.edu/heart-health/cocoa-flavanols-heart-study",
+      "description": "A Harvard-led study (COSMOS) found that cocoa flavanol supplements may reduce cardiovascular events, but the results do not mean eating chocolate prevents heart disease.",
+      "age": "2023-06-15"
+    },
+    {
+      "title": "COSMOS trial: Cocoa flavanols and cardiovascular disease — key findings",
+      "url": "https://www.nejm.org/doi/cosmos-cocoa-flavanol-trial",
+      "description": "The Cocoa Supplement and Multivitamin Outcomes Study found modest cardiovascular benefits from cocoa flavanol supplements, not from eating chocolate bars.",
+      "age": "2022-12-01"
+    },
+    {
+      "title": "No, eating chocolate every day will not prevent heart disease",
+      "url": "https://www.heart.org/en/news/chocolate-heart-health-claims",
+      "description": "While cocoa contains flavanols that may support heart health, the American Heart Association cautions against interpreting studies as evidence that chocolate prevents heart disease.",
+      "age": "2024-01-20"
+    },
+    {
+      "title": "Health Check: Does eating chocolate really help your heart?",
+      "url": "https://theconversation.com/chocolate-heart-health-evidence",
+      "description": "Studies suggest cocoa flavanols have modest benefits, but commercial chocolate products contain high sugar and fat content that may offset any cardiac benefits.",
+      "age": "2023-09-10"
+    },
+    {
+      "title": "Snopes: Claim that Harvard proved chocolate prevents heart disease is misleading",
+      "url": "https://www.snopes.com/fact-check/harvard-chocolate-heart-disease/",
+      "description": "Harvard's COSMOS study found benefits from cocoa flavanol supplements, not from eating chocolate. The study's lead researcher explicitly cautioned against this misinterpretation.",
+      "age": "2023-07-05"
+    }
+  ],
+  "factCheck": [
+    {
+      "text": "Harvard study proved chocolate prevents heart disease",
+      "claimant": "Health blogs and social media",
+      "claimReviewMarkup": {
+        "url": "https://www.snopes.com/fact-check/harvard-chocolate-heart-disease/",
+        "title": "Misleading: Harvard study was about flavanol supplements, not chocolate",
+        "publisher": "Snopes",
+        "rating": "Misleading"
+      }
+    }
+  ]
+}

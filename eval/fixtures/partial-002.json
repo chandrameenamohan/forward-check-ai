@@ -1,0 +1,43 @@
+{
+  "claimId": "partial-002",
+  "claimText": "Coffee has been classified as a cancer-causing agent by WHO",
+  "capturedAt": "2025-05-01T00:00:00.000Z",
+  "brave": [
+    {
+      "title": "IARC reclassifies coffee: no longer 'possibly carcinogenic'",
+      "url": "https://www.iarc.who.int/media-centre/iarc-news/coffee-reclassification-2016",
+      "description": "In 2016, the International Agency for Research on Cancer (IARC) reclassified coffee, removing it from Group 2B ('possibly carcinogenic'). Coffee was placed in Group 3 ('not classifiable').",
+      "age": "2023-05-15"
+    },
+    {
+      "title": "WHO on coffee and cancer: What the science says",
+      "url": "https://www.who.int/news-room/questions-and-answers/item/coffee-cancer-risk",
+      "description": "IARC previously classified coffee as Group 2B in 1991 based on limited evidence. In 2016, after reviewing new evidence, IARC downgraded this classification, finding no conclusive link.",
+      "age": "2024-01-10"
+    },
+    {
+      "title": "Coffee and cancer: The complicated history of IARC classifications",
+      "url": "https://www.cancer.org/cancer/risk-prevention/coffee-cancer-iarc-history.html",
+      "description": "Coffee was listed as 'possibly carcinogenic' from 1991 to 2016. New evidence led to its reclassification. Current scientific consensus does not consider coffee a carcinogen.",
+      "age": "2023-11-20"
+    },
+    {
+      "title": "Nature: How IARC's coffee reversal reflects evolving cancer research",
+      "url": "https://www.nature.com/articles/iarc-coffee-classification-reversal",
+      "description": "IARC's 2016 reclassification of coffee illustrates how cancer risk assessments evolve with new evidence. The original 1991 classification was based on limited bladder cancer studies.",
+      "age": "2023-08-12"
+    }
+  ],
+  "factCheck": [
+    {
+      "text": "Coffee is classified as cancer-causing by WHO",
+      "claimant": "Health scare articles",
+      "claimReviewMarkup": {
+        "url": "https://www.reuters.com/fact-check/coffee-cancer-who-classification",
+        "title": "Context needed: IARC reversed its coffee classification in 2016",
+        "publisher": "Reuters Fact Check",
+        "rating": "Missing Context"
+      }
+    }
+  ]
+}

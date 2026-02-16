@@ -103,7 +103,7 @@ The full eval plan (IMPLEMENTATION_EVAL_PLAN.md) builds 10 graders and 25 tasks 
 - Test: `"all harmWeights are 1, 2, or 3"`
 
 ### Task L0.2: Create canned search results via live capture
-- [ ]
+- [x]
 **Objective:** Capture real Brave Search and Google Fact Check API responses for each factual claim, enabling $0-search-cost eval runs.
 **Details:**
 - Create capture script: `scripts/capture-eval-fixtures.ts`

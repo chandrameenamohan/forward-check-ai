@@ -1,0 +1,49 @@
+{
+  "claimId": "false-002",
+  "claimText": "WHO officially declares green tea cures cancer",
+  "capturedAt": "2025-05-01T00:00:00.000Z",
+  "brave": [
+    {
+      "title": "Fact Check: WHO has NOT declared green tea cures cancer",
+      "url": "https://www.who.int/news/item/green-tea-cancer-misinformation",
+      "description": "The World Health Organization has not made any declaration that green tea cures cancer. This claim has been circulating on social media without any basis.",
+      "age": "2024-02-20"
+    },
+    {
+      "title": "No, green tea does not cure cancer — here's what the research actually says",
+      "url": "https://www.cancer.org/cancer/risk-prevention/diet-physical-activity/green-tea.html",
+      "description": "While green tea contains antioxidants that may have health benefits, no major health organization has declared it a cure for cancer. Studies show modest associations at best.",
+      "age": "2024-01-15"
+    },
+    {
+      "title": "Reuters Fact Check: Green tea cancer cure claim is fabricated",
+      "url": "https://www.reuters.com/fact-check/green-tea-cancer-cure-false-2024",
+      "description": "A viral social media post falsely attributes a cancer cure declaration to the WHO regarding green tea. WHO has made no such statement.",
+      "age": "2024-03-01"
+    },
+    {
+      "title": "Green tea and cancer prevention: What does science say?",
+      "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/green-tea-review",
+      "description": "A systematic review of green tea and cancer risk. Some epidemiological studies suggest potential protective effects of green tea polyphenols, but evidence is insufficient to claim curative properties.",
+      "age": "2023-11-10"
+    },
+    {
+      "title": "WHO's position on traditional medicine and cancer treatment",
+      "url": "https://www.who.int/health-topics/traditional-complementary-and-integrative-medicine",
+      "description": "WHO supports evidence-based integration of traditional medicine but has never endorsed any single food or beverage as a cancer cure.",
+      "age": "2024-01-05"
+    }
+  ],
+  "factCheck": [
+    {
+      "text": "WHO declares green tea cures cancer",
+      "claimant": "Social media posts",
+      "claimReviewMarkup": {
+        "url": "https://www.reuters.com/fact-check/green-tea-cancer-cure-false",
+        "title": "False: WHO has not declared green tea cures cancer",
+        "publisher": "Reuters Fact Check",
+        "rating": "False"
+      }
+    }
+  ]
+}

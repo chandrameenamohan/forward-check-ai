@@ -1,0 +1,59 @@
+{
+  "claimId": "false-003",
+  "claimText": "5G towers have been proven to cause COVID-19 by WHO",
+  "capturedAt": "2025-05-01T00:00:00.000Z",
+  "brave": [
+    {
+      "title": "WHO: 5G mobile networks do NOT spread COVID-19",
+      "url": "https://www.who.int/emergencies/diseases/novel-coronavirus-2019/advice-for-public/myth-busters",
+      "description": "Viruses cannot travel on radio waves/mobile networks. COVID-19 is spreading in many countries that do not have 5G mobile networks.",
+      "age": "2024-01-10"
+    },
+    {
+      "title": "Full Fact: There is no link between 5G and coronavirus",
+      "url": "https://fullfact.org/health/5G-not-accelerating-coronavirus/",
+      "description": "The conspiracy theory that 5G towers cause or spread COVID-19 has been debunked by scientists, telecoms regulators, and the WHO. There is no evidence of any link.",
+      "age": "2023-12-15"
+    },
+    {
+      "title": "BBC Reality Check: The 5G coronavirus conspiracy theory",
+      "url": "https://www.bbc.com/news/5g-covid-conspiracy-debunked",
+      "description": "The claim that 5G causes COVID-19 has no scientific basis. COVID-19 is caused by the SARS-CoV-2 virus, which spreads through respiratory droplets.",
+      "age": "2023-06-20"
+    },
+    {
+      "title": "PolitiFact: No, 5G technology does not cause COVID-19",
+      "url": "https://www.politifact.com/factchecks/5g-covid-19-conspiracy/",
+      "description": "There is no scientific evidence that 5G networks cause, spread, or worsen COVID-19. This conspiracy theory has been repeatedly debunked.",
+      "age": "2023-09-05"
+    },
+    {
+      "title": "ICNIRP: 5G and health — what does the science say?",
+      "url": "https://www.icnirp.org/en/activities/news/5g-health-effects.html",
+      "description": "The International Commission on Non-Ionizing Radiation Protection has reviewed 5G technology and found no evidence it poses health risks when guidelines are followed.",
+      "age": "2023-08-01"
+    }
+  ],
+  "factCheck": [
+    {
+      "text": "5G towers cause COVID-19",
+      "claimant": "Social media conspiracy theories",
+      "claimReviewMarkup": {
+        "url": "https://www.politifact.com/factchecks/5g-covid-conspiracy",
+        "title": "Pants on Fire: 5G does not cause COVID-19",
+        "publisher": "PolitiFact",
+        "rating": "Pants on Fire"
+      }
+    },
+    {
+      "text": "5G technology spreads coronavirus",
+      "claimant": "Various social media accounts",
+      "claimReviewMarkup": {
+        "url": "https://fullfact.org/health/5G-not-accelerating-coronavirus/",
+        "title": "There is no link between 5G and coronavirus",
+        "publisher": "Full Fact",
+        "rating": "False"
+      }
+    }
+  ]
+}

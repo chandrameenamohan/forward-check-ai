@@ -1,0 +1,32 @@
+{
+  "claimId": "true-002",
+  "claimText": "The James Webb Space Telescope launched on December 25, 2021",
+  "capturedAt": "2025-05-01T00:00:00.000Z",
+  "brave": [
+    {
+      "title": "James Webb Space Telescope Launches on Christmas Day 2021",
+      "url": "https://www.nasa.gov/webb/launch",
+      "description": "NASA's James Webb Space Telescope launched on an Ariane 5 rocket from Europe's Spaceport in French Guiana on December 25, 2021 at 7:20 a.m. EST.",
+      "age": "2021-12-25"
+    },
+    {
+      "title": "Webb Telescope: The most powerful space telescope ever built",
+      "url": "https://www.space.com/james-webb-space-telescope-launch-success",
+      "description": "The James Webb Space Telescope successfully launched on Christmas morning 2021, beginning its journey to the L2 Lagrange point 1.5 million kilometers from Earth.",
+      "age": "2021-12-25"
+    },
+    {
+      "title": "ESA: Ariane 5 successfully launches Webb into orbit",
+      "url": "https://www.esa.int/Science_Exploration/Space_Science/Webb/Webb_launch",
+      "description": "Arianespace's Ariane 5 rocket successfully launched the James Webb Space Telescope from the Guiana Space Centre on 25 December 2021.",
+      "age": "2021-12-25"
+    },
+    {
+      "title": "Nature: James Webb Space Telescope finally launches after decades of delays",
+      "url": "https://www.nature.com/articles/webb-telescope-launch-2021",
+      "description": "After more than two decades of development and numerous delays, the $10 billion James Webb Space Telescope launched on December 25, 2021.",
+      "age": "2021-12-26"
+    }
+  ],
+  "factCheck": []
+}

@@ -1,0 +1,32 @@
+{
+  "claimId": "true-003",
+  "claimText": "Japan hosted the 2020 Summer Olympics in 2021 due to COVID-19 delay",
+  "capturedAt": "2025-05-01T00:00:00.000Z",
+  "brave": [
+    {
+      "title": "Tokyo 2020 Olympic Games held in 2021 due to pandemic postponement",
+      "url": "https://olympics.com/en/olympic-games/tokyo-2020",
+      "description": "The Tokyo 2020 Olympic Games were held from 23 July to 8 August 2021, postponed by one year due to the COVID-19 pandemic. The Games retained the 'Tokyo 2020' name.",
+      "age": "2021-08-09"
+    },
+    {
+      "title": "IOC: Tokyo 2020 Games postponed to 2021 due to COVID-19",
+      "url": "https://www.olympic.org/news/tokyo-2020-games-postponed",
+      "description": "The International Olympic Committee and the Tokyo 2020 Organising Committee jointly announced the postponement of the Olympic Games to 2021 due to the global pandemic.",
+      "age": "2020-03-24"
+    },
+    {
+      "title": "BBC: Tokyo Olympics 2020 — how the postponed Games unfolded",
+      "url": "https://www.bbc.com/sport/olympics/tokyo-2020-recap",
+      "description": "The Tokyo 2020 Olympics, delayed by a year due to COVID-19, took place in summer 2021 with strict health protocols and mostly empty stadiums.",
+      "age": "2021-08-08"
+    },
+    {
+      "title": "AP News: Japan successfully hosts delayed 2020 Olympics amid pandemic",
+      "url": "https://apnews.com/article/tokyo-olympics-2021-summary",
+      "description": "Japan hosted the 2020 Summer Olympics in July-August 2021, the first Games ever postponed in peacetime. The event was held largely without spectators.",
+      "age": "2021-08-08"
+    }
+  ],
+  "factCheck": []
+}
