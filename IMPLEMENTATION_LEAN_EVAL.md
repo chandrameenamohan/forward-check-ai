@@ -131,7 +131,7 @@ The full eval plan (IMPLEMENTATION_EVAL_PLAN.md) builds 10 graders and 25 tasks 
 ## Phase L1: Eval Harness
 
 ### Task L1.1: Expose pipeline intermediate outputs
-- [ ]
+- [x]
 **Objective:** Make the pipeline return all intermediate agent outputs so graders can evaluate each stage.
 **Details:**
 - Edit `src/orchestrator/pipeline.ts` — extend `InvestigateResult`:
