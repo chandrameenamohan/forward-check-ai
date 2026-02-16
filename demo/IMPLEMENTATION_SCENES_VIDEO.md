@@ -168,7 +168,7 @@
 - Verdict "LIKELY FALSE" badge visible near end
 
 ### Task 1.5: Validate and fix TheReveal scene (Scene 5)
-- [ ]
+- [x]
 **Objective:** Render Scene5_TheReveal independently, verify audio/visual sync, fix any issues.
 **Details:**
 - Render: `npx remotion render src/index.ts Scene5_TheReveal /Users/ralph/Projects/forward-check-ai/demo/scenes/scene5_thereveal.mp4 --codec h264 --crf 18`
