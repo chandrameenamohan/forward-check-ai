@@ -29,7 +29,7 @@
 - Each composition loads without errors in preview
 
 ### Task 0.2: Create scene wrapper components
-- [ ]
+- [x]
 **Objective:** Create 6 scene wrapper components at `src/compositions/` that each render ONE scene with its correct audio.
 **Details:**
 - Create directory: `src/compositions/`
