@@ -288,7 +288,7 @@ The full eval plan (IMPLEMENTATION_EVAL_PLAN.md) builds 10 graders and 25 tasks 
 - Test: `"should skip for non-factual claims"`
 
 ### Task L2.3: Coverage grader
-- [ ]
+- [x]
 **Objective:** Build a code-based grader that checks whether investigators found expected sources.
 **Blog principle:** *"Did the agent find the important information?"*
 **Details:**
