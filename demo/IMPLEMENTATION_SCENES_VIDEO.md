@@ -148,7 +148,7 @@
 - VO plays through both lines
 
 ### Task 1.4: Validate and fix TheNewsroom scene (Scene 4)
-- [ ]
+- [x]
 **Objective:** Render Scene4_TheNewsroom independently, verify audio/visual sync, fix any issues.
 **Details:**
 - Render: `npx remotion render src/index.ts Scene4_TheNewsroom /Users/ralph/Projects/forward-check-ai/demo/scenes/scene4_thenewsroom.mp4 --codec h264 --crf 18`
