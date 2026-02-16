@@ -152,7 +152,7 @@ The full eval plan (IMPLEMENTATION_EVAL_PLAN.md) builds 10 graders and 25 tasks 
 - `npx tsc --noEmit` passes
 
 ### Task L1.2: Create eval harness
-- [ ]
+- [x]
 **Objective:** Build the eval runner that executes claims against the pipeline and collects structured results.
 **Details:**
 - Create `eval/harness.ts`
