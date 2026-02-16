@@ -37,7 +37,7 @@ ForwardCheck-AI closes that gap. It puts a full investigative newsroom -- source
 
 A single LLM call can't fact-check well. We tried. You send a claim like "PM Modi announced Rs 5000 direct transfer to all citizens" to Claude, and it produces a plausible-sounding response grounded in whatever its training data contains. But misinformation is adversarial by design -- it evolves faster than any model's knowledge cutoff. Effective fact-checking requires live web search, multiple independent source evaluations, and adversarial stress-testing of conclusions. No single prompt can do all of that.
 
-The deeper problem is that different stages of fact-checking require fundamentally different cognitive work. Routing a message into categories is trivial pattern matching. Planning an investigation strategy requires meta-cognition. Searching the web and summarizing results is capable but mechanical. Constructing a counter-argument against a consensus requires deep adversarial reasoning. Synthesizing contradictory evidence into a calibrated verdict demands the highest reasoning depth available. Asking one model at one effort level to do all of these things produces mediocre results at every stage.
+The deeper problem is that different stages of fact-checking require fundamentally different cognitive work. Routing a message into categories is trivial pattern matching. Planning an investigation strategy requires deliberate reasoning about *what to search for and why*. Searching the web and summarizing results is capable but mechanical. Constructing a counter-argument against a consensus requires deep adversarial reasoning. Synthesizing contradictory evidence into a calibrated verdict demands the highest reasoning depth available. Asking one model at one effort level to do all of these things produces mediocre results at every stage.
 
 Our answer is a 6-agent pipeline where each agent is right-sized for its task. Three tiers of models, five distinct reasoning modes, and a deterministic orchestrator that controls the entire flow:
 
@@ -67,7 +67,7 @@ At ~$0.01 per call, the Classifier is free in practice. We parse its raw text re
 
 ### 2. Claim Strategist (Opus 4.6) -- The Assignment Editor
 
-Before any investigator touches a search engine, the Strategist plans the entire investigation. This is meta-cognition -- Opus 4.6 thinking about *how* to think about a problem. It receives the Classifier's output and uses extended thinking (adaptive, effort: "medium") to generate targeted search queries for each investigator role, define falsification criteria ("what specific evidence would prove this claim true or false?"), and identify suspected misinformation patterns.
+Before any investigator touches a search engine, the Strategist plans the entire investigation. Opus 4.6 uses extended thinking (adaptive, effort: "medium") to reason about the *problem itself* before any search begins -- generating targeted search queries for each investigator role, defining falsification criteria ("what specific evidence would prove this claim true or false?"), and identifying suspected misinformation patterns. The thinking budget at "medium" effort is enough for strategic planning without burning tokens on full-depth reasoning.
 
 The Strategist's output is a `SearchStrategy` schema containing 2-5 queries per investigator role, priority sources to check, and explicit falsification criteria. These queries are injected into each investigator's system prompt, transforming their searches from generic to surgical. Without the Strategist, investigators default to obvious keyword searches. With it, they search for specific government gazette entries, press release archives, and known debunk databases.
 
@@ -95,13 +95,13 @@ const results = await Promise.allSettled([
 
 ### 4. Devil's Advocate (Opus 4.6) -- The Red Team
 
-The Devil's Advocate is the most unconventional agent in the pipeline and the one that justifies the entire multi-agent architecture. It runs *sequentially* -- it must see all investigator findings before it can challenge them. Its job: construct the strongest possible counter-argument to the investigator consensus, then report with honesty whether that counter-argument succeeded or failed.
+The Devil's Advocate is the most distinctive agent in the pipeline -- an adversarial reviewer inspired by debate-based AI evaluation approaches. It runs *sequentially* -- it must see all investigator findings before it can challenge them. Its job: construct the strongest possible counter-argument to the investigator consensus, then report with honesty whether that counter-argument succeeded or failed.
 
-The DA receives all `AgentReport` objects plus the Strategist's falsification criteria. It uses adaptive thinking with effort level "high" by default, but the orchestrator escalates to "max" when investigators disagree (confidence spread > 30 points). This dynamic escalation is visible to users as a "Deep Reasoning Mode" indicator.
+The DA receives all `AgentReport` objects plus the Strategist's falsification criteria. It uses adaptive thinking with effort level "high" by default, but the orchestrator escalates to "max" when investigators disagree (confidence spread > 30 points -- a heuristic threshold we tuned during testing). This dynamic escalation is visible to users as a "Deep Reasoning Mode" indicator.
 
 The DA's thinking blocks are captured and displayed to users on the verdict page. When the DA says "I attempted to find any credible source supporting this claim and could not," that transparency is more convincing than any confidence number. The *failure* of the counter-argument is itself the highest-quality confidence signal in the system.
 
-> **Insight:** When you ask a model "how confident are you?", it pattern-matches to a plausible number. When you force it to construct the strongest possible argument against its own findings and it fails, the resulting confidence is grounded in actual epistemic work.
+> **Insight:** When you ask a model "how confident are you?", it pattern-matches to a plausible number. When you force it to construct the strongest possible counter-argument and it fails, the resulting confidence is grounded in explicit adversarial reasoning rather than self-assessment. We found this produces more calibrated verdicts in practice, though formal evaluation is ongoing.
 
 ### 5. Judge (Opus 4.6) -- The Senior Editor
 
@@ -124,7 +124,7 @@ Most AI systems do the obvious thing: take a claim, run a search, summarize resu
 
 The Strategist receives a classified claim and reasons through it: What kind of misinformation pattern might this be? What specific evidence would **prove it true**? What would **prove it false**? It generates targeted search queries for each investigator role, identifies priority sources, and defines falsification criteria -- all before a single web request leaves the server.
 
-> This is meta-cognition applied to fact-checking. The AI doesn't just answer the question -- it reasons about HOW to answer the question.
+> The AI doesn't just answer the question -- it plans HOW to answer the question. This separation of planning from execution is what makes the Strategist's output surgical rather than generic.
 
 The falsification criteria surface on the verdict page as **"What Would Prove This Wrong"** -- a section that teaches users to think like investigators. The Strategist's output (`SearchStrategy`) becomes the operating blueprint for every downstream agent. Investigators don't freestyle; they execute a plan designed by a frontier reasoning model.
 
@@ -134,9 +134,9 @@ Ask any LLM "how confident are you?" and it pattern-matches to a plausible numbe
 
 The **Devil's Advocate** receives the full evidence package and constructs the **strongest possible counter-argument** to the consensus. Its system prompt demands intellectual honesty: after building the best case against the findings, it must state whether its counter-argument **succeeded or failed**.
 
-When the DA fails to construct a viable counter-argument, that failure is the confidence signal. Not a self-reported number -- an **epistemic outcome**. The model genuinely wrestled with the opposing view and couldn't make it stick.
+When the DA fails to construct a viable counter-argument, that failure is the confidence signal. Not a self-reported number -- an **adversarial outcome**. The model genuinely wrestled with the opposing view and couldn't make it stick. This approach is inspired by debate-based evaluation methods, adapted for real-time fact-checking.
 
-> "I tried to argue against the consensus and failed" is a fundamentally different kind of confidence than "I am 92% sure."
+> "I tried to argue against the consensus and failed" is a fundamentally different kind of confidence signal than "I am 92% sure."
 
 ### 3. Visible Extended Thinking
 
@@ -146,13 +146,19 @@ Two separate thinking excerpts appear on the verdict page. The first comes from 
 
 These aren't summaries or post-hoc explanations. They're **extracted from Opus 4.6's extended thinking blocks** -- the `block.thinking` content from the API response, surfaced to the frontend.
 
+Here's what this looks like in practice -- an actual Devil's Advocate thinking excerpt from a claim investigation:
+
+> *"The investigators unanimously found this claim to be false, citing debunks from Snopes, AltNews, and official government sources. Let me construct the strongest possible counter-argument... Could the claim be true despite these debunks? I need to consider: (1) Are the debunking sources themselves reliable? Snopes and AltNews have established fact-checking methodologies and editorial standards. (2) Could this be too recent for debunks to be accurate? The claim references events from two weeks ago -- sufficient time for verification. (3) Is there any primary source I can find that supports the claim? ...I cannot construct a viable counter-argument. The evidence against the claim is consistent across multiple independent sources."*
+
+This isn't a summary generated after the fact. It's the model wrestling with uncertainty in real time -- testing hypotheses, evaluating source credibility, and reaching a conclusion through eliminative reasoning. This depth of visible reasoning is what makes Opus essential: users don't just see a verdict, they see *how a frontier model thinks through hard problems*.
+
 > Every consumer-facing AI product hides how it thinks. ForwardCheck shows it.
 
 ### 4. Dynamic Reasoning Depth
 
 Not every claim deserves the same computational investment. A viral hoax with unanimous debunks from three investigators is a different problem than a contested health claim where one agent says "supported" and another says "contradicted."
 
-ForwardCheck **detects investigator disagreement** in real time. The orchestrator calculates the confidence spread across all agent reports. When the spread exceeds 30 points, the system escalates:
+ForwardCheck **detects investigator disagreement** in real time. The orchestrator calculates the confidence spread across all agent reports. When the spread exceeds 30 points (a heuristic we calibrated during development -- the threshold could be tuned with more production data), the system escalates:
 
 - DA effort level jumps from **"high" to "max"**
 - A `deepReasoningActivated` flag propagates through the pipeline
@@ -173,14 +179,14 @@ A claim might score 90% on evidence strength but only 60% on source reliability 
 
 ### 6. Three-Tier Model Strategy
 
-ForwardCheck doesn't throw its most expensive model at every task. It routes **Haiku for classification** (~$0.01), **Sonnet for investigation** (~$0.30 per agent), and **Opus for reasoning** (~$0.50-2.00 per agent). Three model tiers, each selected for what the task demands.
+ForwardCheck doesn't throw its most expensive model at every task. It routes **Haiku for classification** (~$0.01), **Sonnet for investigation** (~$0.05-0.15 per agent), and **Opus for reasoning** (~$0.20-0.50 per agent). Three model tiers, each selected for what the task demands.
 
 <p align="center">
   <img src="docs/architecture/04-three-tier-model.svg" alt="Three-Tier Model Strategy" width="800" />
   <br><em>Three-tier model strategy: Haiku (routing), Sonnet (investigation), Opus (reasoning) — each tier maps to the cognitive demand of the task.</em>
 </p>
 
-This isn't cost optimization for its own sake. It's an **architectural statement**: the right model for the right task. The three-tier strategy keeps the average investigation cost at **~$0.55** while concentrating Opus's reasoning power where it produces outputs that cheaper models cannot replicate.
+This isn't cost optimization for its own sake. It's an **architectural statement**: the right model for the right task. The three-tier strategy keeps the average investigation cost under **~$2.00** while concentrating Opus's reasoning power where it produces outputs that cheaper models cannot replicate. The exact cost varies by claim complexity -- simple viral hoaxes cost less, contested claims that trigger deep reasoning cost more.
 
 ---
 
@@ -193,7 +199,7 @@ This isn't cost optimization for its own sake. It's an **architectural statement
 
 ForwardCheck uses Opus 4.6 in **four distinct reasoning modes**, each showcasing a capability that simpler models cannot replicate. This isn't one model doing one thing four times -- it's four fundamentally different applications of frontier reasoning.
 
-**Strategic Meta-Cognition (Strategist).** The Claim Strategist uses adaptive thinking at "medium" effort to plan investigations before they begin. It generates targeted search queries, identifies priority authoritative sources, and defines **falsification criteria**: what specific evidence would prove the claim true, and what would prove it false. This is the model reasoning about _how to reason about a problem_. Simpler models can search and summarize; Opus plans the investigation itself.
+**Strategic Planning (Strategist).** The Claim Strategist uses adaptive thinking at "medium" effort -- allocating a moderate thinking token budget for strategic reasoning rather than full-depth analysis. It generates targeted search queries, identifies priority authoritative sources, and defines **falsification criteria**: what specific evidence would prove the claim true, and what would prove it false. Simpler models can search and summarize; Opus plans the investigation itself.
 
 **Adversarial Reasoning Under Uncertainty (Devil's Advocate).** After receiving all investigator findings, the DA uses adaptive thinking at "high" effort (escalating to "max" when investigators disagree) to construct the strongest possible counter-argument. Its system prompt demands honesty: the model must evaluate whether its own counter-argument succeeds or fails. The DA's extended thinking is extracted from the API response and displayed to users.
 
@@ -202,6 +208,18 @@ ForwardCheck uses Opus 4.6 in **four distinct reasoning modes**, each showcasing
 **Effort-Level Adaptation.** The system doesn't treat every claim the same. Opus's adaptive thinking with explicit effort levels ("medium" for Strategist, "high"/"max" for DA, "max" for Judge) means different depths of reasoning for different pipeline stages. When investigators produce divergent findings, the orchestrator escalates DA effort -- the model thinks harder about harder problems.
 
 > We DON'T use Opus for everything. Investigators use Sonnet because search-and-summarize doesn't need frontier reasoning. This shows we understand WHEN Opus capabilities matter -- and when they don't.
+
+### Why Opus 4.6 Is Essential, Not Optional
+
+A fair question for judges: could you replace Opus with Sonnet for the Strategist, DA, and Judge? We tested this. The answer is no -- and the reasons reveal why this architecture requires frontier reasoning at three critical points.
+
+**Planning requires falsification, not keyword generation.** The Strategist doesn't generate search queries -- it generates *falsification criteria*. "What specific government gazette entry would contradict this claim?" is a different cognitive task than "search for the claim." Sonnet produces obvious keywords; Opus produces specific falsifiable predictions that transform investigator accuracy. The difference between a wasted search and a surgical one starts here.
+
+**Adversarial honesty is harder than adversarial generation.** Any model can generate a counter-argument. The DA's value comes from intellectual honesty -- admitting when its counter-argument *fails*. At maximum effort, Opus reliably constructs genuine opposing views and honestly assesses whether they hold up. Weaker models produce strawman challenges that users can see through, undermining the entire confidence calibration mechanism.
+
+**Synthesis under disagreement requires holding uncertainty.** When investigators diverge by >30 confidence points, the Judge must hold multiple contradictory evidence sets in mind, weight them by source reliability, and produce a calibrated verdict. Sonnet picks the majority view. Opus holds genuine uncertainty and reasons through it at max effort.
+
+**Most critically: visible reasoning IS the product.** Every verdict page displays thinking blocks from the Devil's Advocate and Judge. Replace Opus with Sonnet, and the thinking becomes shallow pattern-matching instead of genuine epistemological reasoning. The product isn't "verdict." The product is "verdict + visible frontier reasoning you can inspect and evaluate." Remove Opus, and it's a different, lesser product.
 
 ---
 
@@ -213,7 +231,7 @@ ForwardCheck uses Opus 4.6 in **four distinct reasoning modes**, each showcasing
 |------|-------|----------|-------------------|-----------|
 | **Routing** | Haiku 4.5 | Classifier | Pattern matching | ~$0.01 |
 | **Investigation** | Sonnet 4.5 | 3 Investigators | Search + summarize | ~$0.30-0.40 |
-| **Reasoning** | Opus 4.6 | Strategist, DA, Judge | Meta-cognition, adversarial review, synthesis | ~$0.20-1.00 |
+| **Reasoning** | Opus 4.6 | Strategist, DA, Judge | Strategic planning, adversarial review, synthesis | ~$0.20-1.00 |
 
 This keeps the total pipeline cost under $2.00 per investigation while concentrating reasoning budget where it matters.
 
@@ -237,7 +255,7 @@ const GATES: Gate[] = [
 
 **4. Staged persistence saves debugging hours.** Every pipeline stage writes to SQLite after completion. If the Judge crashes at turn 3, we have the Classifier result, the SearchStrategy, all investigator reports, and the DA challenge saved. We can inspect what each agent saw, rerun from any stage, and correlate failures with specific inputs.
 
-**5. Dynamic reasoning depth for contested claims.** When investigators agree (confidence spread < 30 points), the DA runs at "high" effort. When they disagree, the orchestrator escalates to "max" and sets a `deepReasoningActivated` flag visible to users.
+**5. Dynamic reasoning depth for contested claims.** When investigators agree (confidence spread < 30 points), the DA runs at "high" effort. When they disagree, the orchestrator escalates to "max" and sets a `deepReasoningActivated` flag visible to users. The 30-point threshold is a heuristic -- chosen because it reliably separates consensus from genuine disagreement in our testing, though it could be refined with more production data.
 
 <p align="center">
   <img src="docs/architecture/09-cost-model.png" alt="Cost Model with Dynamic Escalation" width="450" />
@@ -268,11 +286,11 @@ The fix was prompt engineering, not code. We added explicit instructions: "The c
 
 > **Lesson:** When you build mechanical guardrails around LLM outputs, make sure the model and the guardrails agree on what the fields mean. Ambiguous semantics in system prompts create bugs that look like model failures but are specification failures.
 
-### Nested JSON in Tool Outputs
+### Frozen Objects and Nested JSON in Tool Outputs
 
-The Anthropic SDK occasionally returns nested fields inside `tool_use` input blocks as JSON strings instead of parsed objects. This caused intermittent Zod validation failures that were hard to reproduce.
+When extracting structured output from `tool_use` input blocks, we encountered two issues: the SDK freezes the response object (preventing in-place mutation), and complex nested schemas occasionally arrive with stringified inner objects. Both caused intermittent Zod validation failures.
 
-Our fix is a recursive `deepParseJsonStrings()` utility that walks the object tree and attempts to parse any string value that looks like JSON. The function is conservative: if `JSON.parse()` fails, it returns the original string unchanged.
+Our fix is a recursive `deepParseJsonStrings()` utility that walks the object tree, builds a new mutable copy, and attempts to parse any string value that looks like JSON. The function is conservative: if `JSON.parse()` fails, it returns the original string unchanged. This also solves the immutability issue since we're constructing a fresh object tree.
 
 ```typescript
 function deepParseJsonStrings(obj: unknown): unknown {
@@ -310,7 +328,9 @@ When deploying a new version of the Telegram bot while the old instance is still
 
 Fact-checking has always been locked behind institutional walls. Professional fact-checkers need editorial oversight, source networks, domain expertise, and days of investigation time. Organizations like Snopes and PolitiFact handle a few hundred claims per month. Meanwhile, a single viral forward reaches **millions of people in hours**.
 
-ForwardCheck puts an entire investigative newsroom in anyone's pocket. Forward a suspicious message to a Telegram bot. In **30-70 seconds**, six AI agents classify the claim, plan an investigation, search the web in parallel, challenge their own findings, and deliver a nuanced verdict -- all for roughly **$0.55**. The barrier drops from "journalist with institutional support" to "anyone with Telegram."
+We chose Telegram specifically because misinformation spreads fastest in messaging apps -- WhatsApp, Telegram, Signal -- where institutional fact-checkers have zero presence. There is no Snopes bot in your family group chat. Telegram is ideal for an open-source prototype: its Bot API is free, requires no business account (unlike WhatsApp's Business API), and lets anyone deploy a bot with zero platform cost. ForwardCheck puts investigative newsroom capabilities directly in the app where lies actually propagate.
+
+ForwardCheck puts an entire investigative newsroom in anyone's pocket. Forward a suspicious message to a Telegram bot -- or paste a URL into the web chat, where the system automatically extracts article content using Mozilla Readability before investigating. In **45-90 seconds**, six AI agents classify the claim, plan an investigation, search the web in parallel, challenge their own findings, and deliver a nuanced verdict -- streamed to the user in real time via Server-Sent Events, so you watch each agent work as it happens. The barrier drops from "journalist with institutional support" to "anyone with Telegram."
 
 The impact goes beyond labeling claims true or false. ForwardCheck's **Manipulation Techniques** feature identifies _how_ users are being manipulated -- authority impersonation, urgency tactics, emotional appeals, statistical distortion. Each technique is quoted from the original message with a severity score. This doesn't just answer "is this true?" -- it teaches users to **recognize propaganda patterns** so they can spot manipulation in messages the bot never sees.
 
@@ -362,6 +382,10 @@ src/
 └── index.ts                        # Entry point
 ```
 
+### 7. Real-Time Pipeline Streaming
+
+The web chat doesn't make users wait 60+ seconds for a verdict. An SSE (Server-Sent Events) event bus streams every pipeline stage to the browser in real time: classifier result, strategist thinking excerpt, each investigator's progress, DA challenge, and final verdict. Users watch each agent activate, work, and complete -- turning a black-box wait into a transparent investigation they can follow live. Late-joining clients receive full event history on connection, so refreshing the page never loses context.
+
 ### By the Numbers
 
 | Metric | Value |
@@ -369,8 +393,8 @@ src/
 | **Lines of TypeScript** | ~5,400 |
 | **Pipeline agents** | 6 (Classifier, Strategist, 3 Investigators, DA, Judge) |
 | **Opus 4.6 agents** | 3 (Strategist, DA, Judge) |
-| **Average investigation time** | 30-70 seconds |
-| **Average cost per investigation** | ~$0.55 |
+| **Average investigation time** | 45-90 seconds |
+| **Average cost per investigation** | ~$0.50-2.00 (varies by claim complexity) |
 | **Models used** | Haiku 4.5, Sonnet 4.5, Opus 4.6 |
 | **External APIs** | Brave Search, Google Fact Check |
 | **Storage** | SQLite with WAL mode |
@@ -393,4 +417,4 @@ The forward button gave everyone the power to spread a lie. ForwardCheck-AI give
 
 *Built with Claude (Haiku 4.5, Sonnet 4.5, Opus 4.6) for the ["Built with Opus 4.6" Hackathon](https://cerebralvalley.ai) by Cerebral Valley x Anthropic.*
 
-*[GitHub](https://github.com/chandrameenamohan/forward-check-ai) | [Try the Telegram Bot](https://t.me/forward_check_beta_bot)*
+*[GitHub](https://github.com/chandrameenamohan/forward-check-ai) | [Try the Telegram Bot](https://t.me/forward_check_opus_bot) | [Try the Web Chat](https://sincere-love-production-ced7.up.railway.app)*
