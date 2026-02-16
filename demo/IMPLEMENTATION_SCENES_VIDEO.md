@@ -96,7 +96,7 @@
 ## Phase 1: Scene-by-Scene Validation & Polish
 
 ### Task 1.1: Validate and fix ColdOpen scene (Scene 1)
-- [ ]
+- [x]
 **Objective:** Render Scene1_ColdOpen independently, verify audio/visual sync, fix any issues.
 **Details:**
 - Render: `npx remotion render src/index.ts Scene1_ColdOpen /Users/ralph/Projects/forward-check-ai/demo/scenes/scene1_coldopen.mp4 --codec h264 --crf 18`
