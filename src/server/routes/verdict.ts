@@ -42,6 +42,26 @@ export function createVerdictRouter(
       return;
     }
 
+    // Non-factual claims exit early — no verdict object exists
+    if (
+      investigation.status === "completed_non_factual" ||
+      !investigation.final_verdict
+    ) {
+      const classifierResult = investigation.classifier_result as
+        | { category?: string; explanation?: string }
+        | null;
+      res.render("verdict-non-factual", {
+        id: investigation.id,
+        originalMessage: investigation.original_message,
+        category: classifierResult?.category ?? "other",
+        explanation:
+          classifierResult?.explanation ??
+          "This message was not identified as a factual claim.",
+        createdAt: investigation.created_at,
+      });
+      return;
+    }
+
     // For completed investigations, pass parsed data to the template
     res.render("verdict", {
       id: investigation.id,
