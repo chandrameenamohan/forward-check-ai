@@ -240,7 +240,7 @@ The full eval plan (IMPLEMENTATION_EVAL_PLAN.md) builds 10 graders and 25 tasks 
 - Test: `"should score 100 for non-factual short circuit"`
 
 ### Task L2.2: Groundedness grader (Sonnet-based)
-- [ ]
+- [x]
 **Objective:** Build a model-based grader that verifies the Judge's findings are grounded in investigator evidence — using Sonnet, not crude token matching.
 **Blog principle:** *"Does every claim in the output trace back to a source?"*
 **Details:**
