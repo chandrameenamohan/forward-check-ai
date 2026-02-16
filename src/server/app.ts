@@ -1,6 +1,7 @@
 import express from "express";
 import type { Request, Response, NextFunction } from "express";
 import { dirname, join } from "node:path";
+import { existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { createLogger } from "../config/logger.js";
 import type { InvestigationRepository } from "../db/investigation-repository.js";
@@ -70,6 +71,14 @@ export function createApp(repo?: InvestigationRepository, eventBus?: PipelineEve
   app.get("/chat", (_req: Request, res: Response) => {
     res.render("chat");
   });
+
+  // Technical blog — serve the pre-built HTML file
+  const blogPath = join(__dirname, "..", "..", "TECHNICAL_BLOG.html");
+  if (existsSync(blogPath)) {
+    app.get("/blog", (_req: Request, res: Response) => {
+      res.sendFile(blogPath);
+    });
+  }
 
   // Investigation API routes (only when repo is provided)
   if (repo) {
