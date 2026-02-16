@@ -50,6 +50,7 @@ interface StrategistCompleteEvent extends BaseEvent {
   kind: "strategist:complete";
   costUsd: number;
   thinkingExcerpt?: string;
+  strategy?: any;
 }
 
 interface InvestigatorsStartEvent extends BaseEvent {

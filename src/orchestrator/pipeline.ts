@@ -183,7 +183,7 @@ export class InvestigationPipeline {
     this.emitEvent({
       kind: "strategist:complete", investigationId,
       costUsd: strategistCost, thinkingExcerpt: searchStrategy.thinkingExcerpt,
-      timestamp: Date.now(),
+      strategy: searchStrategy, timestamp: Date.now(),
     });
     this.repo.updateSearchStrategy(investigationId, searchStrategy);
 

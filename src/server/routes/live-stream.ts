@@ -73,22 +73,32 @@ export function createLiveStreamRouter(
     res.setHeader("Content-Type", "text/event-stream");
     res.setHeader("Cache-Control", "no-cache");
     res.setHeader("Connection", "keep-alive");
+    res.setHeader("X-Accel-Buffering", "no");
     res.flushHeaders();
+
+    const flushResponse = () => {
+      if (typeof (res as any).flush === "function") {
+        (res as any).flush();
+      }
+    };
 
     // Flush historical events (catch-up for late-joining clients)
     const history = eventBus.getHistory(id);
     for (const event of history) {
       res.write(`event: ${event.kind}\ndata: ${JSON.stringify(event)}\n\n`);
+      flushResponse();
     }
 
     // Subscribe to new events
     const unsubscribe = eventBus.subscribe(id, (event) => {
       res.write(`event: ${event.kind}\ndata: ${JSON.stringify(event)}\n\n`);
+      flushResponse();
     });
 
     // Keepalive comment every 15 seconds
     const keepaliveTimer = setInterval(() => {
       res.write(":\n\n");
+      flushResponse();
     }, KEEPALIVE_INTERVAL_MS);
 
     // Clean up on client disconnect
