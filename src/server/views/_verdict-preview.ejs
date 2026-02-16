@@ -82,7 +82,7 @@
     </div>
 
     <!-- CTA -->
-    <a href="/v/demo" class="fc-verdict-preview-cta">
+    <a href="<%= typeof recentInvestigationId !== 'undefined' && recentInvestigationId ? '/v/' + recentInvestigationId : '/chat' %>" class="fc-verdict-preview-cta">
       Read the full analysis
       <span class="fc-verdict-preview-cta-arrow">→</span>
     </a>

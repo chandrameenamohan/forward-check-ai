@@ -393,4 +393,4 @@ The forward button gave everyone the power to spread a lie. ForwardCheck-AI give
 
 *Built with Claude (Haiku 4.5, Sonnet 4.5, Opus 4.6) for the ["Built with Opus 4.6" Hackathon](https://cerebralvalley.ai) by Cerebral Valley x Anthropic.*
 
-*[GitHub](https://github.com/chandrameenamohan/forward-check-ai) | [Try the Telegram Bot](https://t.me/forward_check_opus_bot)*
+*[GitHub](https://github.com/chandrameenamohan/forward-check-ai) | [Try the Telegram Bot](https://t.me/forward_check_beta_bot)*
