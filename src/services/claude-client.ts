@@ -17,7 +17,7 @@ export type ModelId = (typeof MODELS)[keyof typeof MODELS];
 const PRICING: Record<string, { input: number; output: number }> = {
   [MODELS.HAIKU]: { input: 1, output: 5 },
   [MODELS.SONNET]: { input: 3, output: 15 },
-  [MODELS.OPUS]: { input: 5, output: 25 },
+  [MODELS.OPUS]: { input: 15, output: 75 },
 };
 
 /** Result returned from createMessage, bundling the API response with cost info */
@@ -52,15 +52,11 @@ export class ClaudeClient {
 
     const { input_tokens, output_tokens } = response.usage;
 
-    // Count thinking tokens from response content blocks
-    let thinkingTokens = 0;
-    for (const block of response.content) {
-      if (block.type === "thinking") {
-        // Thinking tokens are included in output_tokens by the API,
-        // but we track them separately for logging
-        thinkingTokens++;
-      }
-    }
+    // Thinking tokens are already included in output_tokens by the API,
+    // so no separate accounting is needed for cost estimation.
+    const usedThinking = response.content.some(
+      (block) => block.type === "thinking",
+    );
 
     const costUsd = this.estimateCost(
       params.model,
@@ -73,6 +69,7 @@ export class ClaudeClient {
         model: params.model,
         inputTokens: input_tokens,
         outputTokens: output_tokens,
+        usedThinking,
         costUsd: costUsd.toFixed(6),
         stopReason: response.stop_reason,
       },
