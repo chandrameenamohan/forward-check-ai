@@ -373,13 +373,14 @@ Follow the 4-phase process (Strategize → Synthesize → Evaluate → Verdict).
       maxTurns: 1,
       tools: allTools,
       thinkingConfig: { type: "adaptive" },
+      toolChoice: { type: "tool", name: "submit_verdict" },
       onToolCall: async (name, input) => {
         if (name === "submit_verdict") {
           return "Verdict submitted successfully.";
         }
         return toolRegistry.execute(name, input);
       },
-      timeoutMs: 60_000,
+      timeoutMs: 120_000,
     });
 
     totalCostUsd += retryResult.totalCostUsd;

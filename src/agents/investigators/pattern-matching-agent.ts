@@ -184,6 +184,7 @@ export async function runPatternMatching(
   });
 
   // Extract and validate report (with retry and JSON fallback)
+  // Pass result._messages so retry has full conversation context (search results, analysis)
   const report = await extractReport({
     toolCalls: result.toolCalls,
     text: result.text,
@@ -191,12 +192,7 @@ export async function runPatternMatching(
     client,
     model: MODELS.SONNET,
     systemPrompt,
-    messages: [
-      {
-        role: "user",
-        content: `Investigate the following claim for pattern matching against known misinformation:\n\n"${claim}"\n\nUse brave_web_search and google_fact_check_search to find existing fact-checks and identify misinformation patterns. When done, call submit_report with your findings.`,
-      },
-    ],
+    messages: result._messages,
     tools: allTools,
   });
   const validation = { data: report };

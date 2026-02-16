@@ -183,6 +183,7 @@ export async function runSourceVerification(
   });
 
   // Extract and validate report (with retry and JSON fallback)
+  // Pass result._messages so retry has full conversation context (search results, analysis)
   const report = await extractReport({
     toolCalls: result.toolCalls,
     text: result.text,
@@ -190,12 +191,7 @@ export async function runSourceVerification(
     client,
     model: MODELS.SONNET,
     systemPrompt,
-    messages: [
-      {
-        role: "user",
-        content: `Investigate the following claim for source verification:\n\n"${claim}"\n\nUse the search tools to find the claim's origin, evaluate source credibility, and look for existing debunks. When done, call submit_report with your findings.`,
-      },
-    ],
+    messages: result._messages,
     tools: allTools,
   });
   const validation = { data: report };

@@ -239,6 +239,7 @@ export async function runDomainExpertise(
   });
 
   // Extract and validate report (with retry and JSON fallback)
+  // Pass result._messages so retry has full conversation context (search results, analysis)
   const report = await extractReport({
     toolCalls: result.toolCalls,
     text: result.text,
@@ -246,12 +247,7 @@ export async function runDomainExpertise(
     client,
     model: MODELS.SONNET,
     systemPrompt,
-    messages: [
-      {
-        role: "user",
-        content: `Investigate the following claim from a ${validDomain} domain expertise perspective:\n\n"${claim}"\n\nUse brave_web_search to find authoritative sources and domain-specific evidence. When done, call submit_report with your findings.`,
-      },
-    ],
+    messages: result._messages,
     tools,
   });
   const validation = { data: report };

@@ -2,6 +2,7 @@ import type {
   MessageParam,
   ContentBlockParam,
   ThinkingConfigParam,
+  ToolChoice,
 } from "@anthropic-ai/sdk/resources/messages/messages.js";
 import type { Tool } from "@anthropic-ai/sdk/resources/messages/messages.js";
 import type { ClaudeClient } from "../services/claude-client.js";
@@ -31,6 +32,8 @@ export interface AgentConfig {
   timeoutMs?: number;
   /** Optional output_config for effort levels (e.g., { effort: "max" }) */
   outputConfig?: { effort: "low" | "medium" | "high" | "max" };
+  /** Optional tool_choice to force a specific tool call (e.g., { type: "tool", name: "submit_verdict" }) */
+  toolChoice?: ToolChoice;
 }
 
 /** Result of a completed agent run */
@@ -87,6 +90,7 @@ async function runAgentLoop(config: AgentConfig): Promise<AgentResult> {
     thinkingConfig,
     onToolCall,
     outputConfig,
+    toolChoice,
   } = config;
 
   // Clone messages to avoid mutating the caller's array
@@ -108,6 +112,7 @@ async function runAgentLoop(config: AgentConfig): Promise<AgentResult> {
       ...(tools && tools.length > 0 ? { tools } : {}),
       ...(thinkingConfig ? { thinking: thinkingConfig } : {}),
       ...(outputConfig ? { output_config: outputConfig } : {}),
+      ...(toolChoice ? { tool_choice: toolChoice } : {}),
     });
 
     totalInputTokens += response.usage.input_tokens;
