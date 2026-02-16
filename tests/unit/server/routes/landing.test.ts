@@ -249,7 +249,7 @@ describe("Landing page routes", () => {
     const html = await res.text();
 
     expect(html).toContain("Read the full analysis");
-    expect(html).toContain("/v/demo");
+    expect(html).toContain("/chat");
   });
 
   it("GET / should contain Opus 4.6 showcase section", async () => {
@@ -450,13 +450,14 @@ describe("Landing page routes", () => {
     try { unlinkSync(`${dbPath}-shm`); } catch { /* ignore */ }
   });
 
-  it("GET / should fallback to /v/demo when no recent investigation", async () => {
+  it("GET / should fallback to /chat when no recent investigation", async () => {
     const port = await startServer();
     const res = await fetch(`http://127.0.0.1:${port}/`);
     const html = await res.text();
 
-    // Secondary CTA should point to /v/demo as fallback
-    expect(html).toContain("/v/demo");
+    // Secondary CTA should fall back to /chat (not /v/demo which 404s)
+    expect(html).not.toContain("/v/demo");
+    expect(html).toContain("/chat");
   });
 
   // ── Task 7.2: Landing page CTA update — add "Check in Browser" button ──
