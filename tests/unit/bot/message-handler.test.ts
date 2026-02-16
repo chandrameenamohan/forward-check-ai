@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { Bot } from "grammy";
 import type { Update, UserFromGetMe } from "grammy/types";
 import type { InvestigationPipeline, InvestigateResult } from "../../../src/orchestrator/pipeline.js";
+import type { InvestigationRepository } from "../../../src/db/investigation-repository.js";
 import { createMessageHandler } from "../../../src/bot/message-handler.js";
 import { makeFinalVerdict } from "../../fixtures/index.js";
 
@@ -53,6 +54,7 @@ const BASE_URL = "http://localhost:3000";
 describe("createMessageHandler", () => {
   let bot: Bot;
   const apiCalls: Array<{ method: string; payload: Record<string, unknown> }> = [];
+  const fakeRepo = { updateStatus: vi.fn() } as unknown as InvestigationRepository;
 
   beforeEach(() => {
     apiCalls.length = 0;
@@ -102,7 +104,7 @@ describe("createMessageHandler", () => {
       } satisfies InvestigateResult),
     } as unknown as InvestigationPipeline;
 
-    createMessageHandler(bot, mockPipeline, BASE_URL);
+    createMessageHandler(bot, mockPipeline, BASE_URL, fakeRepo);
 
     const update = makeMessageUpdate({
       text: "PM Modi gives Rs 5000 to all citizens",
@@ -132,7 +134,7 @@ describe("createMessageHandler", () => {
       } satisfies InvestigateResult),
     } as unknown as InvestigationPipeline;
 
-    createMessageHandler(bot, mockPipeline, BASE_URL);
+    createMessageHandler(bot, mockPipeline, BASE_URL, fakeRepo);
 
     const update = makeMessageUpdate({
       text: "Is it true that the Earth is flat?",
@@ -161,7 +163,7 @@ describe("createMessageHandler", () => {
       investigate: vi.fn().mockRejectedValue(new Error("Pipeline exploded")),
     } as unknown as InvestigationPipeline;
 
-    createMessageHandler(bot, mockPipeline, BASE_URL);
+    createMessageHandler(bot, mockPipeline, BASE_URL, fakeRepo);
 
     const update = makeMessageUpdate({
       text: "Some claim to check",
@@ -189,7 +191,7 @@ describe("createMessageHandler", () => {
       } satisfies InvestigateResult),
     } as unknown as InvestigationPipeline;
 
-    createMessageHandler(bot, mockPipeline, httpsUrl);
+    createMessageHandler(bot, mockPipeline, httpsUrl, fakeRepo);
 
     const update = makeMessageUpdate({
       text: "WHO declares green tea cures cancer",
@@ -224,7 +226,7 @@ describe("createMessageHandler", () => {
       } satisfies InvestigateResult),
     } as unknown as InvestigationPipeline;
 
-    createMessageHandler(bot, mockPipeline, BASE_URL);
+    createMessageHandler(bot, mockPipeline, BASE_URL, fakeRepo);
 
     const update = makeMessageUpdate({
       text: "WHO declares green tea cures cancer",
@@ -254,7 +256,7 @@ describe("createMessageHandler", () => {
       } satisfies InvestigateResult),
     } as unknown as InvestigationPipeline;
 
-    createMessageHandler(bot, mockPipeline, BASE_URL);
+    createMessageHandler(bot, mockPipeline, BASE_URL, fakeRepo);
 
     const update = makeMessageUpdate({
       text: "Hello bot!",
@@ -289,7 +291,7 @@ describe("createMessageHandler", () => {
       }),
     } as unknown as InvestigationPipeline;
 
-    createMessageHandler(bot, mockPipeline, BASE_URL);
+    createMessageHandler(bot, mockPipeline, BASE_URL, fakeRepo);
 
     const update = makeMessageUpdate({
       text: "Some factual claim to check",
@@ -351,7 +353,7 @@ describe("createMessageHandler", () => {
       return { ok: true, result: true } as never;
     });
 
-    createMessageHandler(bot, mockPipeline, BASE_URL);
+    createMessageHandler(bot, mockPipeline, BASE_URL, fakeRepo);
 
     const update = makeMessageUpdate({
       text: "PM Modi gives Rs 5000 to all citizens",
@@ -385,7 +387,7 @@ describe("createMessageHandler", () => {
       }),
     } as unknown as InvestigationPipeline;
 
-    createMessageHandler(bot, mockPipeline, httpsUrl);
+    createMessageHandler(bot, mockPipeline, httpsUrl, fakeRepo);
 
     const update = makeMessageUpdate({
       text: "WHO declares green tea cures cancer",
@@ -424,7 +426,7 @@ describe("createMessageHandler", () => {
       }),
     } as unknown as InvestigationPipeline;
 
-    createMessageHandler(bot, mockPipeline, BASE_URL);
+    createMessageHandler(bot, mockPipeline, BASE_URL, fakeRepo);
 
     const update = makeMessageUpdate({
       text: "Some claim to verify",
@@ -459,7 +461,7 @@ describe("createMessageHandler", () => {
       } satisfies InvestigateResult),
     } as unknown as InvestigationPipeline;
 
-    createMessageHandler(bot, mockPipeline, BASE_URL);
+    createMessageHandler(bot, mockPipeline, BASE_URL, fakeRepo);
 
     const update = makeMessageUpdate({
       text: "Hello!",
@@ -489,7 +491,7 @@ describe("createMessageHandler", () => {
       } satisfies InvestigateResult),
     } as unknown as InvestigationPipeline;
 
-    createMessageHandler(bot, mockPipeline, BASE_URL);
+    createMessageHandler(bot, mockPipeline, BASE_URL, fakeRepo);
 
     const update = makeMessageUpdate({
       text: "https://example.com/article",
@@ -522,7 +524,7 @@ describe("createMessageHandler", () => {
       } satisfies InvestigateResult),
     } as unknown as InvestigationPipeline;
 
-    createMessageHandler(bot, mockPipeline, BASE_URL);
+    createMessageHandler(bot, mockPipeline, BASE_URL, fakeRepo);
 
     const update = makeMessageUpdate({
       text: "PM Modi gives Rs 5000 to all citizens",
