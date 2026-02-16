@@ -2,6 +2,47 @@
 
       var cardEntered = {};
 
+      // ── Auto-scroll to active agent card ──
+      var userIsScrolling = false;
+      var scrollPauseTimer = null;
+      var SCROLL_PAUSE_MS = 5000;
+      var pendingScrollTarget = null;
+      var scrollRafId = null;
+
+      function prefersReducedMotion() {
+        return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      }
+
+      function onUserScroll() {
+        userIsScrolling = true;
+        if (scrollPauseTimer) clearTimeout(scrollPauseTimer);
+        scrollPauseTimer = setTimeout(function() {
+          userIsScrolling = false;
+        }, SCROLL_PAUSE_MS);
+      }
+
+      window.addEventListener('wheel', onUserScroll, { passive: true });
+      window.addEventListener('touchmove', onUserScroll, { passive: true });
+
+      function getScrollTarget(card) {
+        var row = document.getElementById('fc-investigator-row');
+        if (row && row.contains(card)) return row;
+        return card;
+      }
+
+      function scheduleScroll(element) {
+        pendingScrollTarget = element;
+        if (scrollRafId) return;
+        scrollRafId = requestAnimationFrame(function() {
+          scrollRafId = null;
+          if (pendingScrollTarget && !userIsScrolling) {
+            var behavior = prefersReducedMotion() ? 'instant' : 'smooth';
+            pendingScrollTarget.scrollIntoView({ behavior: behavior, block: 'start' });
+          }
+          pendingScrollTarget = null;
+        });
+      }
+
       function setCardState(cardId, state) {
         var card = document.getElementById(cardId);
         if (!card) return;
@@ -15,6 +56,9 @@
           setTimeout(function() {
             card.classList.remove('fc-card-entering');
           }, 500);
+
+          // Auto-scroll to the newly activated card
+          scheduleScroll(getScrollTarget(card));
         }
       }
 
