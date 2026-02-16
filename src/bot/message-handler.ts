@@ -1,5 +1,6 @@
 import { type Bot, type CommandContext, type Context, InlineKeyboard } from "grammy";
 import type { InvestigationPipeline } from "../orchestrator/pipeline.js";
+import type { InvestigationRepository } from "../db/investigation-repository.js";
 import type { FeedbackRepository } from "../db/feedback-repository.js";
 import type { GitHubIssueService } from "../services/github-issues.js";
 import { StatusUpdater } from "./status-updater.js";
@@ -10,6 +11,25 @@ import { createLogger } from "../config/logger.js";
 const logger = createLogger({ level: "info" });
 
 const FEEDBACK_MIN_LENGTH = 10;
+
+/** Maximum time (ms) to wait for the pipeline before timing out. */
+const PIPELINE_TIMEOUT_MS = 120_000;
+
+/**
+ * Wrap a promise with a timeout. Rejects with a clear error if the deadline is exceeded.
+ */
+function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const timer = setTimeout(() => {
+      reject(new Error(`${label} timed out after ${ms / 1000}s`));
+    }, ms);
+
+    promise.then(
+      (value) => { clearTimeout(timer); resolve(value); },
+      (err) => { clearTimeout(timer); reject(err); },
+    );
+  });
+}
 
 /**
  * Handles /bug or /feedback Telegram commands by saving feedback locally
@@ -105,6 +125,7 @@ async function handleFeedbackCommand(
  * @param bot - Grammy Bot instance
  * @param pipeline - The investigation pipeline to run claims through
  * @param baseUrl - Base URL for the web server (used for "View Full Analysis" links)
+ * @param repo - Investigation repository for marking failed investigations
  * @param feedbackRepo - Optional feedback repository for /bug and /feedback commands
  * @param githubService - Optional GitHub issue service for creating issues from feedback
  */
@@ -112,9 +133,22 @@ export function createMessageHandler(
   bot: Bot,
   pipeline: InvestigationPipeline,
   baseUrl: string,
+  repo: InvestigationRepository,
   feedbackRepo?: FeedbackRepository,
   githubService?: GitHubIssueService,
 ): void {
+  // Register /start command so it doesn't go through the pipeline
+  bot.command("start", async (ctx) => {
+    await ctx.api.sendMessage(
+      ctx.chat.id,
+      [
+        "Hi there! I'm ForwardCheck — a fact-checking bot.",
+        "Forward me a message or send me a claim, and I'll investigate whether it's true or false using multiple AI agents and web sources.",
+        "Just paste or forward the claim you'd like me to check!",
+      ].join("\n\n"),
+    );
+  });
+
   // Register /bug and /feedback commands BEFORE the message:text handler
   if (feedbackRepo) {
     bot.command("bug", async (ctx) => {
@@ -152,11 +186,15 @@ export function createMessageHandler(
     const statusUpdater = new StatusUpdater(ctx.api, chatId);
     await statusUpdater.sendInitial();
 
+    // Track investigation ID so we can mark it failed on timeout/error
+    let investigationId: string | undefined;
+
     try {
-      const result = await pipeline.investigate(text, {
+      const pipelinePromise = pipeline.investigate(text, {
         onStatusUpdate: (stage) => statusUpdater.update(stage),
-        onInvestigationCreated: async (investigationId) => {
-          const liveUrl = `${baseUrl}/live/${investigationId}`;
+        onInvestigationCreated: async (id) => {
+          investigationId = id;
+          const liveUrl = `${baseUrl}/live/${id}`;
           const isPublicUrl = liveUrl.startsWith("https://");
 
           if (isPublicUrl) {
@@ -179,6 +217,8 @@ export function createMessageHandler(
         telegramChatId: String(chatId),
         telegramMessageId: String(message.message_id),
       });
+
+      const result = await withTimeout(pipelinePromise, PIPELINE_TIMEOUT_MS, "Investigation pipeline");
 
       // Non-factual short-circuit: send plain text response
       if (result.nonFactualResponse) {
@@ -211,11 +251,24 @@ export function createMessageHandler(
         }
       }
     } catch (err: unknown) {
-      logger.error({ err, chatId }, "Pipeline failed for message");
-      await ctx.api.sendMessage(
-        chatId,
-        "Sorry, an error occurred while investigating your claim. Please try again later.",
-      );
+      const errMsg = err instanceof Error ? err.message : String(err);
+      logger.error({ err: errMsg, chatId, investigationId }, "Pipeline failed for message");
+
+      // Mark the investigation as failed in DB so it doesn't stay stuck at 'pending'
+      if (investigationId) {
+        try {
+          repo.updateStatus(investigationId, "failed");
+        } catch (dbErr) {
+          logger.error({ dbErr, investigationId }, "Failed to mark investigation as failed");
+        }
+      }
+
+      const isTimeout = errMsg.includes("timed out");
+      const userMessage = isTimeout
+        ? "Sorry, this investigation is taking longer than expected. Please try again — some claims require more time."
+        : "Sorry, an error occurred while investigating your claim. Please try again later.";
+
+      await ctx.api.sendMessage(chatId, userMessage);
     }
   });
 }

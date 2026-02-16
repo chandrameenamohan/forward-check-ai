@@ -61,6 +61,11 @@ cp "$PROJECT_DIR/Dockerfile" "$TMPDIR/"
 cp "$PROJECT_DIR/.dockerignore" "$TMPDIR/"
 cp "$PROJECT_DIR/railway.toml" "$TMPDIR/"
 
+# Files referenced by Dockerfile COPY directives
+if [ -f "$PROJECT_DIR/TECHNICAL_BLOG.html" ]; then
+  cp "$PROJECT_DIR/TECHNICAL_BLOG.html" "$TMPDIR/"
+fi
+
 SIZE=$(du -sh "$TMPDIR" | cut -f1)
 echo "Deploy package: $SIZE (vs ~80MB full repo)"
 

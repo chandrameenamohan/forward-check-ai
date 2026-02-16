@@ -99,11 +99,13 @@ const app = createApp(repo, eventBus, pipeline, feedbackRepo, githubService);
 
 // 10. Create Telegram bot and wire message handler
 const bot = createBot(config.TELEGRAM_BOT_TOKEN);
+const railwayPublicDomain = process.env["RAILWAY_PUBLIC_DOMAIN"];
 const baseUrl = config.BASE_URL
-  ?? (config.NODE_ENV === "production"
-    ? `https://forwardcheck.ai`
+  ?? (railwayPublicDomain
+    ? `https://${railwayPublicDomain}`
     : `http://localhost:${config.PORT}`);
-createMessageHandler(bot, pipeline, baseUrl, feedbackRepo, githubService);
+logger.info({ baseUrl }, "Base URL resolved");
+createMessageHandler(bot, pipeline, baseUrl, repo, feedbackRepo, githubService);
 
 // 11. Start Express server
 let server: Server;
