@@ -40,10 +40,10 @@ describe("ClaudeClient", () => {
     });
 
     it("should estimate cost correctly for Opus 4.6", () => {
-      // Opus: $5/MTok input, $25/MTok output
-      // 1000 input tokens = $0.005, 500 output tokens = $0.0125
+      // Opus 4.6: $15/MTok input, $75/MTok output
+      // 1000 input tokens = $0.015, 500 output tokens = $0.0375
       const cost = client.estimateCost(MODELS.OPUS, 1000, 500);
-      expect(cost).toBeCloseTo(0.0175, 6);
+      expect(cost).toBeCloseTo(0.0525, 6);
     });
 
     it("should return zero cost for zero tokens", () => {
@@ -53,10 +53,10 @@ describe("ClaudeClient", () => {
 
     it("should use output pricing for thinking tokens", () => {
       // Thinking tokens are billed as output tokens
-      // Opus: $5/MTok input, $25/MTok output
-      // 1000 input + 500 output + 2000 thinking = $0.005 + $0.0125 + $0.05 = $0.0675
+      // Opus 4.6: $15/MTok input, $75/MTok output
+      // 1000 input + 500 output + 2000 thinking = $0.015 + $0.0375 + $0.15 = $0.2025
       const cost = client.estimateCost(MODELS.OPUS, 1000, 500, 2000);
-      expect(cost).toBeCloseTo(0.0675, 6);
+      expect(cost).toBeCloseTo(0.2025, 6);
     });
 
     it("should default thinking tokens to zero", () => {

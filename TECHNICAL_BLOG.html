@@ -215,7 +215,7 @@ img {
 <body>
 
 <h1>ForwardCheck-AI: How We Built a Multi-Agent Fact-Checking Pipeline with Claude</h1>
-<p><em>An engineering deep-dive into orchestrating six AI agents to fact-check viral claims in 60 seconds</em></p>
+<p><em>An engineering deep-dive into orchestrating six AI agents to fact-check viral claims in minutes, not hours</em></p>
 <p><strong>Chandra Mohan Meena</strong> | chandrameenamohan@gmail.com | February 16, 2026</p>
 
 <hr />
@@ -233,7 +233,7 @@ img {
 
 <p>I wanted to flip that. I wanted to build something that could fact-check a viral claim <strong>faster than it spreads</strong>. Not a search engine. Not a chatbot that says "I'm not sure." A team of AI agents that investigate like a newsroom, argue like lawyers, and deliver a verdict you can see through &mdash; reasoning and all.</p>
 
-<p>So I built ForwardCheck-AI. You forward a suspicious message to a Telegram bot &mdash; or type it into the web chat. Sixty seconds later, six AI agents hand you a verdict. You see the evidence. You see the counter-arguments. You see the thinking process of the AI that made the call. No black box. No "trust me." Just transparent reasoning you can inspect with your own eyes.</p>
+<p>So I built ForwardCheck-AI. You forward a suspicious message to a Telegram bot &mdash; or type it into the web chat. Minutes later, six AI agents hand you a verdict. You see the evidence. You see the counter-arguments. You see the thinking process of the AI that made the call. No black box. No "trust me." Just transparent reasoning you can inspect with your own eyes.</p>
 
 <hr />
 
@@ -243,7 +243,7 @@ img {
 
 <p>Professional fact-checkers do better work. But there are about 400 of them covering the entire internet. They publish debunks in articles that take hours or days to write. Meanwhile, a single WhatsApp forward reaches 50 group chats in ten minutes. The infrastructure for spreading lies is instant and free. The infrastructure for checking them is manual, expensive, and slow. That gap is the problem &mdash; and no amount of "media literacy" fixes a system where the lie has a ten-hour head start.</p>
 
-<p>ForwardCheck-AI closes that gap. It puts a full investigative newsroom &mdash; source verification, domain expertise, pattern matching, adversarial challenge, and final judgment &mdash; inside a Telegram message or a web chat. One forward. Sixty seconds. A verdict with receipts.</p>
+<p>ForwardCheck-AI closes that gap. It puts a full investigative newsroom &mdash; source verification, domain expertise, pattern matching, adversarial challenge, and final judgment &mdash; inside a Telegram message or a web chat. One forward. A few minutes. A verdict with receipts.</p>
 
 <hr />
 
@@ -854,7 +854,7 @@ const daEffort = deepReasoningActivated ? "max" : "high";</code></pre>
 
 <p>We chose Telegram specifically because misinformation spreads fastest in messaging apps &mdash; WhatsApp, Telegram, Signal &mdash; where institutional fact-checkers have zero presence. There is no Snopes bot in your family group chat. Telegram is ideal for an open-source prototype: its Bot API is free, requires no business account (unlike WhatsApp's Business API), and lets anyone deploy a bot with zero platform cost. ForwardCheck puts investigative newsroom capabilities directly in the app where lies actually propagate.</p>
 
-<p>ForwardCheck puts an entire investigative newsroom in anyone's pocket. Forward a suspicious message to a Telegram bot &mdash; or paste a URL into the web chat, where the system automatically extracts article content using Mozilla Readability before investigating. In <strong>45&ndash;90 seconds</strong>, six AI agents classify the claim, plan an investigation, search the web in parallel, challenge their own findings, and deliver a nuanced verdict &mdash; streamed to the user in real time via Server-Sent Events, so you watch each agent work as it happens. The barrier drops from "journalist with institutional support" to "anyone with Telegram."</p>
+<p>ForwardCheck puts an entire investigative newsroom in anyone's pocket. Forward a suspicious message to a Telegram bot &mdash; or paste a URL into the web chat, where the system automatically extracts article content using Mozilla Readability before investigating. In <strong>2&ndash;4 minutes</strong>, six AI agents classify the claim, plan an investigation, search the web in parallel, challenge their own findings, and deliver a nuanced verdict &mdash; streamed to the user in real time via Server-Sent Events, so you watch each agent work as it happens. The barrier drops from "journalist with institutional support" to "anyone with Telegram."</p>
 
 <p>The impact goes beyond labeling claims true or false. ForwardCheck's <strong>Manipulation Techniques</strong> feature identifies <em>how</em> users are being manipulated &mdash; authority impersonation, urgency tactics, emotional appeals, statistical distortion. Each technique is quoted from the original message with a severity score. This doesn't just answer "is this true?" &mdash; it teaches users to <strong>recognize propaganda patterns</strong> so they can spot manipulation in messages the bot never sees.</p>
 
@@ -914,7 +914,7 @@ const daEffort = deepReasoningActivated ? "max" : "high";</code></pre>
     <tr><td><strong>Lines of TypeScript</strong></td><td>~5,400</td></tr>
     <tr><td><strong>Pipeline agents</strong></td><td>6 (Classifier, Strategist, 3 Investigators, DA, Judge)</td></tr>
     <tr><td><strong>Opus 4.6 agents</strong></td><td>3 (Strategist, DA, Judge)</td></tr>
-    <tr><td><strong>Average investigation time</strong></td><td>45&ndash;90 seconds</td></tr>
+    <tr><td><strong>Average investigation time</strong></td><td>2&ndash;4 minutes</td></tr>
     <tr><td><strong>Average cost per investigation</strong></td><td>~$0.50&ndash;2.00 (varies by claim complexity)</td></tr>
     <tr><td><strong>Models used</strong></td><td>Haiku 4.5, Sonnet 4.5, Opus 4.6</td></tr>
     <tr><td><strong>External APIs</strong></td><td>Brave Search, Google Fact Check</td></tr>

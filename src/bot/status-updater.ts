@@ -49,7 +49,7 @@ export class StatusUpdater {
     try {
       const sent = await this.api.sendMessage(
         this.chatId,
-        "🔍 Investigating your claim... This may take up to 60 seconds.",
+        "🔍 Investigating your claim... This may take 2-4 minutes for a thorough analysis.",
       );
       this.statusMessageId = sent.message_id;
     } catch (err: unknown) {

@@ -94,7 +94,7 @@ function validateReport(data: unknown, agentRole: string): AgentReport {
   return validation.data;
 }
 
-/** Send a 1-turn follow-up asking the model to call submit_report */
+/** Send a 1-turn follow-up asking the model to call submit_report, forcing the tool call */
 async function retrySubmitReport(
   client: ClaudeClient,
   model: string,
@@ -117,6 +117,7 @@ async function retrySubmitReport(
     max_tokens: 4096,
     messages: retryMessages,
     tools,
+    tool_choice: { type: "tool" as const, name: "submit_report" },
   });
 
   // Check if the retry response contains a submit_report tool call

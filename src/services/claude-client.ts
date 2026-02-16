@@ -44,11 +44,17 @@ export class ClaudeClient {
 
   /**
    * Wraps client.messages.create() with logging for model, token usage, and cost.
+   * Defaults to temperature: 0 for deterministic analytical output.
+   * Extended thinking requires temperature 1 (API constraint), so we skip the override when thinking is enabled.
    */
   async createMessage(
     params: MessageCreateParamsNonStreaming,
   ): Promise<CreateMessageResult> {
-    const response = await this.client.messages.create(params);
+    const effectiveParams =
+      params.temperature !== undefined || params.thinking
+        ? params
+        : { ...params, temperature: 0 as const };
+    const response = await this.client.messages.create(effectiveParams);
 
     const { input_tokens, output_tokens } = response.usage;
 
