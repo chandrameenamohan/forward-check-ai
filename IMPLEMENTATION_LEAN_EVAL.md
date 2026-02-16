@@ -206,7 +206,7 @@ The full eval plan (IMPLEMENTATION_EVAL_PLAN.md) builds 10 graders and 25 tasks 
 ## Phase L2: Three Graders
 
 ### Task L2.1: Verdict accuracy grader with harm weighting
-- [ ]
+- [x]
 **Objective:** Build a code-based grader that checks verdict correctness, weighted by harm potential.
 **Details:**
 - Create `eval/graders/verdict-grader.ts`
