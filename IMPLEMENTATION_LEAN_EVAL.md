@@ -352,7 +352,7 @@ The full eval plan (IMPLEMENTATION_EVAL_PLAN.md) builds 10 graders and 25 tasks 
 - Integration: `npx tsx eval/run-eval.ts --mode mock --claim false-001 --skip-groundedness` completes
 
 ### Task L3.2: Create eval report — console + markdown
-- [ ]
+- [x]
 **Objective:** Print a clear summary to stdout and save detailed markdown report.
 **Details:**
 - Create `eval/report.ts`

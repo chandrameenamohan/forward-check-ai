@@ -7,6 +7,7 @@ import { gradeGroundedness, aggregateGroundednessScores } from "./graders/ground
 import type { GroundednessGrade, GroundednessAggregateResult } from "./graders/groundedness-grader.js";
 import { gradeCoverage, aggregateCoverageScores } from "./graders/coverage-grader.js";
 import type { CoverageGrade, CoverageAggregateResult } from "./graders/coverage-grader.js";
+import { generateSummaryString, saveMarkdownReport } from "./report.js";
 import { ClaudeClient } from "../src/services/claude-client.js";
 import { createLogger } from "../src/config/logger.js";
 import { writeFileSync, mkdirSync } from "node:fs";
@@ -142,68 +143,7 @@ export async function runEval(args: EvalArgs): Promise<EvalResult> {
 // ── Console summary printer ─────────────────────────────────────
 
 function printSummary(result: EvalResult, args: EvalArgs): void {
-  const lines: string[] = [];
-
-  lines.push("══════════════════════════════════════════");
-  lines.push("ForwardCheck-AI — Eval Results");
-  lines.push(`Mode: ${args.mode} | Claims: ${result.trialResults.length} | Cost: $${result.totalCostUsd.toFixed(2)}`);
-  lines.push("══════════════════════════════════════════");
-  lines.push("");
-
-  // Verdict accuracy
-  lines.push("VERDICT ACCURACY");
-  const va = result.verdictAggregate;
-  lines.push(`  Harm-weighted accuracy:  ${va.harmWeightedAccuracy.toFixed(1)}%  (target: >70%)`);
-  const exact = result.verdictGrades.filter((g) => g.categoryCorrect).length;
-  lines.push(`  Exact category match:    ${va.exactMatchRate.toFixed(1)}%  (${exact}/${result.verdictGrades.length})`);
-  const acceptable = result.verdictGrades.filter((g) => g.categoryAcceptable).length;
-  lines.push(`  Acceptable match:        ${va.acceptableMatchRate.toFixed(1)}%  (${acceptable}/${result.verdictGrades.length})`);
-  lines.push("");
-
-  // Groundedness
-  if (result.groundednessAggregate) {
-    lines.push("GROUNDEDNESS (Sonnet-graded)");
-    const ga = result.groundednessAggregate;
-    lines.push(`  Avg grounded findings:   ${ga.avgGroundedFindings.toFixed(1)}%  (target: >70%)`);
-    lines.push(`  Avg traceable sources:   ${ga.avgTraceableSources.toFixed(1)}%  (target: >80%)`);
-    lines.push("");
-  }
-
-  // Coverage
-  lines.push("COVERAGE");
-  const ca = result.coverageAggregate;
-  lines.push(`  Must-find source hit:    ${ca.avgMustFindHitRate.toFixed(1)}%  (target: >60%)`);
-  lines.push(`  Avg unique domains:      ${ca.avgUniqueDomains.toFixed(1)}`);
-  lines.push("");
-
-  // Failures
-  const failures: Array<{ claimId: string; expected: string; got: string; harm: number }> = [];
-  for (let i = 0; i < result.trialResults.length; i++) {
-    const trial = result.trialResults[i]!;
-    const grade = result.verdictGrades[i]!;
-    if (!grade.categoryCorrect && !grade.categoryAcceptable) {
-      const got = trial.verdict?.category ?? trial.error ?? "no-verdict";
-      failures.push({
-        claimId: trial.claimId,
-        expected: trial.claim.expectedCategory,
-        got,
-        harm: grade.harmWeight,
-      });
-    }
-  }
-
-  if (failures.length > 0) {
-    // Sort by harm weight descending
-    failures.sort((a, b) => b.harm - a.harm);
-    lines.push("FAILURES");
-    for (const f of failures) {
-      lines.push(`  ✗ ${f.claimId}  expected:${f.expected}  got:${f.got}  harm:${f.harm}`);
-    }
-    lines.push("");
-  }
-
-  // Print to stdout via logger
-  const summary = lines.join("\n");
+  const summary = generateSummaryString(result, { mode: args.mode });
   logger.info(summary);
 }
 
@@ -261,6 +201,7 @@ async function main(): Promise<void> {
 
   printSummary(result, args);
   saveResults(result, args);
+  saveMarkdownReport(result, { mode: args.mode });
 
   // Exit non-zero if harm-weighted accuracy < 50% (safety net)
   if (result.verdictAggregate.harmWeightedAccuracy < 50) {
