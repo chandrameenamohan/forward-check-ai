@@ -13,6 +13,7 @@ RUN npm ci --omit=dev
 COPY src/ ./src/
 COPY tsconfig.json ./
 COPY public/ ./public/
+COPY TECHNICAL_BLOG.html ./
 
 # Create data directory for SQLite
 RUN mkdir -p /data
