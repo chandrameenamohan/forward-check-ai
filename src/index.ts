@@ -95,7 +95,7 @@ const eventBus = new PipelineEventBus();
 const pipeline = new InvestigationPipeline(client, toolRegistry, repo, undefined, eventBus);
 
 // 9. Create Express app with routes (with event bus for SSE endpoint)
-const app = createApp(repo, eventBus, pipeline, feedbackRepo, githubService);
+const app = createApp(repo, eventBus, pipeline, feedbackRepo, githubService, config.TELEGRAM_BOT_USERNAME);
 
 // 10. Create Telegram bot and wire message handler
 const bot = createBot(config.TELEGRAM_BOT_TOKEN);

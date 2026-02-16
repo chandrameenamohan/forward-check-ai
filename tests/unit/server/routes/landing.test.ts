@@ -21,7 +21,7 @@ describe("Landing page routes", () => {
 
   function startServer(): Promise<number> {
     return new Promise((resolve) => {
-      const app = createApp();
+      const app = createApp(undefined, undefined, undefined, undefined, undefined, "forward_check_opus_bot");
       server = app.listen(0, () => {
         const addr = server!.address();
         if (typeof addr === "object" && addr !== null) {
@@ -429,7 +429,7 @@ describe("Landing page routes", () => {
     const repo = new InvestigationRepository(db);
     const id = repo.create("Test claim for landing page");
 
-    const app = createApp(repo);
+    const app = createApp(repo, undefined, undefined, undefined, undefined, "forward_check_opus_bot");
     const port = await new Promise<number>((resolve) => {
       server = app.listen(0, () => {
         const addr = server!.address();

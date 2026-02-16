@@ -16,6 +16,7 @@ const KEEPALIVE_INTERVAL_MS = 15_000;
 export function createLiveStreamRouter(
   repo: InvestigationRepository,
   eventBus: PipelineEventBus,
+  telegramBotUsername?: string,
 ): Router {
   const router = Router();
 
@@ -49,6 +50,7 @@ export function createLiveStreamRouter(
       originalMessage: investigation.original_message,
       status: investigation.status,
       sourceUrl: investigation.source_url,
+      telegramBotUsername: telegramBotUsername ?? "forward_check_beta_bot",
     });
   });
 

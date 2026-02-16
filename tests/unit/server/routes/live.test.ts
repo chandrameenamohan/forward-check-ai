@@ -56,7 +56,7 @@ describe("Live verdict page routes", () => {
 
   function startServer(): Promise<number> {
     return new Promise((resolve) => {
-      const app = createApp(repo, eventBus);
+      const app = createApp(repo, eventBus, undefined, undefined, undefined, "forward_check_opus_bot");
       server = app.listen(0, () => {
         const addr = server!.address();
         if (typeof addr === "object" && addr !== null) {
