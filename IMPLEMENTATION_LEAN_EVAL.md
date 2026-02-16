@@ -400,7 +400,7 @@ The full eval plan (IMPLEMENTATION_EVAL_PLAN.md) builds 10 graders and 25 tasks 
 ## Phase L4: Transcript Review & Baseline
 
 ### Task L4.1: Run initial eval on 5 claims and review transcripts
-- [ ]
+- [x]
 **Objective:** Run 5 diverse claims, read the full pipeline transcripts, and document what's actually broken.
 **Details:**
 - Run: `npx tsx eval/run-eval.ts --mode mock --claim false-001 --claim false-003 --claim true-001 --claim partial-001 --claim adversarial-001`
