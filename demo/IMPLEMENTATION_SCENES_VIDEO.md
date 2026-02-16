@@ -210,7 +210,7 @@
 ## Phase 2: Assembly & Final Output
 
 ### Task 2.1: Render all scenes and concatenate final video
-- [ ]
+- [x]
 **Objective:** Run the full render pipeline and produce a single concatenated video from all 6 scenes.
 **Details:**
 - Run: `./render-scenes.sh --concat`
