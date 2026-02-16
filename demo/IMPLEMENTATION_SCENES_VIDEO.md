@@ -187,7 +187,7 @@
 - "And it handles nuance" is the last VO line
 
 ### Task 1.6: Validate and fix TheClose scene (Scene 6)
-- [ ]
+- [x]
 **Objective:** Render Scene6_TheClose independently, verify audio/visual sync, fix any issues.
 **Details:**
 - Render: `npx remotion render src/index.ts Scene6_TheClose /Users/ralph/Projects/forward-check-ai/demo/scenes/scene6_theclose.mp4 --codec h264 --crf 18`
