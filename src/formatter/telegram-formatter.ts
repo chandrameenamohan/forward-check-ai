@@ -8,13 +8,23 @@ interface CategoryDisplay {
 }
 
 const CATEGORY_DISPLAY: Record<VerdictCategory, CategoryDisplay> = {
-  "likely-true": { emoji: "\u{1F7E2}", label: "LIKELY TRUE" },
-  "partially-true": { emoji: "\u{1F7E1}", label: "PARTIALLY TRUE" },
-  "unverified": { emoji: "\u26AA", label: "UNVERIFIED" },
-  "likely-false": { emoji: "\u{1F534}", label: "LIKELY FALSE" },
-  "satire": { emoji: "\u{1F3AD}", label: "SATIRE" },
-  "opinion": { emoji: "\u{1F4AD}", label: "OPINION" },
+  "likely-true": { emoji: "🟢", label: "LIKELY TRUE" },
+  "partially-true": { emoji: "🟡", label: "PARTIALLY TRUE" },
+  "unverified": { emoji: "⚪", label: "UNVERIFIED" },
+  "likely-false": { emoji: "🔴", label: "LIKELY FALSE" },
+  "satire": { emoji: "🎭", label: "SATIRE" },
+  "opinion": { emoji: "💭", label: "OPINION" },
 };
+
+const DA_OUTCOME_DISPLAY: Record<FinalVerdict["devilsAdvocateOutcome"], string> = {
+  counter_argument_failed: "Challenge failed — verdict held firm",
+  counter_argument_partially_succeeded: "Partially succeeded — see full analysis",
+  counter_argument_succeeded: "Challenge succeeded — verdict adjusted",
+};
+
+const SEPARATOR = "━━━━━━━━━━━━━━━━━━━━━";
+const MAX_KEY_FINDINGS = 3;
+const MAX_TECHNIQUES = 2;
 
 function capitalize(s: string): string {
   return s.charAt(0).toUpperCase() + s.slice(1);
@@ -27,43 +37,116 @@ function escapeHtml(text: string): string {
     .replace(/>/g, "&gt;");
 }
 
+/** Build a 10-char Unicode bar: ▓▓▓▓░░░░░░ */
+function buildBar(value: number): string {
+  const filled = Math.round(Math.min(100, Math.max(0, value)) / 10);
+  return "▓".repeat(filled) + "░".repeat(10 - filled);
+}
+
+function padLabel(label: string, width: number): string {
+  return label + " ".repeat(Math.max(0, width - label.length));
+}
+
+function padValue(value: number): string {
+  return String(value).padStart(3, " ");
+}
+
 export function formatTelegramVerdict(verdict: FinalVerdict): string {
   const display = CATEGORY_DISPLAY[verdict.category];
   const parts: string[] = [];
 
-  // Header: emoji + category + confidence
+  // ── Header: emoji + category + confidence + nuance tag ──
   let header = `${display.emoji} <b>${display.label}</b> — ${verdict.confidence}% confidence`;
   if (verdict.nuanceTag) {
     header += ` — <i>${capitalize(verdict.nuanceTag)}</i>`;
   }
   parts.push(header);
 
-  // Deep reasoning indicator
+  // ── Deep reasoning indicator (conditional) ──
   if (verdict.deepReasoningActivated) {
-    parts.push(`\u{1F9E0} <b>Deep Reasoning Mode</b> activated`);
+    parts.push("\n🧠 <b>Deep Reasoning</b> activated");
   }
 
-  // Summary
+  // ── Summary ──
   parts.push("");
   parts.push(escapeHtml(verdict.summary));
 
-  // Manipulation techniques (top 2)
+  // ── Confidence Decomposition ──
+  const d = verdict.confidenceDecomposition;
+  parts.push("");
+  parts.push(SEPARATOR);
+  parts.push("");
+  parts.push("📊 <b>Confidence Breakdown</b>");
+  parts.push(
+    `${padLabel("Evidence", 12)} ${buildBar(d.evidenceStrength)} ${padValue(d.evidenceStrength)}`,
+  );
+  parts.push(
+    `${padLabel("Sources", 12)} ${buildBar(d.sourceReliability)} ${padValue(d.sourceReliability)}`,
+  );
+  parts.push(
+    `${padLabel("Complexity", 12)} ${buildBar(d.claimComplexity)} ${padValue(d.claimComplexity)}`,
+  );
+  parts.push(
+    `${padLabel("Resilience", 12)} ${buildBar(d.counterArgumentResilience)} ${padValue(d.counterArgumentResilience)}`,
+  );
+
+  // ── Key Findings ──
+  if (verdict.keyFindings.length > 0) {
+    parts.push("");
+    parts.push(SEPARATOR);
+    parts.push("");
+    parts.push("📋 <b>Key Findings</b>");
+    const findings = verdict.keyFindings.slice(0, MAX_KEY_FINDINGS);
+    for (const finding of findings) {
+      parts.push(`• ${escapeHtml(finding)}`);
+    }
+  }
+
+  // ── Manipulation Techniques (expandable blockquote for details) ──
   const topTechniques = verdict.manipulationTechniques
     .slice()
     .sort((a, b) => b.severity - a.severity)
-    .slice(0, 2);
+    .slice(0, MAX_TECHNIQUES);
 
   if (topTechniques.length > 0) {
     parts.push("");
-    parts.push("\u{26A0}\u{FE0F} <b>Manipulation Techniques:</b>");
+    parts.push(SEPARATOR);
+    parts.push("");
+    parts.push("⚠️ <b>Manipulation Detected</b>");
+
+    const expandLines: string[] = [];
     for (const tech of topTechniques) {
-      parts.push(`\u{2022} <b>${escapeHtml(tech.technique)}</b>`);
+      expandLines.push(
+        `• <b>${escapeHtml(tech.technique)}</b> — ${tech.severity}/100`,
+      );
+      if (tech.evidenceQuote) {
+        expandLines.push(`"${escapeHtml(tech.evidenceQuote)}"`);
+      }
+      if (tech.description) {
+        expandLines.push(`↳ ${escapeHtml(tech.description)}`);
+      }
+      expandLines.push("");
     }
+    // Remove trailing blank line
+    if (expandLines[expandLines.length - 1] === "") {
+      expandLines.pop();
+    }
+
+    parts.push(`<blockquote expandable>${expandLines.join("\n")}</blockquote>`);
+  }
+
+  // ── Footer: Devil's Advocate + Source Count ──
+  parts.push("");
+  const daText = DA_OUTCOME_DISPLAY[verdict.devilsAdvocateOutcome];
+  parts.push(`⚔️ Devil's Advocate: <b>${daText}</b>`);
+
+  if (verdict.sources.length > 0) {
+    parts.push(`📚 Based on ${verdict.sources.length} source${verdict.sources.length === 1 ? "" : "s"}`);
   }
 
   const result = parts.join("\n");
 
-  // Truncate to stay within Telegram's ~4000 char limit
+  // Truncate to stay within Telegram's 4096 char limit (leave buffer)
   if (result.length > 3900) {
     return result.slice(0, 3897) + "...";
   }

@@ -90,7 +90,7 @@ describe("formatTelegramVerdict", () => {
     expect(html).not.toContain("undefined");
   });
 
-  it("should include manipulation techniques", () => {
+  it("should include manipulation techniques with severity and expandable blockquote", () => {
     const verdict = makeVerdict({
       category: "likely-false",
       confidence: 10,
@@ -118,6 +118,9 @@ describe("formatTelegramVerdict", () => {
     const html = formatTelegramVerdict(verdict);
     expect(html).toContain("Fabricated Authority");
     expect(html).toContain("Emotional Appeal");
+    expect(html).toContain("90/100");
+    expect(html).toContain("75/100");
+    expect(html).toContain("blockquote expandable");
     // Only top 2 should appear
     expect(html).not.toContain("Third technique");
   });
@@ -210,5 +213,116 @@ describe("formatTelegramVerdict", () => {
     const verdict = makeVerdict();
     const result = formatTelegramVerdict(verdict);
     expect(typeof result).toBe("string");
+  });
+
+  it("should include confidence decomposition bars", () => {
+    const verdict = makeVerdict({
+      confidenceDecomposition: {
+        evidenceStrength: 50,
+        sourceReliability: 80,
+        claimComplexity: 30,
+        counterArgumentResilience: 10,
+      },
+    });
+    const html = formatTelegramVerdict(verdict);
+    expect(html).toContain("Confidence Breakdown");
+    expect(html).toContain("Evidence");
+    expect(html).toContain("Sources");
+    expect(html).toContain("Complexity");
+    expect(html).toContain("Resilience");
+    // Check bar chars exist
+    expect(html).toContain("▓");
+    expect(html).toContain("░");
+  });
+
+  it("should include key findings (max 3)", () => {
+    const verdict = makeVerdict({
+      keyFindings: [
+        "Finding one",
+        "Finding two",
+        "Finding three",
+        "Finding four should be hidden",
+      ],
+    });
+    const html = formatTelegramVerdict(verdict);
+    expect(html).toContain("Key Findings");
+    expect(html).toContain("Finding one");
+    expect(html).toContain("Finding two");
+    expect(html).toContain("Finding three");
+    expect(html).not.toContain("Finding four");
+  });
+
+  it("should include devil's advocate outcome", () => {
+    const verdict = makeVerdict({
+      devilsAdvocateOutcome: "counter_argument_failed",
+    });
+    const html = formatTelegramVerdict(verdict);
+    expect(html).toContain("Devil's Advocate");
+    expect(html).toContain("Challenge failed");
+  });
+
+  it("should show partially succeeded DA outcome", () => {
+    const verdict = makeVerdict({
+      devilsAdvocateOutcome: "counter_argument_partially_succeeded",
+    });
+    const html = formatTelegramVerdict(verdict);
+    expect(html).toContain("Partially succeeded");
+  });
+
+  it("should include source count", () => {
+    const verdict = makeVerdict({
+      sources: [
+        { url: "https://a.com", title: "A", relevance: "high" },
+        { url: "https://b.com", title: "B", relevance: "medium" },
+        { url: "https://c.com", title: "C", relevance: "low" },
+      ],
+    });
+    const html = formatTelegramVerdict(verdict);
+    expect(html).toContain("Based on 3 sources");
+  });
+
+  it("should use singular 'source' for count of 1", () => {
+    const verdict = makeVerdict({
+      sources: [{ url: "https://a.com", title: "A", relevance: "high" }],
+    });
+    const html = formatTelegramVerdict(verdict);
+    expect(html).toContain("Based on 1 source");
+    expect(html).not.toContain("1 sources");
+  });
+
+  it("should not show source line when no sources", () => {
+    const verdict = makeVerdict({ sources: [] });
+    const html = formatTelegramVerdict(verdict);
+    expect(html).not.toContain("Based on");
+  });
+
+  it("should escape HTML in key findings", () => {
+    const verdict = makeVerdict({
+      keyFindings: ["Test <script>alert('xss')</script> finding"],
+    });
+    const html = formatTelegramVerdict(verdict);
+    expect(html).toContain("&lt;script&gt;");
+    expect(html).not.toContain("<script>");
+  });
+
+  it("should escape HTML in evidence quotes", () => {
+    const verdict = makeVerdict({
+      manipulationTechniques: [
+        {
+          technique: "Test",
+          description: "Desc with <b>html</b>",
+          evidenceQuote: "Quote with <i>tags</i>",
+          severity: 80,
+        },
+      ],
+    });
+    const html = formatTelegramVerdict(verdict);
+    expect(html).toContain("&lt;i&gt;tags&lt;/i&gt;");
+  });
+
+  it("should include section separators", () => {
+    const verdict = makeVerdict();
+    const html = formatTelegramVerdict(verdict);
+    expect(html).toContain("━━━");
   });
 });
