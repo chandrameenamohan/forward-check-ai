@@ -160,6 +160,13 @@ export class InvestigationRepository {
       .run(JSON.stringify(verdict), durationMs, costUsd, id);
   }
 
+  deleteById(id: string): boolean {
+    const result = this.db
+      .prepare("DELETE FROM investigations WHERE id = ?")
+      .run(id);
+    return result.changes > 0;
+  }
+
   getRecent(limit: number): Investigation[] {
     const rows = this.db
       .prepare("SELECT * FROM investigations ORDER BY rowid DESC LIMIT ?")

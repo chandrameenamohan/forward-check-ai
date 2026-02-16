@@ -130,6 +130,25 @@ export function createApp(repo?: InvestigationRepository, eventBus?: PipelineEve
     app.use(createFeedbackRouter(feedbackRepo, githubService));
   }
 
+  // Admin: delete investigation by ID (protected by ADMIN_SECRET)
+  if (repo) {
+    app.delete("/api/admin/investigation/:id", (req: Request, res: Response) => {
+      const secret = req.headers["x-admin-secret"] as string | undefined;
+      const expected = process.env["ADMIN_SECRET"];
+      if (!expected || secret !== expected) {
+        res.status(403).json({ error: "Forbidden" });
+        return;
+      }
+      const id = req.params["id"] as string;
+      const deleted = repo.deleteById(id);
+      if (deleted) {
+        res.json({ ok: true, deleted: id });
+      } else {
+        res.status(404).json({ error: "Investigation not found" });
+      }
+    });
+  }
+
   // 404 handler
   app.use((_req: Request, res: Response) => {
     res.status(404).json({ error: "Not found" });
