@@ -322,7 +322,7 @@ The full eval plan (IMPLEMENTATION_EVAL_PLAN.md) builds 10 graders and 25 tasks 
 ## Phase L3: Runner & Report
 
 ### Task L3.1: Create eval runner script
-- [ ]
+- [x]
 **Objective:** Build the CLI entry point that runs the eval suite.
 **Details:**
 - Create `eval/run-eval.ts` — executable script

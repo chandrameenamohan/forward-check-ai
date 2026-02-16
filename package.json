@@ -11,7 +11,10 @@
     "typecheck": "tsc --noEmit",
     "quality": "bash scripts/quality-gate.sh",
     "quality:full": "bash scripts/quality-full.sh",
-    "deploy": "bash scripts/deploy.sh"
+    "deploy": "bash scripts/deploy.sh",
+    "eval": "npx tsx eval/run-eval.ts --mode mock --skip-groundedness",
+    "eval:full": "npx tsx eval/run-eval.ts --mode mock",
+    "eval:live": "npx tsx eval/run-eval.ts --mode live"
   },
   "keywords": [],
   "author": "",
