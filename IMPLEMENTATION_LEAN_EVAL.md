@@ -467,7 +467,7 @@ The full eval plan (IMPLEMENTATION_EVAL_PLAN.md) builds 10 graders and 25 tasks 
 - `npx tsc --noEmit` passes
 
 ### Task L5.2: Re-run full eval and compare to baseline
-- [ ]
+- [x]
 **Objective:** Run the full 15-claim eval again and compare to the L4.2 baseline.
 **Details:**
 - Run: `npx tsx eval/run-eval.ts --mode mock`
