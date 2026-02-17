@@ -451,7 +451,7 @@ The full eval plan (IMPLEMENTATION_EVAL_PLAN.md) builds 10 graders and 25 tasks 
 ## Phase L5: Fix & Iterate
 
 ### Task L5.1: Fix top prompt issues from transcript review
-- [ ]
+- [x]
 **Objective:** Apply the top 3 fixes identified in L4.1 transcript review.
 **Details:**
 - Edit agent prompts based on transcript findings (likely candidates):

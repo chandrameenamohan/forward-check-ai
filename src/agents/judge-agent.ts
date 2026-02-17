@@ -47,6 +47,13 @@ Render your final verdict using the submit_verdict tool. You MUST provide:
 - satire: Claim is from satirical source
 - opinion: Claim is subjective, not factual
 
+**IMPORTANT — Partially-True Reasoning:**
+When investigators assess findings as "mixed," or when the nuanceTag would be "exaggerated" or "misleading," strongly consider "partially-true" instead of "likely-false." Apply this test:
+- Does the claim reference real research, a real event, or a real institution? If YES, the kernel exists.
+- Does the claim overstate, misrepresent, or oversimplify the real findings? If YES, it is exaggerated, not fabricated.
+- A claim that exaggerates real peer-reviewed research from a named institution (e.g., a real Harvard study, a real WHO report) is **partially-true**, NOT likely-false.
+- Reserve "likely-false" for claims where the core factual basis is fabricated (the study doesn't exist, the event never happened, the institution never said it).
+
 **CRITICAL — Confidence Score Semantics:**
 The \`confidence\` field is a TRUTHFULNESS SCORE — it measures how likely the claim is to be TRUE on a 0-100 scale:
 - 0 = the claim is definitely FALSE

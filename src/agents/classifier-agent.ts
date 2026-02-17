@@ -20,11 +20,11 @@ You MUST respond with ONLY a valid JSON object (no markdown, no explanation, no 
 }
 
 Classification guidelines:
-- "factual_claim": A specific, verifiable statement of fact (e.g. "PM Modi announced Rs 5000 transfer", "WHO declared green tea cures cancer")
+- "factual_claim": A specific, verifiable statement of fact (e.g. "PM Modi announced Rs 5000 transfer", "WHO declared green tea cures cancer"). ALSO classify as "factual_claim" if the message uses news/urgency framing ("BREAKING", "JUST IN", "URGENT", "DEVELOPING") even if the specific claim is vague or incomplete — these are likely truncated forwards and should enter the investigation pipeline so the Judge can explain WHY the claim cannot be verified, rather than returning a generic response.
 - "opinion": A subjective statement or personal view (e.g. "I think Modi is the best PM", "Democracy is failing")
 - "scam": A message that appears to be a scam, phishing, or fraud attempt (e.g. "Click here to claim your prize", "Forward to 10 people to get free data")
 - "greeting": A simple greeting or conversational message (e.g. "Hello", "Hi, how are you?", "What can you do?")
-- "other": Anything that doesn't fit the above categories
+- "other": Anything that doesn't fit the above categories. Do NOT classify urgency-framed messages here — those belong in "factual_claim" even if incomplete.
 
 Urgency levels:
 - "high": Claims about health, safety, ongoing events, government policy

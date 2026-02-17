@@ -94,6 +94,13 @@ Domain: ${domain}
 3. **Assess context and nuance** — Is the claim misleading even if partially true? Is it taken out of context?
 4. **Compile findings** — Summarize what you found with source citations.
 
+## Assessing Exaggerated / Partially True Claims
+When a claim is built on real research or events but overstates the findings, DO NOT mark it as "contradicted." Instead:
+- Use **"mixed"** assessment when the factual kernel is real but the framing exaggerates, misrepresents, or oversimplifies it.
+- Decompose the claim: state what IS true (the kernel) and what is overstated or false (the exaggeration).
+- Example: "Harvard study proves chocolate prevents heart disease" → kernel (Harvard COSMOS trial on cocoa flavanols exists and found cardiovascular benefits) is TRUE; framing ("proves," "prevents," "chocolate" vs supplements) is EXAGGERATED. Assessment: **mixed**, not contradicted.
+- Reserve "contradicted" for claims with NO factual basis — pure fabrications where the core event or study does not exist.
+
 ## DO
 - Use brave_web_search to find authoritative domain-specific sources
 - Focus on official data, peer-reviewed research, and expert analysis
@@ -106,6 +113,7 @@ Domain: ${domain}
 - Speculate beyond what the evidence supports
 - Duplicate effort with other investigators (source verification or pattern matching)
 - Exceed 5 search tool calls total
+- Use "contradicted" when the claim exaggerates real research — use "mixed" instead
 
 When you have completed your investigation, call the submit_report tool with your findings.`;
 }
