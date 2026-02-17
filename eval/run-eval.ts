@@ -1,3 +1,6 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import { evalClaims } from "./dataset.js";
 import { EvalHarness } from "./harness.js";
 import type { EvalTrialResult } from "./harness.js";
@@ -178,6 +181,12 @@ function saveResults(result: EvalResult, args: EvalArgs): string {
       verdictGrade: result.verdictGrades[i],
       coverageGrade: result.coverageGrades[i],
       groundednessGrade: result.groundednessGrades[i] ?? null,
+      // Full intermediate outputs for transcript review
+      classifierResult: trial.classifierResult ?? null,
+      searchStrategy: trial.searchStrategy ?? null,
+      agentReports: trial.agentReports ?? null,
+      challengeReport: trial.challengeReport ?? null,
+      verdict: trial.verdict ?? null,
     })),
   };
 

@@ -428,7 +428,7 @@ The full eval plan (IMPLEMENTATION_EVAL_PLAN.md) builds 10 graders and 25 tasks 
 - At least 2 specific prompt improvement suggestions documented
 
 ### Task L4.2: Run full 15-claim baseline eval
-- [ ]
+- [x]
 **Objective:** Run all 15 claims in mock mode to establish baseline metrics.
 **Details:**
 - Run: `npx tsx eval/run-eval.ts --mode mock`
