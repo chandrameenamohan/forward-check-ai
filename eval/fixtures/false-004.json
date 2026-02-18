@@ -1,0 +1,43 @@
+{
+  "claimId": "false-004",
+  "claimText": "NASA confirmed the Earth will experience 3 days of complete darkness in December",
+  "capturedAt": "2025-05-01T00:00:00.000Z",
+  "brave": [
+    {
+      "title": "NASA debunks 'Three Days of Darkness' hoax",
+      "url": "https://www.nasa.gov/news/three-days-darkness-hoax",
+      "description": "NASA has confirmed that there is no astronomical event that would cause three days of darkness. This is a recurring internet hoax that resurfaces every few months.",
+      "age": "2024-01-05"
+    },
+    {
+      "title": "Snopes: Will the Earth experience three days of complete darkness?",
+      "url": "https://www.snopes.com/fact-check/three-days-of-darkness/",
+      "description": "This claim has been circulating since at least 2014. NASA and other space agencies have repeatedly confirmed no such event is possible or predicted.",
+      "age": "2023-12-20"
+    },
+    {
+      "title": "AFP Fact Check: No, NASA did not predict 3 days of darkness",
+      "url": "https://factcheck.afp.com/nasa-three-days-darkness-hoax",
+      "description": "Social media posts falsely claim NASA confirmed Earth will experience three days of complete darkness. NASA has made no such announcement.",
+      "age": "2024-02-10"
+    },
+    {
+      "title": "USA Today Fact Check: Three days of darkness claim is a hoax",
+      "url": "https://www.usatoday.com/story/news/factcheck/three-days-darkness-false/",
+      "description": "Experts confirm there is no scientific basis for the claim that Earth will go dark for three days. The hoax has been debunked multiple times.",
+      "age": "2023-11-25"
+    }
+  ],
+  "factCheck": [
+    {
+      "text": "NASA confirms 3 days of darkness",
+      "claimant": "Viral social media posts",
+      "claimReviewMarkup": {
+        "url": "https://www.snopes.com/fact-check/three-days-of-darkness/",
+        "title": "No, NASA did not predict three days of darkness",
+        "publisher": "Snopes",
+        "rating": "False"
+      }
+    }
+  ]
+}

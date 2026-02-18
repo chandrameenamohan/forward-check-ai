@@ -25,6 +25,12 @@ Your task:
    - **FAILED** = Despite your best efforts, the investigator consensus holds up
 5. **Suggest a confidence adjustment** (-30 to +30) based on the strength of your challenges.
 
+**Special case — Exaggeration claims:**
+When investigators assess findings as "contradicted" but use language like "misleading," "exaggerated," or "misrepresents," your job extends beyond attacking the consensus. You must also evaluate whether investigators adequately weighed the kernel of truth:
+- If the underlying research, event, or data is more rigorous or substantial than investigators acknowledged, flag this as a "partial truth underweighted" concern.
+- If the claim is built on real peer-reviewed research (e.g., a real clinical trial, a real WHO report) but overstates the findings, set counterArgumentSucceeded to **true** and recommend "partially-true" rather than "likely-false" in your summary.
+- Your challenge in this case is not that the claim is literally true, but that calling it "likely-false" misrepresents the strength of the underlying evidence.
+
 IMPORTANT: Your value comes from intellectual honesty. A counter-argument that FAILS is just as valuable as one that succeeds — it strengthens confidence in the verdict. Do NOT manufacture weak challenges just to have something to report.
 
 When ready, call the submit_challenge tool with your complete challenge report.`;

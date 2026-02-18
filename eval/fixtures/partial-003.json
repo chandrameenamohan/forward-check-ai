@@ -1,0 +1,49 @@
+{
+  "claimId": "partial-003",
+  "claimText": "Tesla cars can drive themselves fully autonomously without any human intervention",
+  "capturedAt": "2025-05-01T00:00:00.000Z",
+  "brave": [
+    {
+      "title": "Tesla Autopilot and FSD: What can Tesla cars actually do?",
+      "url": "https://www.tesla.com/autopilot",
+      "description": "Tesla's Autopilot and Full Self-Driving (FSD) capabilities require active driver supervision. Tesla states drivers must keep hands on the wheel and be ready to take over at any time.",
+      "age": "2024-02-15"
+    },
+    {
+      "title": "NHTSA: Tesla's FSD requires human supervision",
+      "url": "https://www.nhtsa.gov/technology-innovation/automated-vehicles-safety/tesla-autopilot",
+      "description": "The National Highway Traffic Safety Administration classifies Tesla's FSD as a Level 2 driver-assistance system, meaning human supervision is required at all times.",
+      "age": "2024-01-20"
+    },
+    {
+      "title": "Reuters: Tesla faces scrutiny over 'Full Self-Driving' marketing claims",
+      "url": "https://www.reuters.com/business/autos/tesla-full-self-driving-scrutiny-2024",
+      "description": "Tesla's FSD beta requires drivers to remain attentive. Despite the name, it does not provide full autonomous driving capability. Multiple crashes have occurred during Autopilot use.",
+      "age": "2024-03-05"
+    },
+    {
+      "title": "The Verge: Tesla's Full Self-Driving — what it is and what it isn't",
+      "url": "https://www.theverge.com/tesla-fsd-explained",
+      "description": "Tesla's FSD is an advanced driver-assistance feature, not true autonomous driving. The SAE classifies it as Level 2, meaning the driver must always be ready to intervene.",
+      "age": "2024-02-28"
+    },
+    {
+      "title": "Consumer Reports: Tesla Autopilot review and safety concerns",
+      "url": "https://www.consumerreports.org/cars/tesla-autopilot-review",
+      "description": "Consumer Reports found Tesla's Autopilot and FSD perform well in many scenarios but emphasize these are driver-assistance features, not full self-driving technology.",
+      "age": "2024-01-10"
+    }
+  ],
+  "factCheck": [
+    {
+      "text": "Tesla cars can drive fully autonomously",
+      "claimant": "Social media and marketing claims",
+      "claimReviewMarkup": {
+        "url": "https://www.politifact.com/factchecks/tesla-self-driving-claims/",
+        "title": "Mostly False: Tesla FSD requires human supervision",
+        "publisher": "PolitiFact",
+        "rating": "Mostly False"
+      }
+    }
+  ]
+}

@@ -10,3 +10,4 @@ data/
 coverage/
 quality-report.md
 tmp/
+eval/results/

@@ -1,0 +1,59 @@
+{
+  "claimId": "adversarial-002",
+  "claimText": "PM Modi gave Rs 5000 AND green tea cures cancer AND WhatsApp is now free",
+  "capturedAt": "2025-05-01T00:00:00.000Z",
+  "brave": [
+    {
+      "title": "PIB Fact Check: Viral compound claims about government schemes are false",
+      "url": "https://pib.gov.in/factcheck/compound-claims-debunked",
+      "description": "Multiple compound viral messages combining claims about PM Modi schemes, health cures, and free apps are fabricated. PIB confirms no Rs 5000 transfer scheme exists.",
+      "age": "2024-03-10"
+    },
+    {
+      "title": "AltNews: Compound WhatsApp forwards combine multiple debunked claims",
+      "url": "https://www.altnews.in/fact-check-compound-whatsapp-forwards-false",
+      "description": "Viral WhatsApp messages combining claims about government transfers, miracle cures, and free app offers are a common pattern used to spread misinformation.",
+      "age": "2024-02-20"
+    },
+    {
+      "title": "WhatsApp is NOT free — it has always been free to download",
+      "url": "https://faq.whatsapp.com/general/about-whatsapp/",
+      "description": "WhatsApp has been free to download and use since 2016 when it dropped its $1/year subscription. Claims that WhatsApp is 'now free' are meaningless.",
+      "age": "2024-01-15"
+    },
+    {
+      "title": "Reuters Fact Check: Green tea cancer cure claim is fabricated",
+      "url": "https://www.reuters.com/fact-check/green-tea-cancer-cure-false-2024",
+      "description": "WHO has never declared that green tea cures cancer. This claim has been repeatedly debunked by fact-checkers worldwide.",
+      "age": "2024-03-01"
+    },
+    {
+      "title": "BoomLive: No, PM Modi has not announced Rs 5000 direct transfer",
+      "url": "https://www.boomlive.in/fact-check/modi-rs-5000-scheme-fake",
+      "description": "A viral WhatsApp message claiming PM Narendra Modi has announced Rs 5000 direct transfer to all Indian citizens is fake.",
+      "age": "2024-03-10"
+    }
+  ],
+  "factCheck": [
+    {
+      "text": "PM Modi announced Rs 5000 direct transfer",
+      "claimant": "WhatsApp viral message",
+      "claimReviewMarkup": {
+        "url": "https://www.altnews.in/fact-check-pm-modi-rs-5000",
+        "title": "No, PM Modi did not announce Rs 5000 transfer",
+        "publisher": "AltNews",
+        "rating": "False"
+      }
+    },
+    {
+      "text": "Green tea cures cancer according to WHO",
+      "claimant": "Social media posts",
+      "claimReviewMarkup": {
+        "url": "https://www.reuters.com/fact-check/green-tea-cancer-cure-false",
+        "title": "False: WHO has not declared green tea cures cancer",
+        "publisher": "Reuters Fact Check",
+        "rating": "False"
+      }
+    }
+  ]
+}

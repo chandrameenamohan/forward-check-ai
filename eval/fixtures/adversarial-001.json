@@ -1,0 +1,26 @@
+{
+  "claimId": "adversarial-001",
+  "claimText": "BREAKING: The president just announced...",
+  "capturedAt": "2025-05-01T00:00:00.000Z",
+  "brave": [
+    {
+      "title": "Latest presidential news and announcements",
+      "url": "https://www.whitehouse.gov/briefing-room/",
+      "description": "The official White House briefing room with statements, press briefings, and presidential actions.",
+      "age": "2024-03-20"
+    },
+    {
+      "title": "AP News: Latest breaking news from the White House",
+      "url": "https://apnews.com/hub/white-house",
+      "description": "Stay updated with the latest news from the White House and presidential announcements from the Associated Press.",
+      "age": "2024-03-19"
+    },
+    {
+      "title": "How to verify breaking news claims on social media",
+      "url": "https://www.poynter.org/fact-checking/verify-breaking-news-social-media/",
+      "description": "Tips for verifying breaking news claims: check official sources, look for multiple independent reports, and be wary of vague 'BREAKING' posts that lack specifics.",
+      "age": "2024-02-15"
+    }
+  ],
+  "factCheck": []
+}

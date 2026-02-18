@@ -2,7 +2,10 @@ import type { ClaudeClient } from "../services/claude-client.js";
 import type { ToolRegistry } from "../tools/tool-registry.js";
 import type { InvestigationRepository } from "../db/investigation-repository.js";
 import type { FinalVerdict } from "../schemas/final-verdict.js";
+import type { ClassifierResult } from "../schemas/classifier-result.js";
+import type { SearchStrategy } from "../schemas/search-strategy.js";
 import type { AgentReport } from "../schemas/agent-report.js";
+import type { ChallengeReport } from "../schemas/challenge-report.js";
 import type { PipelineStage } from "../bot/status-updater.js";
 import type { PipelineEventBus } from "./pipeline-events.js";
 import { ClaimCache } from "../services/claim-cache.js";
@@ -42,6 +45,10 @@ export interface InvestigateResult {
   totalCostUsd: number;
   durationMs: number;
   cached?: boolean;
+  classifierResult?: ClassifierResult;
+  searchStrategy?: SearchStrategy;
+  agentReports?: AgentReport[];
+  challengeReport?: ChallengeReport;
 }
 
 export class InvestigationPipeline {
@@ -164,6 +171,7 @@ export class InvestigationPipeline {
         verdict: null, investigationId,
         nonFactualResponse: nonFactual.text,
         totalCostUsd, durationMs: Date.now() - startTime,
+        classifierResult,
       };
     }
 
@@ -280,7 +288,10 @@ export class InvestigationPipeline {
       verdict: finalVerdict, totalCostUsd, durationMs, timestamp: Date.now(),
     });
 
-    return { verdict: finalVerdict, investigationId, totalCostUsd, durationMs };
+    return {
+      verdict: finalVerdict, investigationId, totalCostUsd, durationMs,
+      classifierResult, searchStrategy, agentReports, challengeReport,
+    };
   }
 
   private async runInvestigators(

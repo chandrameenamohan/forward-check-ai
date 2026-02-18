@@ -571,4 +571,57 @@ describe("InvestigationPipeline", () => {
       expect(cached!.investigationId).toBe("test-investigation-id");
     });
   });
+
+  describe("intermediate outputs", () => {
+    it("should return intermediate outputs in result for factual claims", async () => {
+      const { classifierResult, searchStrategy, sourceReport, domainReport, patternReport, challengeReport } =
+        setupFullPipelineMocks();
+
+      const result = await pipeline.investigate("PM Modi Rs 5000 transfer");
+
+      expect(result.classifierResult).toEqual(classifierResult);
+      expect(result.searchStrategy).toEqual(searchStrategy);
+      expect(result.agentReports).toHaveLength(3);
+      expect(result.agentReports).toEqual(
+        expect.arrayContaining([sourceReport, domainReport, patternReport]),
+      );
+      expect(result.challengeReport).toEqual(challengeReport);
+    });
+
+    it("should return classifierResult for non-factual short-circuit", async () => {
+      const greetingResult = makeClassifierResult({ category: "greeting" });
+      mockedRunClassifier.mockResolvedValue({ result: greetingResult, costUsd: 0.01 });
+      mockedHandleNonFactual.mockReturnValue({
+        text: "Hi! I'm ForwardCheck.",
+        shouldInvestigate: false,
+      });
+
+      const result = await pipeline.investigate("Hello");
+
+      expect(result.classifierResult).toEqual(greetingResult);
+      expect(result.searchStrategy).toBeUndefined();
+      expect(result.agentReports).toBeUndefined();
+      expect(result.challengeReport).toBeUndefined();
+    });
+
+    it("should return agentReports only for successful investigators", async () => {
+      const sourceReport = makeAgentReport({ agentRole: "source_verification", confidenceScore: 20 });
+      const patternReport = makeAgentReport({ agentRole: "pattern_matching", confidenceScore: 18 });
+
+      mockedRunClassifier.mockResolvedValue({ result: makeClassifierResult(), costUsd: 0.01 });
+      mockedRunStrategist.mockResolvedValue({ strategy: makeSearchStrategy(), costUsd: 0.20 });
+      mockedRunSourceVerification.mockResolvedValue({ report: sourceReport, costUsd: 0.35 });
+      mockedRunDomainExpertise.mockRejectedValue(new Error("Agent failed"));
+      mockedRunPatternMatching.mockResolvedValue({ report: patternReport, costUsd: 0.32 });
+      mockedRunDevilsAdvocate.mockResolvedValue({ report: makeChallengeReport(), costUsd: 0.50 });
+      mockedRunJudge.mockResolvedValue({ verdict: makeFinalVerdict(), costUsd: 0.80 });
+      mockedEnforceConfidenceGates.mockImplementation((v) => v);
+
+      const result = await pipeline.investigate("Test claim");
+
+      expect(result.agentReports).toHaveLength(2);
+      const roles = result.agentReports!.map((r) => r.agentRole).sort();
+      expect(roles).toEqual(["pattern_matching", "source_verification"]);
+    });
+  });
 });
