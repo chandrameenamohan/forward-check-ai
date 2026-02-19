@@ -30,7 +30,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
  * @param eventBus - Optional PipelineEventBus for SSE live-stream routes.
  *                   When provided with repo, mounts /api/live/:id/stream route.
  */
-export function createApp(repo?: InvestigationRepository, eventBus?: PipelineEventBus, pipeline?: InvestigationPipeline, feedbackRepo?: FeedbackRepository, githubService?: GitHubIssueService, telegramBotUsername?: string, whatsAppAdapter?: WhatsAppAdapter): express.Express {
+export function createApp(repo?: InvestigationRepository, eventBus?: PipelineEventBus, pipeline?: InvestigationPipeline, feedbackRepo?: FeedbackRepository, githubService?: GitHubIssueService, telegramBotUsername?: string, whatsAppAdapter?: WhatsAppAdapter, whatsappPhoneNumber?: string): express.Express {
   const app = express();
 
   // JSON body parsing
@@ -56,7 +56,12 @@ export function createApp(repo?: InvestigationRepository, eventBus?: PipelineEve
         // DB query failed — fall back to no recent investigation
       }
     }
-    res.render("landing", { recentInvestigationId, telegramBotUsername: telegramBotUsername ?? "forward_check_beta_bot" });
+    res.render("landing", {
+      recentInvestigationId,
+      telegramBotUsername: telegramBotUsername ?? "forward_check_beta_bot",
+      whatsappEnabled: !!whatsAppAdapter,
+      whatsappPhoneNumber: whatsappPhoneNumber ?? null,
+    });
   });
 
   // Health endpoint

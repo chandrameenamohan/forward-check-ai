@@ -478,7 +478,7 @@
 - All existing app startup tests still pass
 
 ### Task 8.3: Update landing page with WhatsApp info
-- [ ]
+- [x]
 **Objective:** Conditionally show WhatsApp contact info on the landing page when WhatsApp is enabled.
 **Details:**
 - Update `src/server/app.ts` to pass `whatsappEnabled: boolean` to the landing page template
