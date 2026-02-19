@@ -441,7 +441,7 @@
 ## Phase 8: Wire WhatsApp into Application
 
 ### Task 8.1: Mount WhatsApp webhook routes in Express
-- [ ]
+- [x]
 **Objective:** Conditionally mount WhatsApp webhook routes in the Express server when WhatsApp is enabled.
 **Details:**
 - Update `src/server/app.ts`:
