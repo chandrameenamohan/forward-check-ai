@@ -416,7 +416,7 @@
 ## Phase 7: Environment Configuration
 
 ### Task 7.1: Add WhatsApp environment variables
-- [ ]
+- [x]
 **Objective:** Add WhatsApp-specific configuration to the Zod env schema, making them optional so the app can run with Telegram only.
 **Details:**
 - Update `src/config/env.ts`:
