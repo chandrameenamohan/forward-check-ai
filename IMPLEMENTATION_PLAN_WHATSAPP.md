@@ -129,7 +129,7 @@
 - Test: `"should handle API errors gracefully without throwing"`
 
 ### Task 2.2: Create TelegramAdapter
-- [ ]
+- [x]
 **Objective:** Create a `TelegramAdapter` that implements `PlatformAdapter`, encapsulating Grammy bot setup, message handler registration, and the start/stop lifecycle.
 **Details:**
 - Create `src/platforms/telegram/adapter.ts`
