@@ -18,8 +18,7 @@ import {
 import { InvestigationPipeline } from "./orchestrator/pipeline.js";
 import { PipelineEventBus } from "./orchestrator/pipeline-events.js";
 import { createApp } from "./server/app.js";
-import { createBot } from "./bot/bot.js";
-import { createMessageHandler } from "./bot/message-handler.js";
+import { TelegramAdapter } from "./platforms/telegram/adapter.js";
 import type { Server } from "node:http";
 
 // 1. Load and validate environment config
@@ -97,15 +96,22 @@ const pipeline = new InvestigationPipeline(client, toolRegistry, repo, undefined
 // 9. Create Express app with routes (with event bus for SSE endpoint)
 const app = createApp(repo, eventBus, pipeline, feedbackRepo, githubService, config.TELEGRAM_BOT_USERNAME);
 
-// 10. Create Telegram bot and wire message handler
-const bot = createBot(config.TELEGRAM_BOT_TOKEN);
+// 10. Create Telegram adapter (replaces direct Grammy bot + message handler wiring)
 const railwayPublicDomain = process.env["RAILWAY_PUBLIC_DOMAIN"];
 const baseUrl = config.BASE_URL
   ?? (railwayPublicDomain
     ? `https://${railwayPublicDomain}`
     : `http://localhost:${config.PORT}`);
 logger.info({ baseUrl }, "Base URL resolved");
-createMessageHandler(bot, pipeline, baseUrl, repo, feedbackRepo, githubService);
+
+const telegramAdapter = new TelegramAdapter(
+  config.TELEGRAM_BOT_TOKEN,
+  pipeline,
+  baseUrl,
+  repo,
+  feedbackRepo,
+  githubService,
+);
 
 // 11. Start Express server
 let server: Server;
@@ -116,38 +122,19 @@ server = app.listen(config.PORT, () => {
   );
 });
 
-// 12. Start bot long polling (with retry on 409 conflict during deploys)
-function startBotWithRetry(retries = 5, delayMs = 3000): void {
-  bot.start({
-    onStart: (botInfo) => {
-      logger.info(
-        { username: botInfo.username, id: botInfo.id },
-        "Telegram bot started",
-      );
-    },
-  }).catch((err: unknown) => {
-    const is409 =
-      err instanceof Error &&
-      (err.message.includes("409") || err.message.includes("Conflict"));
-    if (is409 && retries > 0) {
-      logger.warn(
-        { retriesLeft: retries },
-        "Telegram bot 409 conflict — old instance still polling, retrying...",
-      );
-      setTimeout(() => startBotWithRetry(retries - 1, delayMs * 2), delayMs);
-    } else {
-      logger.error({ err }, "Telegram bot polling failed — server continues without bot");
-    }
-  });
-}
-startBotWithRetry();
+// 12. Start Telegram adapter (long polling with retry on 409 conflict)
+telegramAdapter.start().catch((err: unknown) => {
+  logger.error({ err }, "Telegram adapter failed to start");
+});
 
 // 13. Graceful shutdown
 function shutdown(signal: string): void {
   logger.info({ signal }, "Received shutdown signal");
 
-  bot.stop();
-  logger.info("Telegram bot stopped");
+  telegramAdapter.stop().catch((err: unknown) => {
+    logger.error({ err }, "Telegram adapter failed to stop");
+  });
+  logger.info("Telegram adapter stopped");
 
   server.close(() => {
     logger.info("Express server stopped");

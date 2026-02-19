@@ -189,7 +189,7 @@
 - Test: `"should mark investigation as failed on timeout"`
 
 ### Task 2.5: Wire TelegramAdapter into index.ts and verify Telegram still works
-- [ ]
+- [x]
 **Objective:** Replace the direct Grammy bot + message handler wiring in `src/index.ts` with the new `TelegramAdapter`, verifying zero behavior change.
 **Details:**
 - Update `src/index.ts`:
