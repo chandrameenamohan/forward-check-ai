@@ -519,7 +519,7 @@
 - Test timeout: 30 seconds
 
 ### Task 9.2: Cross-platform pipeline test
-- [ ]
+- [x]
 **Objective:** Verify that the same pipeline produces identical verdicts regardless of whether the claim came from Telegram, WhatsApp, or web.
 **Details:**
 - Create `tests/integration/cross-platform-pipeline.test.ts`
