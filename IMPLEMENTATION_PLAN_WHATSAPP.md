@@ -536,7 +536,7 @@
 - Test timeout: 30 seconds
 
 ### Task 9.3: WhatsApp formatter snapshot tests
-- [ ]
+- [x]
 **Objective:** Create snapshot tests for the WhatsApp verdict formatter to catch formatting regressions.
 **Details:**
 - Create `tests/unit/platforms/whatsapp/formatter-snapshots.test.ts`
