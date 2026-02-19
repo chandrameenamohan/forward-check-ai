@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { formatTelegramVerdict } from "../../../src/formatter/telegram-formatter.js";
+import { formatTelegramVerdict } from "../../../src/platforms/telegram/formatter.js";
 import { makeFinalVerdict as makeVerdict } from "../../fixtures/index.js";
 
 describe("formatTelegramVerdict", () => {

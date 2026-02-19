@@ -2,7 +2,7 @@ import type { Api, RawApi } from "grammy";
 import { InlineKeyboard } from "grammy";
 import type { PlatformResponder, PipelineStage } from "../types.js";
 import { PIPELINE_STAGES } from "../types.js";
-import { formatTelegramVerdict } from "../../formatter/telegram-formatter.js";
+import { formatTelegramVerdict } from "./formatter.js";
 import type { FinalVerdict } from "../../schemas/final-verdict.js";
 import { createLogger } from "../../config/logger.js";
 

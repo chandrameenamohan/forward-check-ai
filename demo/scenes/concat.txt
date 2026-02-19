@@ -1,0 +1,6 @@
+file 'scene1_coldopen.mp4'
+file 'scene2_thespread.mp4'
+file 'scene3_thesolution.mp4'
+file 'scene4_thenewsroom.mp4'
+file 'scene5_thereveal.mp4'
+file 'scene6_theclose.mp4'

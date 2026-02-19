@@ -1,0 +1,76 @@
+=====================================
+LINKEDIN POST
+=====================================
+
+13,000 applied. 500 selected. I was one of them.
+
+Last week, I participated in the "Built with Opus 4.6" hackathon by Cerebral Valley x Anthropic — a 7-day virtual sprint to build something meaningful with Claude's most powerful model.
+
+Out of 13,000 applications worldwide, Anthropic selected 500 builders. Roughly 10 of us were from India. Getting that acceptance email was surreal.
+
+But what made this special wasn't the selection — it was finally getting to build something I've always wanted to exist.
+
+The problem: Your mom forwards you a message — "NASA confirmed 15 days of darkness!" — and shares it with 200 people before any fact-checker can respond. Misinformation is instant and free. Checking it is manual, expensive, and slow.
+
+What I built: ForwardCheck-AI — a Telegram bot where you forward a suspicious message and 6 AI agents investigate it like a newsroom in 60 seconds. A Classifier reads it. A Strategist plans the investigation. Three Investigators search the web in parallel. A Devil's Advocate tries to tear the findings apart. And a Judge delivers the verdict — with its full reasoning visible to you.
+
+Not "true" or "false." It shows you how a message is trying to manipulate you — emotional framing, authority impersonation, urgency tactics — so you learn to spot it yourself.
+
+Three tiers of Claude models, each matched to the task: Haiku for routing, Sonnet for investigation, Opus 4.6 for reasoning. The AI argues with itself so you don't have to trust a black box.
+
+This hackathon reminded me why I love building. Sometimes the right constraint + the right problem + the right tools = something you're genuinely proud of.
+
+Demo: https://youtu.be/Nao7kQmqwNI?si=Gz3uYKc-Me1W0S9K
+GitHub: https://github.com/chandrameenamohan/forward-check-ai
+Try it: https://t.me/forward_check_opus_bot
+
+#BuiltWithOpus #CerebralValley #Anthropic #ClaudeCode #AI #Hackathon #FactChecking #Misinformation #BuildInPublic
+
+
+=====================================
+X (TWITTER) THREAD
+=====================================
+
+1/
+13,000 applied. 500 selected. ~10 from India.
+
+I just wrapped the "Built with Opus 4.6" hackathon by @CerebralValley x @AnthropicAI — and built something I've always wanted to exist.
+
+ForwardCheck-AI: forward a suspicious message to a Telegram bot → 6 AI agents fact-check it in 60 seconds. 🧵
+
+2/
+The pipeline:
+- Classifier (Haiku) reads the message
+- Strategist (Opus) plans the investigation
+- 3 Investigators (Sonnet) search the web in parallel
+- Devil's Advocate (Opus) tries to tear findings apart
+- Judge (Opus) delivers the verdict
+
+All reasoning is visible. No black box.
+
+3/
+It doesn't just say "true" or "false" — it shows you the manipulation techniques: emotional framing, authority impersonation, urgency tactics.
+
+You don't just learn what's fake. You learn how to spot it yourself.
+
+4/
+Misinformation spreads in minutes. Fact-checkers take days. ForwardCheck-AI closes that gap.
+
+Built in 7 days with Claude (Haiku + Sonnet + Opus 4.6).
+
+Watch the demo: https://youtu.be/Nao7kQmqwNI?si=Gz3uYKc-Me1W0S9K
+Try it: https://t.me/forward_check_opus_bot
+Code: https://github.com/chandrameenamohan/forward-check-ai
+
+#BuiltWithOpus @AnthropicAI
+
+
+=====================================
+X (TWITTER) SINGLE TWEET
+=====================================
+
+13,000 applied. 500 selected. ~10 from India.
+
+Just built ForwardCheck-AI at the @AnthropicAI x @CerebralValley hackathon — 6 AI agents fact-check forwarded messages in 60 seconds. A Devil's Advocate argues against its own findings. All reasoning visible. No black box.
+
+https://youtu.be/Nao7kQmqwNI?si=Gz3uYKc-Me1W0S9K

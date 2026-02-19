@@ -58,7 +58,7 @@ Telegram Message → Classifier (Haiku) → Claim Strategist (Opus 4.6)
 | Agents | `src/agents/` | Agent implementations (classifier, strategist, investigators, DA, judge) |
 | Tools | `src/tools/` | Search tools (Brave, Google Fact Check) |
 | Orchestrator | `src/orchestrator/` | Pipeline orchestration, agent runner, tool-use loop |
-| Formatter | `src/formatter/` | Verdict formatting for Telegram + web |
+| Formatter | `src/formatter/` | Platform-agnostic formatting (confidence gates) |
 | Platforms | `src/platforms/` | Platform abstraction layer (types, adapters, responders) |
 | Config | `src/config/` | Environment config, logger setup |
 
@@ -154,6 +154,9 @@ Telegram Message → Classifier (Haiku) → Claim Strategist (Opus 4.6)
 - **Eval grader pattern:** Graders live in `eval/graders/`. Each grader exports a pure function `grade*(result: EvalTrialResult, claim: EvalClaim)` → typed grade object with Zod schema. Code-based graders (verdict, coverage) are sync; model-based graders (groundedness) are async. Each grader also exports an aggregate function for computing summary metrics across all grades. Non-factual claims handled separately from factual claims in verdict grading — non-factual checks classifier routing, factual checks verdict category + confidence + findings + sources.
 - **Eval runner pattern:** `eval/run-eval.ts` is both an importable module and a CLI script. Exports `parseArgs(argv)` and `runEval(args)` for testability. Main module guard (`process.argv[1]?.endsWith("run-eval.ts")`) prevents execution when imported in tests. `EvalResult` type bundles all trial results, grade arrays, and aggregate summaries. Console summary and JSON file output are side effects of `main()`, not `runEval()`. npm scripts: `eval` (quick: mock + skip-groundedness), `eval:full` (mock + all graders), `eval:live` (real APIs).
 - **Eval report pattern:** `eval/report.ts` exports `generateSummaryString(result, config)` → plain text console summary and `generateMarkdownReport(result, config)` → markdown string with per-claim table, metrics tables, and failures list. `saveMarkdownReport(result, config)` writes to `eval/results/eval-{timestamp}.md`. `ReportConfig` interface takes `mode` string. Failures collected and sorted by harm weight descending in both summary and markdown. `run-eval.ts` delegates console printing to `generateSummaryString` and saves both JSON and markdown reports.
+
+- **Platform directory barrel exports:** Each platform subdirectory (`src/platforms/telegram/`, `src/platforms/whatsapp/`) has an `index.ts` barrel export re-exporting the adapter, responder, and formatter. Import from the barrel (e.g., `from '../platforms/telegram/index.js'`) for external consumers; use direct file imports (e.g., `from './formatter.js'`) within the platform directory.
+- **Telegram formatter moved to platform directory:** `src/formatter/telegram-formatter.ts` → `src/platforms/telegram/formatter.ts`. The `src/formatter/` directory now only contains platform-agnostic code (`confidence-gates.ts`). Platform-specific formatters live alongside their adapter and responder.
 
 ## Decisions Log
 

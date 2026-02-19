@@ -150,7 +150,7 @@
 - All existing bot tests still conceptually pass (may need path updates)
 
 ### Task 2.3: Move Telegram formatter into platform directory
-- [ ]
+- [x]
 **Objective:** Move `src/formatter/telegram-formatter.ts` to `src/platforms/telegram/formatter.ts` and update all imports.
 **Details:**
 - Move file: `src/formatter/telegram-formatter.ts` → `src/platforms/telegram/formatter.ts`

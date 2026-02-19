@@ -1,4 +1,4 @@
-import type { FinalVerdict } from "../schemas/final-verdict.js";
+import type { FinalVerdict } from "../../schemas/final-verdict.js";
 
 type VerdictCategory = FinalVerdict["category"];
 

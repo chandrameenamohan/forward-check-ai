@@ -4,7 +4,7 @@ import type { InvestigationRepository } from "../db/investigation-repository.js"
 import type { FeedbackRepository } from "../db/feedback-repository.js";
 import type { GitHubIssueService } from "../services/github-issues.js";
 import { StatusUpdater } from "./status-updater.js";
-import { formatTelegramVerdict } from "../formatter/telegram-formatter.js";
+import { formatTelegramVerdict } from "../platforms/telegram/formatter.js";
 import { detectUrl } from "../services/url-extractor.js";
 import { createLogger } from "../config/logger.js";
 
