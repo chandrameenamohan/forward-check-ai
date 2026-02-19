@@ -380,7 +380,7 @@
 - Test: `"stop should succeed (no-op)"`
 
 ### Task 5.4: Create WhatsApp platform barrel export
-- [ ]
+- [x]
 **Objective:** Create barrel export for all WhatsApp platform modules.
 **Details:**
 - Create `src/platforms/whatsapp/index.ts` — re-exports: `WhatsAppAdapter`, `WhatsAppResponder`, `WhatsAppCloudClient`, `formatWhatsAppVerdict`, `createWhatsAppWebhookRouter`, `parseWebhookPayload`, `verifyWebhookSignature`
