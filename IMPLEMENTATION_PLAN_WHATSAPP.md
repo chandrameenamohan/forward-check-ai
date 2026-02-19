@@ -252,7 +252,7 @@
 - Test: `"should reject empty signature"`
 
 ### Task 3.3: WhatsApp webhook payload parser
-- [ ]
+- [x]
 **Objective:** Parse incoming WhatsApp webhook POST payloads into `PlatformMessage` objects, handling text messages, forwarded detection, and status updates.
 **Details:**
 - Create `src/platforms/whatsapp/webhook-parser.ts`
