@@ -159,6 +159,7 @@ Telegram Message → Classifier (Haiku) → Claim Strategist (Opus 4.6)
 
 - **Platform directory barrel exports:** Each platform subdirectory (`src/platforms/telegram/`, `src/platforms/whatsapp/`) has an `index.ts` barrel export re-exporting the adapter, responder, and formatter. Import from the barrel (e.g., `from '../platforms/telegram/index.js'`) for external consumers; use direct file imports (e.g., `from './formatter.js'`) within the platform directory.
 - **Telegram formatter moved to platform directory:** `src/formatter/telegram-formatter.ts` → `src/platforms/telegram/formatter.ts`. The `src/formatter/` directory now only contains platform-agnostic code (`confidence-gates.ts`). Platform-specific formatters live alongside their adapter and responder.
+- **WhatsApp webhook e2e test pattern:** Integration tests that exercise the full webhook → adapter → pipeline → responder flow need to: (1) mock `globalThis.fetch` to intercept WhatsApp Cloud API calls while using `originalFetch` for HTTP requests to the local Express server, (2) mock the pipeline's `investigate()` method to create real DB records and return canned verdicts, (3) use `waitFor()` polling to wait for the fire-and-forget async handler to complete (webhook POST returns 200 immediately but `handleMessage` runs asynchronously). First-time WhatsApp users receive 5 fetch calls: welcome + initial + sendLink + verdict text + verdict CTA.
 
 ## Decisions Log
 

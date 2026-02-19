@@ -498,7 +498,7 @@
 ## Phase 9: Integration Testing
 
 ### Task 9.1: WhatsApp webhook end-to-end test
-- [ ]
+- [x]
 **Objective:** Test the complete WhatsApp webhook flow from incoming POST payload to pipeline invocation with mock responses.
 **Details:**
 - Create `tests/integration/whatsapp-webhook-e2e.test.ts`
