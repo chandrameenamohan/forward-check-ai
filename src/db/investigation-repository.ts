@@ -14,11 +14,22 @@ interface InvestigationRow {
   final_verdict: string | null;
   telegram_chat_id: string | null;
   telegram_message_id: string | null;
+  source_platform: string | null;
+  platform_chat_id: string | null;
+  platform_message_id: string | null;
   created_at: string;
   completed_at: string | null;
   total_cost_usd: number;
   pipeline_duration_ms: number | null;
   source_url: string | null;
+}
+
+/** Options for creating a new investigation. */
+export interface CreateInvestigationOptions {
+  platform?: string;
+  platformChatId?: string;
+  platformMessageId?: string;
+  sourceUrl?: string;
 }
 
 /** Parsed investigation with JSON fields deserialized. */
@@ -34,6 +45,9 @@ export interface Investigation {
   final_verdict: unknown;
   telegram_chat_id: string | null;
   telegram_message_id: string | null;
+  source_platform: string | null;
+  platform_chat_id: string | null;
+  platform_message_id: string | null;
   created_at: string;
   completed_at: string | null;
   total_cost_usd: number;
@@ -63,6 +77,9 @@ function toInvestigation(row: InvestigationRow): Investigation {
     final_verdict: parseJsonColumn(row.final_verdict),
     telegram_chat_id: row.telegram_chat_id,
     telegram_message_id: row.telegram_message_id,
+    source_platform: row.source_platform,
+    platform_chat_id: row.platform_chat_id,
+    platform_message_id: row.platform_message_id,
     created_at: row.created_at,
     completed_at: row.completed_at,
     total_cost_usd: row.total_cost_usd,
@@ -80,22 +97,32 @@ export class InvestigationRepository {
 
   create(
     originalMessage: string,
-    telegramChatId?: string,
-    telegramMessageId?: string,
-    sourceUrl?: string,
+    options?: CreateInvestigationOptions,
   ): string {
     const id = nanoid();
+    const platform = options?.platform ?? null;
+    const platformChatId = options?.platformChatId ?? null;
+    const platformMessageId = options?.platformMessageId ?? null;
+    const sourceUrl = options?.sourceUrl ?? null;
+
+    // Write to old telegram columns for backward compat when platform is telegram
+    const telegramChatId = platform === "telegram" ? platformChatId : null;
+    const telegramMessageId = platform === "telegram" ? platformMessageId : null;
+
     this.db
       .prepare(
-        `INSERT INTO investigations (id, original_message, telegram_chat_id, telegram_message_id, source_url)
-         VALUES (?, ?, ?, ?, ?)`,
+        `INSERT INTO investigations (id, original_message, telegram_chat_id, telegram_message_id, source_url, source_platform, platform_chat_id, platform_message_id)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
       )
       .run(
         id,
         originalMessage,
-        telegramChatId ?? null,
-        telegramMessageId ?? null,
-        sourceUrl ?? null,
+        telegramChatId,
+        telegramMessageId,
+        sourceUrl,
+        platform,
+        platformChatId,
+        platformMessageId,
       );
     return id;
   }

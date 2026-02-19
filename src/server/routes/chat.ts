@@ -57,7 +57,7 @@ export function createChatRouter(
     }
 
     // Create investigation in DB
-    const id = repo.create(trimmed);
+    const id = repo.create(trimmed, { platform: "web" });
     logger.info({ id, messageLength: trimmed.length }, "Chat investigation created");
 
     // Trigger pipeline in the background (do NOT await)

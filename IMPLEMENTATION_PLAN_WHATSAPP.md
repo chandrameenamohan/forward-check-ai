@@ -64,7 +64,7 @@
 - Cleanup: delete test database after each test
 
 ### Task 1.4: Update InvestigationRepository for platform-agnostic fields
-- [ ]
+- [x]
 **Objective:** Update `InvestigationRepository.create()` to accept platform-agnostic parameters and write to both old and new columns.
 **Details:**
 - Update `src/db/investigation-repository.ts`:

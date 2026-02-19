@@ -158,8 +158,11 @@ describe("InvestigationPipeline platform-agnostic fields", () => {
 
     expect(mockRepo.create).toHaveBeenCalledWith(
       "Test claim",
-      "tg-12345",
-      "tg-67890",
+      {
+        platform: "telegram",
+        platformChatId: "tg-12345",
+        platformMessageId: "tg-67890",
+      },
     );
   });
 
@@ -171,8 +174,11 @@ describe("InvestigationPipeline platform-agnostic fields", () => {
     expect(result.verdict).toBeDefined();
     expect(mockRepo.create).toHaveBeenCalledWith(
       "Test claim",
-      undefined,
-      undefined,
+      {
+        platform: undefined,
+        platformChatId: undefined,
+        platformMessageId: undefined,
+      },
     );
   });
 
@@ -188,8 +194,11 @@ describe("InvestigationPipeline platform-agnostic fields", () => {
     // Legacy fields should still be passed through to repo.create
     expect(mockRepo.create).toHaveBeenCalledWith(
       "Test claim",
-      "12345",
-      "67890",
+      {
+        platform: undefined,
+        platformChatId: "12345",
+        platformMessageId: "67890",
+      },
     );
   });
 
@@ -208,8 +217,11 @@ describe("InvestigationPipeline platform-agnostic fields", () => {
     // Platform-agnostic fields take precedence
     expect(mockRepo.create).toHaveBeenCalledWith(
       "Test claim",
-      "new-chat-id",
-      "new-msg-id",
+      {
+        platform: "telegram",
+        platformChatId: "new-chat-id",
+        platformMessageId: "new-msg-id",
+      },
     );
   });
 });

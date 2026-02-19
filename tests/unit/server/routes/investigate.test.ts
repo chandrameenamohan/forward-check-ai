@@ -90,7 +90,7 @@ describe("Investigation API routes", () => {
 
     const investigation = repo.getById(body.id);
     expect(investigation).not.toBeNull();
-    expect(investigation!.telegram_chat_id).toBe("12345");
+    expect(investigation!.platform_chat_id).toBe("12345");
   });
 
   it("POST /api/investigate should reject empty message", async () => {

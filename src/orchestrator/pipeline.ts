@@ -101,7 +101,11 @@ export class InvestigationPipeline {
     const chatId = options?.platformChatId ?? options?.telegramChatId;
     const messageId = options?.platformMessageId ?? options?.telegramMessageId;
     const investigationId = options?.investigationId
-      ?? this.repo.create(message, chatId, messageId);
+      ?? this.repo.create(message, {
+        platform: options?.platform,
+        platformChatId: chatId,
+        platformMessageId: messageId,
+      });
 
     try {
       await options?.onInvestigationCreated?.(investigationId);
