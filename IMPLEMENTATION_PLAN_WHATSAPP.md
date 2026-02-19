@@ -166,7 +166,7 @@
 - `npx tsc --noEmit` passes
 
 ### Task 2.4: Create message router
-- [ ]
+- [x]
 **Objective:** Create a `MessageRouter` that receives a `PlatformMessage` + `PlatformResponder` pair, runs the pipeline, and sends responses back through the responder.
 **Details:**
 - Create `src/platforms/message-router.ts`
