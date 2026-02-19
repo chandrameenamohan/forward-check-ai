@@ -43,7 +43,7 @@
 - All existing pipeline tests still pass: `npx vitest run tests/unit/orchestrator/pipeline.test.ts`
 
 ### Task 1.3: Database migration for platform-agnostic columns
-- [ ]
+- [x]
 **Objective:** Add `source_platform`, `platform_chat_id`, `platform_message_id` columns to `investigations` table and `platform_user_id_hash` to `feedback` table. Backfill from existing telegram columns.
 **Details:**
 - Update `src/db/migrations.ts`:

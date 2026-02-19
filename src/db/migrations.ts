@@ -31,6 +31,34 @@ export function runMigrations(db: Database.Database): void {
     /* column already exists */
   }
 
+  // Migration: add platform-agnostic columns for multi-platform support
+  try {
+    db.exec(`ALTER TABLE investigations ADD COLUMN source_platform TEXT DEFAULT 'telegram'`);
+  } catch {
+    /* column already exists */
+  }
+
+  try {
+    db.exec(`ALTER TABLE investigations ADD COLUMN platform_chat_id TEXT`);
+  } catch {
+    /* column already exists */
+  }
+
+  try {
+    db.exec(`ALTER TABLE investigations ADD COLUMN platform_message_id TEXT`);
+  } catch {
+    /* column already exists */
+  }
+
+  // Backfill: copy telegram-specific columns into platform-agnostic columns
+  db.exec(`
+    UPDATE investigations
+    SET platform_chat_id = telegram_chat_id,
+        platform_message_id = telegram_message_id
+    WHERE platform_chat_id IS NULL
+      AND telegram_chat_id IS NOT NULL
+  `);
+
   db.exec(`
     CREATE TABLE IF NOT EXISTS feedback (
       id TEXT PRIMARY KEY,
@@ -47,4 +75,11 @@ export function runMigrations(db: Database.Database): void {
       created_at TEXT NOT NULL DEFAULT (datetime('now'))
     )
   `);
+
+  // Migration: add platform_user_id_hash column to feedback table
+  try {
+    db.exec(`ALTER TABLE feedback ADD COLUMN platform_user_id_hash TEXT`);
+  } catch {
+    /* column already exists */
+  }
 }
