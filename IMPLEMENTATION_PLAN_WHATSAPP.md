@@ -358,7 +358,7 @@
 - Test: `"POST /webhook/whatsapp should ignore non-text message types"`
 
 ### Task 5.3: Create WhatsAppAdapter
-- [ ]
+- [x]
 **Objective:** Create a `WhatsAppAdapter` that implements `PlatformAdapter`, wiring the Cloud API client, webhook parser, responder, and message router together.
 **Details:**
 - Create `src/platforms/whatsapp/adapter.ts`
