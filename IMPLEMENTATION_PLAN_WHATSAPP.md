@@ -574,7 +574,7 @@
 - Test: App starts with only Telegram vars set (WhatsApp disabled)
 
 ### Task 10.2: WhatsApp webhook test script
-- [ ]
+- [x]
 **Objective:** Create a script that simulates WhatsApp webhook payloads for local development testing.
 **Details:**
 - Create `scripts/test-whatsapp-webhook.ts`
