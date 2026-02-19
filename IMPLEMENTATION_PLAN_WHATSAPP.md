@@ -236,7 +236,7 @@
 - Test: `"should handle API errors gracefully without throwing"` (mock fetch returning 400)
 
 ### Task 3.2: WhatsApp webhook signature verification
-- [ ]
+- [x]
 **Objective:** Implement Meta's webhook signature verification to validate that incoming webhook payloads are genuinely from Meta.
 **Details:**
 - Create `src/platforms/whatsapp/webhook-signature.ts`
