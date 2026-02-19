@@ -25,7 +25,7 @@
 - `npx tsc --noEmit` passes
 
 ### Task 1.2: Generalize pipeline to platform-agnostic fields
-- [ ]
+- [x]
 **Objective:** Replace `telegramChatId`/`telegramMessageId` in `InvestigateOptions` with platform-agnostic `platform`, `platformChatId`, `platformMessageId` fields.
 **Details:**
 - Update `src/orchestrator/pipeline.ts` `InvestigateOptions`:

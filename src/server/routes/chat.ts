@@ -56,7 +56,7 @@ export function createChatRouter(
       logger.info({ url }, "URL detected in chat message");
     }
 
-    // Create investigation in DB with null telegram fields
+    // Create investigation in DB
     const id = repo.create(trimmed);
     logger.info({ id, messageLength: trimmed.length }, "Chat investigation created");
 
@@ -64,6 +64,7 @@ export function createChatRouter(
     // Pass the pre-created investigation ID so pipeline reuses it instead of creating a duplicate
     pipeline.investigate(trimmed, {
       investigationId: id,
+      platform: "web",
       onInvestigationCreated: () => {
         // Investigation already created above — no-op
       },

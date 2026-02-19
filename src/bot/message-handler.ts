@@ -214,8 +214,9 @@ export function createMessageHandler(
             );
           }
         },
-        telegramChatId: String(chatId),
-        telegramMessageId: String(message.message_id),
+        platform: "telegram",
+        platformChatId: String(chatId),
+        platformMessageId: String(message.message_id),
       });
 
       const result = await withTimeout(pipelinePromise, PIPELINE_TIMEOUT_MS, "Investigation pipeline");
