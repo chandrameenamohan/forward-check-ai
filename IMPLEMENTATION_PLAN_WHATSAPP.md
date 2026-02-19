@@ -456,7 +456,7 @@
 - All existing server tests still pass
 
 ### Task 8.2: Wire WhatsApp adapter into index.ts
-- [ ]
+- [x]
 **Objective:** Conditionally create and start the `WhatsAppAdapter` in the application entry point when WhatsApp env vars are present.
 **Details:**
 - Update `src/index.ts`:
