@@ -108,7 +108,7 @@
 ## Phase 2: Refactor Telegram into Adapter Pattern
 
 ### Task 2.1: Create TelegramResponder
-- [ ]
+- [x]
 **Objective:** Extract Telegram-specific response logic (send messages, edit messages, send verdicts with InlineKeyboard) into a `TelegramResponder` that implements `PlatformResponder`.
 **Details:**
 - Create `src/platforms/telegram/responder.ts`
