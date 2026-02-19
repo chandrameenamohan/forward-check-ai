@@ -86,7 +86,7 @@
 - Cleanup: delete test database after each test
 
 ### Task 1.5: Update FeedbackRepository for platform-agnostic fields
-- [ ]
+- [x]
 **Objective:** Generalize `CreateFeedbackParams` to support platform-agnostic user identifiers alongside existing telegram-specific fields.
 **Details:**
 - Update `src/db/feedback-repository.ts`:
