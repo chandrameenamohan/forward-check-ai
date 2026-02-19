@@ -5,3 +5,4 @@ export { formatWhatsAppVerdict } from "./formatter.js";
 export { createWhatsAppWebhookRouter } from "./webhook.js";
 export { parseWebhookPayload } from "./webhook-parser.js";
 export { verifyWebhookSignature } from "./webhook-signature.js";
+export { hashPhoneNumber, normalizePhoneNumber } from "./phone-hash.js";

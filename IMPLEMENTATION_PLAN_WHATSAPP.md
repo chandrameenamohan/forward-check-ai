@@ -394,7 +394,7 @@
 ## Phase 6: Phone Number Privacy
 
 ### Task 6.1: Phone number hashing utility
-- [ ]
+- [x]
 **Objective:** Create a utility that hashes phone numbers before they are stored or logged, since WhatsApp identifies users by phone number (PII).
 **Details:**
 - Create `src/platforms/whatsapp/phone-hash.ts`
