@@ -333,7 +333,7 @@
 - Test: `"should handle API errors gracefully without throwing"`
 
 ### Task 5.2: Create WhatsApp webhook routes
-- [ ]
+- [x]
 **Objective:** Create Express routes for WhatsApp webhook verification (GET) and incoming message handling (POST).
 **Details:**
 - Create `src/platforms/whatsapp/webhook.ts`
