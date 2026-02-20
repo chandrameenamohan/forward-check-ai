@@ -55,7 +55,11 @@ describe("InvestigationRepository", () => {
     );
     const repo = new InvestigationRepository(db);
 
-    const id = repo.create("Test claim message", "chat-123", "msg-456");
+    const id = repo.create("Test claim message", {
+      platform: "telegram",
+      platformChatId: "chat-123",
+      platformMessageId: "msg-456",
+    });
     const investigation = repo.getById(id);
 
     expect(investigation).not.toBeNull();
@@ -204,9 +208,7 @@ describe("InvestigationRepository", () => {
 
     const id = repo.create(
       "Check this: https://example.com/article",
-      undefined,
-      undefined,
-      "https://example.com/article",
+      { sourceUrl: "https://example.com/article" },
     );
     const investigation = repo.getById(id);
 

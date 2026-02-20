@@ -23,6 +23,15 @@ export const envSchema = z.object({
     .enum(["fatal", "error", "warn", "info", "debug", "trace"])
     .default("info"),
   DATABASE_PATH: z.string().default("./data/forwardcheck.db"),
+  WHATSAPP_PHONE_NUMBER_ID: z.string().optional(),
+  WHATSAPP_ACCESS_TOKEN: z.string().optional(),
+  WHATSAPP_VERIFY_TOKEN: z.string().optional(),
+  WHATSAPP_APP_SECRET: z.string().optional(),
+  PHONE_HASH_SALT: z.string().default("forwardcheck-ai-v1"),
+  WHATSAPP_ENABLED: z
+    .string()
+    .default("false")
+    .transform((v) => v === "true"),
 });
 
 export type EnvConfig = z.infer<typeof envSchema>;

@@ -6,7 +6,7 @@ import type { ClassifierResult } from "../schemas/classifier-result.js";
 import type { SearchStrategy } from "../schemas/search-strategy.js";
 import type { AgentReport } from "../schemas/agent-report.js";
 import type { ChallengeReport } from "../schemas/challenge-report.js";
-import type { PipelineStage } from "../bot/status-updater.js";
+import type { PipelineStage } from "../platforms/types.js";
 import type { PipelineEventBus } from "./pipeline-events.js";
 import { ClaimCache } from "../services/claim-cache.js";
 import { detectUrl, enrichMessageWithUrl } from "../services/url-extractor.js";
@@ -28,8 +28,16 @@ const DISAGREEMENT_SPREAD_THRESHOLD = 30;
 export interface InvestigateOptions {
   onStatusUpdate?: (stage: PipelineStage) => void | Promise<void>;
   onInvestigationCreated?: (investigationId: string) => void | Promise<void>;
+  /** @deprecated Use platformChatId instead. Kept for backward compatibility. */
   telegramChatId?: string;
+  /** @deprecated Use platformMessageId instead. Kept for backward compatibility. */
   telegramMessageId?: string;
+  /** Platform originating the investigation. */
+  platform?: "telegram" | "whatsapp" | "web";
+  /** Platform-agnostic chat/conversation identifier. */
+  platformChatId?: string;
+  /** Platform-agnostic message identifier. */
+  platformMessageId?: string;
   /** If provided, reuse this investigation ID instead of creating a new DB record. */
   investigationId?: string;
   /** Pre-detected source URL (skip auto-detection). */
@@ -90,8 +98,14 @@ export class InvestigationPipeline {
       };
     }
 
+    const chatId = options?.platformChatId ?? options?.telegramChatId;
+    const messageId = options?.platformMessageId ?? options?.telegramMessageId;
     const investigationId = options?.investigationId
-      ?? this.repo.create(message, options?.telegramChatId, options?.telegramMessageId);
+      ?? this.repo.create(message, {
+        platform: options?.platform,
+        platformChatId: chatId,
+        platformMessageId: messageId,
+      });
 
     try {
       await options?.onInvestigationCreated?.(investigationId);

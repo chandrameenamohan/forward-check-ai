@@ -221,12 +221,35 @@
       border-color: var(--fc-text-dim);
     }
 
+    .fc-cta-whatsapp {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.8rem 1.8rem;
+      background: #25D366;
+      color: #fff;
+      font-family: 'Satoshi', sans-serif;
+      font-size: 0.92rem;
+      font-weight: 700;
+      text-decoration: none;
+      border-radius: 8px;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 0 20px rgba(37, 211, 102, 0.25), 0 0 60px rgba(37, 211, 102, 0.08);
+    }
+
+    .fc-cta-whatsapp:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 30px rgba(37, 211, 102, 0.4), 0 0 80px rgba(37, 211, 102, 0.12);
+      color: #fff;
+    }
+
     .fc-cta-arrow {
       transition: transform 0.2s;
     }
 
     .fc-cta-primary:hover .fc-cta-arrow,
-    .fc-cta-secondary:hover .fc-cta-arrow {
+    .fc-cta-secondary:hover .fc-cta-arrow,
+    .fc-cta-whatsapp:hover .fc-cta-arrow {
       transform: translateX(3px);
     }
 

@@ -18,8 +18,9 @@ import {
 import { InvestigationPipeline } from "./orchestrator/pipeline.js";
 import { PipelineEventBus } from "./orchestrator/pipeline-events.js";
 import { createApp } from "./server/app.js";
-import { createBot } from "./bot/bot.js";
-import { createMessageHandler } from "./bot/message-handler.js";
+import { TelegramAdapter } from "./platforms/telegram/adapter.js";
+import { WhatsAppAdapter } from "./platforms/whatsapp/adapter.js";
+import { createMessageRouter } from "./platforms/message-router.js";
 import type { Server } from "node:http";
 
 // 1. Load and validate environment config
@@ -94,20 +95,53 @@ const eventBus = new PipelineEventBus();
 // 8. Create investigation pipeline (with event bus for live streaming)
 const pipeline = new InvestigationPipeline(client, toolRegistry, repo, undefined, eventBus);
 
-// 9. Create Express app with routes (with event bus for SSE endpoint)
-const app = createApp(repo, eventBus, pipeline, feedbackRepo, githubService, config.TELEGRAM_BOT_USERNAME);
-
-// 10. Create Telegram bot and wire message handler
-const bot = createBot(config.TELEGRAM_BOT_TOKEN);
+// 9. Resolve base URL
 const railwayPublicDomain = process.env["RAILWAY_PUBLIC_DOMAIN"];
 const baseUrl = config.BASE_URL
   ?? (railwayPublicDomain
     ? `https://${railwayPublicDomain}`
     : `http://localhost:${config.PORT}`);
 logger.info({ baseUrl }, "Base URL resolved");
-createMessageHandler(bot, pipeline, baseUrl, repo, feedbackRepo, githubService);
 
-// 11. Start Express server
+// 10. Create shared message router for all platform adapters
+const messageRouter = createMessageRouter(pipeline, repo, baseUrl);
+
+// 11. Create Telegram adapter
+const telegramAdapter = new TelegramAdapter(
+  config.TELEGRAM_BOT_TOKEN,
+  pipeline,
+  baseUrl,
+  repo,
+  feedbackRepo,
+  githubService,
+);
+
+// 12. Conditionally create WhatsApp adapter
+let whatsAppAdapter: WhatsAppAdapter | undefined;
+if (
+  config.WHATSAPP_ENABLED &&
+  config.WHATSAPP_PHONE_NUMBER_ID &&
+  config.WHATSAPP_ACCESS_TOKEN &&
+  config.WHATSAPP_VERIFY_TOKEN
+) {
+  whatsAppAdapter = new WhatsAppAdapter(
+    config.WHATSAPP_PHONE_NUMBER_ID,
+    config.WHATSAPP_ACCESS_TOKEN,
+    config.WHATSAPP_VERIFY_TOKEN,
+    config.WHATSAPP_APP_SECRET,
+    messageRouter,
+  );
+  logger.info("WhatsApp adapter initialized");
+} else if (config.WHATSAPP_ENABLED) {
+  logger.warn(
+    "WHATSAPP_ENABLED is true but required credentials are missing (WHATSAPP_PHONE_NUMBER_ID, WHATSAPP_ACCESS_TOKEN, WHATSAPP_VERIFY_TOKEN). WhatsApp adapter not started.",
+  );
+}
+
+// 13. Create Express app with routes (with event bus for SSE endpoint)
+const app = createApp(repo, eventBus, pipeline, feedbackRepo, githubService, config.TELEGRAM_BOT_USERNAME, whatsAppAdapter);
+
+// 14. Start Express server
 let server: Server;
 server = app.listen(config.PORT, () => {
   logger.info(
@@ -116,38 +150,33 @@ server = app.listen(config.PORT, () => {
   );
 });
 
-// 12. Start bot long polling (with retry on 409 conflict during deploys)
-function startBotWithRetry(retries = 5, delayMs = 3000): void {
-  bot.start({
-    onStart: (botInfo) => {
-      logger.info(
-        { username: botInfo.username, id: botInfo.id },
-        "Telegram bot started",
-      );
-    },
-  }).catch((err: unknown) => {
-    const is409 =
-      err instanceof Error &&
-      (err.message.includes("409") || err.message.includes("Conflict"));
-    if (is409 && retries > 0) {
-      logger.warn(
-        { retriesLeft: retries },
-        "Telegram bot 409 conflict — old instance still polling, retrying...",
-      );
-      setTimeout(() => startBotWithRetry(retries - 1, delayMs * 2), delayMs);
-    } else {
-      logger.error({ err }, "Telegram bot polling failed — server continues without bot");
-    }
+// 15. Start Telegram adapter (long polling with retry on 409 conflict)
+telegramAdapter.start().catch((err: unknown) => {
+  logger.error({ err }, "Telegram adapter failed to start");
+});
+
+// 16. Start WhatsApp adapter (no-op for webhook-based, but logs readiness)
+if (whatsAppAdapter) {
+  whatsAppAdapter.start().catch((err: unknown) => {
+    logger.error({ err }, "WhatsApp adapter failed to start");
   });
 }
-startBotWithRetry();
 
-// 13. Graceful shutdown
+// 17. Graceful shutdown
 function shutdown(signal: string): void {
   logger.info({ signal }, "Received shutdown signal");
 
-  bot.stop();
-  logger.info("Telegram bot stopped");
+  telegramAdapter.stop().catch((err: unknown) => {
+    logger.error({ err }, "Telegram adapter failed to stop");
+  });
+  logger.info("Telegram adapter stopped");
+
+  if (whatsAppAdapter) {
+    whatsAppAdapter.stop().catch((err: unknown) => {
+      logger.error({ err }, "WhatsApp adapter failed to stop");
+    });
+    logger.info("WhatsApp adapter stopped");
+  }
 
   server.close(() => {
     logger.info("Express server stopped");

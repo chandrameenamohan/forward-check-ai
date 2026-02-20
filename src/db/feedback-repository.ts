@@ -11,6 +11,7 @@ interface FeedbackRow {
   user_agent: string | null;
   telegram_username: string | null;
   telegram_user_id: string | null;
+  platform_user_id_hash: string | null;
   github_issue_url: string | null;
   github_issue_number: number | null;
   ip_address: string | null;
@@ -27,6 +28,7 @@ export interface Feedback {
   user_agent: string | null;
   telegram_username: string | null;
   telegram_user_id: string | null;
+  platform_user_id_hash: string | null;
   github_issue_url: string | null;
   github_issue_number: number | null;
   ip_address: string | null;
@@ -41,6 +43,7 @@ export interface CreateFeedbackParams {
   userAgent?: string;
   telegramUsername?: string;
   telegramUserId?: string;
+  platformUserIdHash?: string;
   ipAddress?: string;
 }
 
@@ -54,6 +57,7 @@ function toFeedback(row: FeedbackRow): Feedback {
     user_agent: row.user_agent,
     telegram_username: row.telegram_username,
     telegram_user_id: row.telegram_user_id,
+    platform_user_id_hash: row.platform_user_id_hash,
     github_issue_url: row.github_issue_url,
     github_issue_number: row.github_issue_number,
     ip_address: row.ip_address,
@@ -72,8 +76,8 @@ export class FeedbackRepository {
     const id = nanoid();
     this.db
       .prepare(
-        `INSERT INTO feedback (id, type, title, description, source_channel, user_agent, telegram_username, telegram_user_id, ip_address)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        `INSERT INTO feedback (id, type, title, description, source_channel, user_agent, telegram_username, telegram_user_id, platform_user_id_hash, ip_address)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       )
       .run(
         id,
@@ -84,6 +88,7 @@ export class FeedbackRepository {
         params.userAgent ?? null,
         params.telegramUsername ?? null,
         params.telegramUserId ?? null,
+        params.platformUserIdHash ?? null,
         params.ipAddress ?? null,
       );
     return id;

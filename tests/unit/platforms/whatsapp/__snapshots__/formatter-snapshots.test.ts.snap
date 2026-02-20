@@ -1,0 +1,137 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`formatWhatsAppVerdict — snapshot tests > should format likely-false verdict with manipulation techniques 1`] = `
+"🔴 *LIKELY FALSE* — 12% confidence
+
+This claim is fabricated. No credible source supports the alleged government programme. Multiple fact-checkers have debunked identical variants.
+
+━━━━━━━━━━━━━━━━━━━━━
+
+📊 *Confidence Breakdown*
+Evidence     ▓░░░░░░░░░  10
+Sources      ▓▓░░░░░░░░  15
+Complexity   ▓▓░░░░░░░░  20
+Resilience   ▓░░░░░░░░░   8
+
+━━━━━━━━━━━━━━━━━━━━━
+
+📋 *Key Findings*
+• No official government scheme matches the described programme
+• Snopes and AltNews debunked identical chain messages in 2025
+• The quoted official never made the attributed statement
+
+━━━━━━━━━━━━━━━━━━━━━
+
+⚠️ *Manipulation Detected*
+• *Appeal to Authority* — 85/100
+  > "PM Modi personally announced Rs 5000 for every citizen"
+• *Urgency Framing* — 72/100
+  > "Register before midnight or lose your chance!"
+
+⚔️ Devil's Advocate: *Challenge failed — verdict held firm*
+📚 Based on 2 sources"
+`;
+
+exports[`formatWhatsAppVerdict — snapshot tests > should format likely-true verdict with high confidence 1`] = `
+"🟢 *LIKELY TRUE* — 95% confidence
+
+Multiple independent official sources confirm this announcement. The claim is well-documented and verified by Reuters and AP.
+
+━━━━━━━━━━━━━━━━━━━━━
+
+📊 *Confidence Breakdown*
+Evidence     ▓▓▓▓▓▓▓▓▓▓  95
+Sources      ▓▓▓▓▓▓▓▓▓░  92
+Complexity   ▓▓▓░░░░░░░  30
+Resilience   ▓▓▓▓▓▓▓▓▓▓  97
+
+━━━━━━━━━━━━━━━━━━━━━
+
+📋 *Key Findings*
+• Official government press release confirms the policy
+• Reuters and AP independently verified the announcement
+• Timeline matches public records from the relevant ministry
+
+⚔️ Devil's Advocate: *Challenge failed — verdict held firm*
+📚 Based on 3 sources"
+`;
+
+exports[`formatWhatsAppVerdict — snapshot tests > should format partially-true verdict with nuance tag 1`] = `
+"🟡 *PARTIALLY TRUE* — 64% confidence — _Exaggerated_
+
+The underlying research exists but the claim significantly exaggerates the findings. The original study found a modest correlation, not the causal proof claimed.
+
+━━━━━━━━━━━━━━━━━━━━━
+
+📊 *Confidence Breakdown*
+Evidence     ▓▓▓▓▓▓▓░░░  65
+Sources      ▓▓▓▓▓▓▓░░░  70
+Complexity   ▓▓▓▓▓▓░░░░  55
+Resilience   ▓▓▓▓▓▓░░░░  60
+
+━━━━━━━━━━━━━━━━━━━━━
+
+📋 *Key Findings*
+• Harvard study exists but concludes correlation, not causation
+• Original paper explicitly warns against the interpretation in the claim
+• Media coverage progressively exaggerated the findings through each share
+
+━━━━━━━━━━━━━━━━━━━━━
+
+⚠️ *Manipulation Detected*
+• *Cherry-Picked Data* — 68/100
+  > "study proves chocolate prevents heart disease"
+
+⚔️ Devil's Advocate: *Partially succeeded — see full analysis*
+📚 Based on 2 sources"
+`;
+
+exports[`formatWhatsAppVerdict — snapshot tests > should format satire verdict 1`] = `
+"🎭 *SATIRE* — 98% confidence
+
+This article is from a well-known satirical publication. The Onion is a recognized satire outlet and the article uses characteristic humorous exaggeration.
+
+━━━━━━━━━━━━━━━━━━━━━
+
+📊 *Confidence Breakdown*
+Evidence     ▓▓▓▓▓▓▓▓▓▓  99
+Sources      ▓▓▓▓▓▓▓▓▓▓  98
+Complexity   ▓░░░░░░░░░  10
+Resilience   ▓▓▓▓▓▓▓▓▓▓  99
+
+━━━━━━━━━━━━━━━━━━━━━
+
+📋 *Key Findings*
+• Source is The Onion, a well-known satirical publication
+• Article uses absurdist humour typical of satire
+• No real news outlet has reported this event
+
+⚔️ Devil's Advocate: *Challenge failed — verdict held firm*
+📚 Based on 1 source"
+`;
+
+exports[`formatWhatsAppVerdict — snapshot tests > should format unverified verdict with deep reasoning activated 1`] = `
+"⚪ *UNVERIFIED* — 45% confidence
+
+🧠 *Deep Reasoning* activated
+
+Insufficient evidence to confirm or deny this claim. No official sources or credible media have reported on the alleged event. The claim cannot be verified at this time.
+
+━━━━━━━━━━━━━━━━━━━━━
+
+📊 *Confidence Breakdown*
+Evidence     ▓▓▓▓░░░░░░  35
+Sources      ▓▓▓▓░░░░░░  40
+Complexity   ▓▓▓▓▓▓░░░░  60
+Resilience   ▓▓▓▓▓░░░░░  50
+
+━━━━━━━━━━━━━━━━━━━━━
+
+📋 *Key Findings*
+• No primary sources found for the alleged event
+• Social media posts are the only origin of this claim
+• Official channels have not commented on the matter
+
+⚔️ Devil's Advocate: *Partially succeeded — see full analysis*
+📚 Based on 1 source"
+`;

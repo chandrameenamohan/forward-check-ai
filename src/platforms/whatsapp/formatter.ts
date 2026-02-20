@@ -1,4 +1,4 @@
-import type { FinalVerdict } from "../schemas/final-verdict.js";
+import type { FinalVerdict } from "../../schemas/final-verdict.js";
 
 type VerdictCategory = FinalVerdict["category"];
 
@@ -25,16 +25,10 @@ const DA_OUTCOME_DISPLAY: Record<FinalVerdict["devilsAdvocateOutcome"], string> 
 const SEPARATOR = "━━━━━━━━━━━━━━━━━━━━━";
 const MAX_KEY_FINDINGS = 3;
 const MAX_TECHNIQUES = 2;
+const MAX_LENGTH = 4000;
 
 function capitalize(s: string): string {
   return s.charAt(0).toUpperCase() + s.slice(1);
-}
-
-function escapeHtml(text: string): string {
-  return text
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
 }
 
 /** Build a 10-char Unicode bar: ▓▓▓▓░░░░░░ */
@@ -51,32 +45,39 @@ function padValue(value: number): string {
   return String(value).padStart(3, " ");
 }
 
-export function formatTelegramVerdict(verdict: FinalVerdict): string {
+/**
+ * Format a FinalVerdict into WhatsApp-compatible markdown text.
+ *
+ * Uses WhatsApp markdown syntax: *bold*, _italic_
+ * No HTML tags allowed.
+ * Max ~4000 chars (WhatsApp limit is 4096).
+ */
+export function formatWhatsAppVerdict(verdict: FinalVerdict): string {
   const display = CATEGORY_DISPLAY[verdict.category];
   const parts: string[] = [];
 
   // ── Header: emoji + category + confidence + nuance tag ──
-  let header = `${display.emoji} <b>${display.label}</b> — ${verdict.confidence}% confidence`;
+  let header = `${display.emoji} *${display.label}* — ${verdict.confidence}% confidence`;
   if (verdict.nuanceTag) {
-    header += ` — <i>${capitalize(verdict.nuanceTag)}</i>`;
+    header += ` — _${capitalize(verdict.nuanceTag)}_`;
   }
   parts.push(header);
 
   // ── Deep reasoning indicator (conditional) ──
   if (verdict.deepReasoningActivated) {
-    parts.push("\n🧠 <b>Deep Reasoning</b> activated");
+    parts.push("\n🧠 *Deep Reasoning* activated");
   }
 
   // ── Summary ──
   parts.push("");
-  parts.push(escapeHtml(verdict.summary));
+  parts.push(verdict.summary);
 
   // ── Confidence Decomposition ──
   const d = verdict.confidenceDecomposition;
   parts.push("");
   parts.push(SEPARATOR);
   parts.push("");
-  parts.push("📊 <b>Confidence Breakdown</b>");
+  parts.push("📊 *Confidence Breakdown*");
   parts.push(
     `${padLabel("Evidence", 12)} ${buildBar(d.evidenceStrength)} ${padValue(d.evidenceStrength)}`,
   );
@@ -95,14 +96,14 @@ export function formatTelegramVerdict(verdict: FinalVerdict): string {
     parts.push("");
     parts.push(SEPARATOR);
     parts.push("");
-    parts.push("📋 <b>Key Findings</b>");
+    parts.push("📋 *Key Findings*");
     const findings = verdict.keyFindings.slice(0, MAX_KEY_FINDINGS);
     for (const finding of findings) {
-      parts.push(`• ${escapeHtml(finding)}`);
+      parts.push(`• ${finding}`);
     }
   }
 
-  // ── Manipulation Techniques (expandable blockquote for details) ──
+  // ── Manipulation Techniques (top 2 by severity) ──
   const topTechniques = verdict.manipulationTechniques
     .slice()
     .sort((a, b) => b.severity - a.severity)
@@ -112,43 +113,31 @@ export function formatTelegramVerdict(verdict: FinalVerdict): string {
     parts.push("");
     parts.push(SEPARATOR);
     parts.push("");
-    parts.push("⚠️ <b>Manipulation Detected</b>");
-
-    const expandLines: string[] = [];
+    parts.push("⚠️ *Manipulation Detected*");
     for (const tech of topTechniques) {
-      expandLines.push(
-        `• <b>${escapeHtml(tech.technique)}</b> — ${tech.severity}/100`,
-      );
+      parts.push(`• *${tech.technique}* — ${tech.severity}/100`);
       if (tech.evidenceQuote) {
-        expandLines.push(`"${escapeHtml(tech.evidenceQuote)}"`);
+        parts.push(`  > "${tech.evidenceQuote}"`);
       }
-      if (tech.description) {
-        expandLines.push(`↳ ${escapeHtml(tech.description)}`);
-      }
-      expandLines.push("");
     }
-    // Remove trailing blank line
-    if (expandLines[expandLines.length - 1] === "") {
-      expandLines.pop();
-    }
-
-    parts.push(`<blockquote expandable>${expandLines.join("\n")}</blockquote>`);
   }
 
   // ── Footer: Devil's Advocate + Source Count ──
   parts.push("");
   const daText = DA_OUTCOME_DISPLAY[verdict.devilsAdvocateOutcome];
-  parts.push(`⚔️ Devil's Advocate: <b>${daText}</b>`);
+  parts.push(`⚔️ Devil's Advocate: *${daText}*`);
 
   if (verdict.sources.length > 0) {
-    parts.push(`📚 Based on ${verdict.sources.length} source${verdict.sources.length === 1 ? "" : "s"}`);
+    parts.push(
+      `📚 Based on ${verdict.sources.length} source${verdict.sources.length === 1 ? "" : "s"}`,
+    );
   }
 
   const result = parts.join("\n");
 
-  // Truncate to stay within Telegram's 4096 char limit (leave buffer)
-  if (result.length > 3900) {
-    return result.slice(0, 3897) + "...";
+  // Truncate to stay within WhatsApp's 4096 char limit (leave buffer)
+  if (result.length > MAX_LENGTH) {
+    return result.slice(0, MAX_LENGTH - 3) + "...";
   }
 
   return result;

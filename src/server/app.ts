@@ -15,6 +15,7 @@ import type { InvestigationPipeline } from "../orchestrator/pipeline.js";
 import type { FeedbackRepository } from "../db/feedback-repository.js";
 import type { GitHubIssueService } from "../services/github-issues.js";
 import { createRateLimiter } from "./middleware/rate-limit.js";
+import type { WhatsAppAdapter } from "../platforms/whatsapp/adapter.js";
 
 const logger = createLogger({ level: "info" });
 
@@ -29,7 +30,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
  * @param eventBus - Optional PipelineEventBus for SSE live-stream routes.
  *                   When provided with repo, mounts /api/live/:id/stream route.
  */
-export function createApp(repo?: InvestigationRepository, eventBus?: PipelineEventBus, pipeline?: InvestigationPipeline, feedbackRepo?: FeedbackRepository, githubService?: GitHubIssueService, telegramBotUsername?: string): express.Express {
+export function createApp(repo?: InvestigationRepository, eventBus?: PipelineEventBus, pipeline?: InvestigationPipeline, feedbackRepo?: FeedbackRepository, githubService?: GitHubIssueService, telegramBotUsername?: string, whatsAppAdapter?: WhatsAppAdapter, whatsappPhoneNumber?: string): express.Express {
   const app = express();
 
   // JSON body parsing
@@ -55,7 +56,12 @@ export function createApp(repo?: InvestigationRepository, eventBus?: PipelineEve
         // DB query failed — fall back to no recent investigation
       }
     }
-    res.render("landing", { recentInvestigationId, telegramBotUsername: telegramBotUsername ?? "forward_check_beta_bot" });
+    res.render("landing", {
+      recentInvestigationId,
+      telegramBotUsername: telegramBotUsername ?? "forward_check_beta_bot",
+      whatsappEnabled: !!whatsAppAdapter,
+      whatsappPhoneNumber: whatsappPhoneNumber ?? null,
+    });
   });
 
   // Health endpoint
@@ -147,6 +153,11 @@ export function createApp(repo?: InvestigationRepository, eventBus?: PipelineEve
         res.status(404).json({ error: "Investigation not found" });
       }
     });
+  }
+
+  // WhatsApp webhook routes (only when adapter is provided)
+  if (whatsAppAdapter) {
+    app.use(whatsAppAdapter.getWebhookRouter());
   }
 
   // 404 handler

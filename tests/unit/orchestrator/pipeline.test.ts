@@ -422,7 +422,11 @@ describe("InvestigationPipeline", () => {
       await pipeline.investigate("PM Modi Rs 5000 claim");
 
       const repo = mockRepo;
-      expect(repo.create).toHaveBeenCalledWith("PM Modi Rs 5000 claim", undefined, undefined);
+      expect(repo.create).toHaveBeenCalledWith("PM Modi Rs 5000 claim", {
+        platform: undefined,
+        platformChatId: undefined,
+        platformMessageId: undefined,
+      });
       expect(repo.updateStatus).toHaveBeenCalledWith("test-investigation-id", "investigating");
       expect(repo.updateClassifierResult).toHaveBeenCalledOnce();
       expect(repo.updateSearchStrategy).toHaveBeenCalledOnce();
@@ -439,7 +443,11 @@ describe("InvestigationPipeline", () => {
         telegramMessageId: "67890",
       });
 
-      expect(mockRepo.create).toHaveBeenCalledWith("Test claim", "12345", "67890");
+      expect(mockRepo.create).toHaveBeenCalledWith("Test claim", {
+        platform: undefined,
+        platformChatId: "12345",
+        platformMessageId: "67890",
+      });
     });
 
     it("should save non-factual results to database", async () => {

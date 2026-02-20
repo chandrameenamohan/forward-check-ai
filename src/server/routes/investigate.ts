@@ -26,7 +26,7 @@ export function createInvestigateRouter(
       return;
     }
 
-    const id = repo.create(message, chatId);
+    const id = repo.create(message, { platformChatId: chatId });
     logger.info({ id, messageLength: message.length }, "Investigation created");
 
     res.status(201).json({ id, status: "pending" });
