@@ -41,7 +41,7 @@ jobs:
           node -e "if (${COVERAGE} < 60) { console.error('Coverage ${COVERAGE}% is below 60% threshold'); process.exit(1); }"
 
       - name: Upload coverage artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: coverage
           path: coverage/
