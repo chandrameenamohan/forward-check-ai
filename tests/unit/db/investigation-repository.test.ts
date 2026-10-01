@@ -247,4 +247,50 @@ describe("InvestigationRepository", () => {
       "https://example.com/news/article-123",
     );
   });
+
+  it("should mark investigations a dead process left running as failed and say whose they were", async () => {
+    const { InvestigationRepository } = await import("../../../src/db/investigation-repository.js");
+    const repo = new InvestigationRepository(db);
+    const pending = repo.create("never started", { platform: "web" });
+    const running = repo.create("was running", { platform: "whatsapp", platformChatId: "15551234567" });
+    repo.updateStatus(running, "investigating");
+    const done = repo.create("finished");
+    repo.updateFinalVerdict(done, { category: "likely-false" }, 10, 0.1);
+
+    const interrupted = repo.failInterrupted();
+
+    expect(interrupted.map((row) => row.id).sort()).toEqual([pending, running].sort());
+    expect(interrupted.find((row) => row.id === running)).toMatchObject({ platform: "whatsapp", chatId: "15551234567" });
+    expect(repo.getById(pending)?.status).toBe("failed");
+    expect(repo.getById(running)?.status).toBe("failed");
+    expect(repo.getById(done)?.status).toBe("completed");
+  });
+
+  it("should know a platform message that already has an investigation", async () => {
+    const { InvestigationRepository } = await import("../../../src/db/investigation-repository.js");
+    const repo = new InvestigationRepository(db);
+    repo.create("a claim", { platform: "whatsapp", platformChatId: "15551234567", platformMessageId: "wamid.1" });
+
+    expect(repo.hasPlatformMessage("whatsapp", "15551234567", "wamid.1")).toBe(true);
+    expect(repo.hasPlatformMessage("whatsapp", "15551234567", "wamid.2")).toBe(false);
+    expect(repo.hasPlatformMessage("telegram", "15551234567", "wamid.1")).toBe(false);
+  });
+
+  it("should copy a finished investigation's results onto the row of a repeated claim", async () => {
+    const { InvestigationRepository } = await import("../../../src/db/investigation-repository.js");
+    const repo = new InvestigationRepository(db);
+    const first = repo.create("a claim");
+    repo.updateAgentReports(first, [{ agentRole: "source_verification" }]);
+    repo.updateFinalVerdict(first, { category: "likely-false", confidence: 5 }, 1000, 0.5);
+    const second = repo.create("a claim");
+
+    repo.copyResults(first, second);
+
+    const copy = repo.getById(second);
+    expect(copy?.status).toBe("completed");
+    expect(copy?.final_verdict).toEqual({ category: "likely-false", confidence: 5 });
+    expect(copy?.agent_reports).toEqual([{ agentRole: "source_verification" }]);
+    expect(copy?.completed_at).not.toBeNull();
+    expect(copy?.total_cost_usd).toBe(0);
+  });
 });

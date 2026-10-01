@@ -1,0 +1,7 @@
+[
+  { "name": "model", "listen": "0.0.0.0:8001", "upstream": "stub:8001", "enabled": true },
+  { "name": "news", "listen": "news.example:8002", "upstream": "stub:8002", "enabled": true },
+  { "name": "brave", "listen": "api.search.brave.com:443", "upstream": "stub:443", "enabled": true },
+  { "name": "factcheck", "listen": "factchecktools.googleapis.com:443", "upstream": "stub:443", "enabled": true },
+  { "name": "graph", "listen": "graph.facebook.com:443", "upstream": "stub:443", "enabled": true }
+]

@@ -99,6 +99,7 @@ function createMockRepo(): InvestigationRepository {
     updateAgentReports: vi.fn(),
     updateChallengeReport: vi.fn(),
     updateFinalVerdict: vi.fn(),
+    copyResults: vi.fn(),
     getRecent: vi.fn(),
   } as unknown as InvestigationRepository;
 }
@@ -544,6 +545,19 @@ describe("InvestigationPipeline", () => {
 
       // Classifier should NOT have been called again
       expect(mockedRunClassifier).toHaveBeenCalledOnce();
+    });
+
+    it("should finish the caller's own row when a repeated claim is answered from the cache", async () => {
+      const { finalVerdict } = setupFullPipelineMocks();
+      await pipeline.investigate("PM Modi Rs 5000 transfer");
+
+      // The web chat makes its row before asking: that row must not be left pending.
+      const result = await pipeline.investigate("PM Modi Rs 5000 transfer", { investigationId: "chat-row-2" });
+
+      expect(result.cached).toBe(true);
+      expect(result.verdict).toEqual(finalVerdict);
+      expect(result.investigationId).toBe("chat-row-2");
+      expect(mockRepo.copyResults).toHaveBeenCalledWith("test-investigation-id", "chat-row-2");
     });
 
     it("should not cache non-factual results", async () => {

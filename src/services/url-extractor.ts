@@ -3,6 +3,8 @@
  * Detects URLs in user input and extracts article content for fact-checking.
  */
 
+import { lookup } from "node:dns/promises";
+import { BlockList, isIP } from "node:net";
 import { Readability } from "@mozilla/readability";
 import { JSDOM } from "jsdom";
 import { createLogger } from "../config/logger.js";
@@ -23,6 +25,35 @@ const DEFAULT_TIMEOUT_MS = 10_000;
 
 /** User-Agent header for HTTP requests */
 const USER_AGENT = "ForwardCheck-AI/1.0 (fact-checking bot)";
+
+/** Redirects followed before giving up */
+const MAX_REDIRECTS = 5;
+
+/** Addresses a user's URL must not reach: this machine and the networks behind it. */
+const PRIVATE_ADDRESSES = new BlockList();
+for (const [net, bits] of [["0.0.0.0", 8], ["10.0.0.0", 8], ["100.64.0.0", 10], ["127.0.0.0", 8], ["169.254.0.0", 16], ["172.16.0.0", 12], ["192.168.0.0", 16]] as const) {
+  PRIVATE_ADDRESSES.addSubnet(net, bits, "ipv4");
+}
+for (const [net, bits] of [["::", 127], ["fc00::", 7], ["fe80::", 10]] as const) {
+  PRIVATE_ADDRESSES.addSubnet(net, bits, "ipv6");
+}
+
+/**
+ * Throw unless every address the URL's host resolves to is a public one.
+ */
+// ponytail: checked before the fetch, not pinned to it. A host that changes its answer between
+// the two (DNS rebinding) gets through; pin the address with a custom dispatcher if that matters.
+export async function assertPublicUrl(url: string): Promise<void> {
+  const host = new URL(url).hostname.replace(/^\[|\]$/g, "");
+  const version = isIP(host);
+  const addresses = version !== 0 ? [{ address: host, family: version }] : await lookup(host, { all: true });
+  for (const { address, family } of addresses) {
+    const mapped = /^::ffff:(\d+\.\d+\.\d+\.\d+)$/i.exec(address)?.[1];
+    if (PRIVATE_ADDRESSES.check(mapped ?? address, mapped !== undefined || family === 4 ? "ipv4" : "ipv6")) {
+      throw new Error(`URL points at a private address (${host})`);
+    }
+  }
+}
 
 /** Result of extracting article content from a URL */
 export interface UrlExtractionResult {
@@ -63,11 +94,20 @@ export async function fetchUrlContent(
 
   let response: Response;
   try {
-    response = await fetch(url, {
-      headers: { "User-Agent": USER_AGENT },
-      signal: controller.signal,
-      redirect: "follow",
-    });
+    // Redirects are followed by hand: each hop is a new address to check.
+    let target = url;
+    for (let hop = 0; ; hop++) {
+      await assertPublicUrl(target);
+      response = await fetch(target, {
+        headers: { "User-Agent": USER_AGENT },
+        signal: controller.signal,
+        redirect: "manual",
+      });
+      const location = response.headers.get("location");
+      if (response.status < 300 || response.status >= 400 || !location) break;
+      if (hop >= MAX_REDIRECTS) throw new Error("too many redirects");
+      target = new URL(location, target).toString();
+    }
   } catch (err) {
     clearTimeout(timer);
     const message = err instanceof Error ? err.message : String(err);

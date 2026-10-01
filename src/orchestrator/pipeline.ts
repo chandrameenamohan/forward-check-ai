@@ -89,6 +89,14 @@ export class InvestigationPipeline {
     const cached = this.cache.get(message);
     if (cached) {
       logger.info({ investigationId: cached.investigationId }, "Returning cached result");
+      const ownId = options?.investigationId;
+      if (ownId && ownId !== cached.investigationId) {
+        // The caller made a row before asking (the web chat does): finish it, or it stays pending for ever.
+        this.repo.copyResults(cached.investigationId, ownId);
+        this.emitEvent({ kind: "pipeline:start", investigationId: ownId, message, timestamp: Date.now() });
+        this.emitEvent({ kind: "pipeline:complete", investigationId: ownId, verdict: cached.result, totalCostUsd: 0, durationMs: 0, timestamp: Date.now() });
+        return { verdict: cached.result, investigationId: ownId, totalCostUsd: 0, durationMs: Date.now() - startTime, cached: true };
+      }
       return {
         verdict: cached.result,
         investigationId: cached.investigationId,

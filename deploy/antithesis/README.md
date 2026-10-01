@@ -1,0 +1,78 @@
+# ForwardCheck: hermetic slice + Antithesis-style properties
+
+A Docker Compose reproduction of ForwardCheck that runs with **no internet**, is driven by a workload, and is
+checked with Antithesis SDK assertions while faults are opened at the trust boundaries. Not the hosted platform: a
+local harness in Antithesis's layout, so the same directory can be handed over later. The rule: **write properties,
+then attack the system while they are checked; change configuration, never code.**
+
+The properties are the 18 of `antithesis/scratchbook/property-catalog.md`.
+
+```
+driver ──HTTP──▶ app ──▶ toxiproxy :8001 ──▶ stub (scripted model)
+   │              │  ──▶ toxiproxy api.search.brave.com:443, factchecktools.googleapis.com:443, graph.facebook.com:443 ──▶ stub
+   │              │  ──▶ toxiproxy news.example:8002 ──▶ stub (a news site)
+   └── reads directly: the app's SQLite file, the stub's log, the ledger
+```
+
+| service | what |
+|---|---|
+| `app` | the image the repo's `Dockerfile` builds, **unchanged** |
+| `stub` | the scripted model (no model call, no token in any image), Brave, Google Fact Check, the WhatsApp Graph API and a news site |
+| `toxiproxy` | between the app and each of those, one listener per dependency |
+| `driver`, `burst` | the workload and the judge; `burst` is a second address for the rate-limit workload |
+
+**It booted on configuration alone.** `ANTHROPIC_BASE_URL` points the model at toxiproxy. The three https hosts are
+hard-coded in the app, so each is a network alias of toxiproxy and the stub's certificate is trusted through
+`NODE_EXTRA_CA_CERTS`. The news site sits on an internal network with a public address range, because the app
+refuses to fetch a private address for a user.
+
+**The script for a claim is in the claim**: `#fc{t=<token>,v=likely-false,c=97,inv=88-x-85,lat=500}` sets the
+Judge's verdict, which investigators fail, and how slow the model is. See `stub/server.ts`.
+
+## Run it
+
+```bash
+deploy/antithesis/run.sh up            # build both images, start the slice (needs Docker)
+deploy/antithesis/run.sh baseline      # quiet workload + one of each fault window -> all PASS, all guards hit
+deploy/antithesis/run.sh model-unavailable   # one scenario: model-unavailable model-slow model-frozen
+                                             #   search-unavailable graph-unavailable app-killed
+deploy/antithesis/run.sh chaos 8       # eight rounds, a random scenario each
+deploy/antithesis/run.sh report
+deploy/antithesis/run.sh no-internet
+deploy/antithesis/run.sh down
+```
+
+`model-frozen` needs `SETTLE_MS=330000`: a claim may take that long to give up on a model that stopped answering.
+
+A run is a PASS only when every evaluated property holds, every command finished, and the app container is
+running. State of a run is in `.run/` (git-ignored): the SDK's output, the ledger, the cues, the stub's log.
+
+## The test template (`test/v1/forwardcheck/`)
+
+| command | what it does |
+|---|---|
+| `first_setup` | toxiproxy holds every listener, the app answers |
+| `parallel_driver_claims` | one claim per verdict category, a greeting, one through the web chat |
+| `parallel_driver_judge_disagrees` | the Judge's category and its score disagree (likely-false at 97) |
+| `parallel_driver_partial_failure` | one, two and all three investigators fail |
+| `parallel_driver_duplicate_delivery` | the same webhook delivered twice |
+| `parallel_driver_webhook_signatures` | unsigned, wrongly signed, and signed but spelled Meta's way |
+| `parallel_driver_repeated_claim` | the same claim again, through the chat and by a second WhatsApp user |
+| `parallel_driver_late_joiner` | a browser that opens the stream after the investigation started |
+| `parallel_driver_markup` | a message carrying a script tag |
+| `parallel_driver_urls` | a link to an outside article, and one to the app's own loopback address |
+| `parallel_driver_rate_limit` | thirteen chat claims at once from one address |
+| `anytime_health` | `/health` every half second, beside every fault |
+| `eventually_claims_settle`, `eventually_whatsapp_answered` | after the faults stop |
+| `finally_verdicts`, `finally_webhooks`, `finally_restart`, `finally_streams`, `finally_pages`, `finally_rate_limit`, `finally_cache`, `finally_windows` | the judgement |
+
+The scenes (`driver/scenes.ts`) are local only: inside Antithesis the platform chooses the faults.
+
+## What this does not do
+
+- It applies one fault at one moment, chosen by hand; `chaos N` only varies which. It cannot search.
+- The model is scripted, so it says nothing about verdict quality: `npm run eval` does that.
+- Not in the slice: Telegram, the feedback route, and the Claude Agent SDK transport (the app's path when no
+  `ANTHROPIC_API_KEY` is set). That path was checked once by hand with a real claim.
+- Handing it to hosted Antithesis needs a tenant, both images pushed to its registry, the certificate baked into
+  an image instead of generated by `run.sh`, and `snouty validate` on this directory.

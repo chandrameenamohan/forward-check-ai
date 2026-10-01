@@ -1,0 +1,8 @@
+{
+  "name": "forwardcheck-antithesis-harness",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "antithesis-sdk": "0.2.0"
+  }
+}

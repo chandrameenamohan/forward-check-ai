@@ -138,6 +138,21 @@ if (
   );
 }
 
+// 12b. Nothing is running yet: whatever a previous process left pending or investigating will never finish.
+// Say so in the database, and tell the people who were waiting.
+const interrupted = repo.failInterrupted();
+if (interrupted.length > 0) {
+  logger.warn({ count: interrupted.length }, "Marked investigations interrupted by a restart as failed");
+  const apology = "Sorry, your investigation was interrupted by a restart on our side. Please send the claim again.";
+  for (const { platform, chatId } of interrupted) {
+    if (!chatId) continue;
+    const adapter = platform === "whatsapp" ? whatsAppAdapter : platform === "telegram" ? telegramAdapter : undefined;
+    adapter?.notify(chatId, apology).catch((err: unknown) => {
+      logger.error({ err, platform }, "Failed to tell a user their investigation was interrupted");
+    });
+  }
+}
+
 // 13. Create Express app with routes (with event bus for SSE endpoint)
 const app = createApp(repo, eventBus, pipeline, feedbackRepo, githubService, config.TELEGRAM_BOT_USERNAME, whatsAppAdapter);
 

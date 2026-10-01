@@ -1,9 +1,47 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import {
+  assertPublicUrl,
   detectUrl,
   fetchUrlContent,
   enrichMessageWithUrl,
 } from "../../../src/services/url-extractor.js";
+
+// No real DNS in unit tests: every name is a public address unless it says otherwise.
+vi.mock("node:dns/promises", () => ({
+  lookup: vi.fn(async (host: string) => [
+    host === "localhost" ? { address: "127.0.0.1", family: 4 }
+      : host === "intranet.example" ? { address: "10.0.0.7", family: 4 }
+      : { address: "93.184.216.34", family: 4 },
+  ]),
+}));
+
+describe("assertPublicUrl", () => {
+  it.each([
+    "http://localhost:3000/",
+    "http://127.0.0.1/admin",
+    "http://[::1]:3000/",
+    "http://[::ffff:127.0.0.1]/",
+    "http://169.254.169.254/latest/meta-data/",
+    "http://192.168.1.1/",
+    "http://intranet.example/wiki",
+  ])("should refuse %s", async (url) => {
+    await expect(assertPublicUrl(url)).rejects.toThrow("private address");
+  });
+
+  it("should allow a public host", async () => {
+    await expect(assertPublicUrl("https://example.com/article")).resolves.toBeUndefined();
+  });
+
+  it("should refuse a public URL that redirects to a private address, without fetching it", async () => {
+    const mockFetch = vi.fn().mockResolvedValue(new Response(null, { status: 302, headers: { location: "http://127.0.0.1:3000/" } }));
+    vi.stubGlobal("fetch", mockFetch);
+
+    await expect(fetchUrlContent("https://example.com/redirect")).rejects.toThrow("private address");
+    expect(mockFetch).toHaveBeenCalledTimes(1);
+
+    vi.unstubAllGlobals();
+  });
+});
 
 describe("detectUrl", () => {
   it("should return null for plain text without URLs", () => {

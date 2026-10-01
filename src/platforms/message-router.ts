@@ -37,9 +37,18 @@ export function createMessageRouter(
   repo: InvestigationRepository,
   baseUrl: string,
 ): MessageRouter {
+  // ponytail: in-memory set, never pruned. It only closes the gap before the row exists; the row is the record.
+  const routing = new Set<string>();
   return {
     async route(message: PlatformMessage, responder: PlatformResponder): Promise<void> {
       const chatId = message.chatId;
+      // A platform delivers a message again when our acknowledgement was slow: it is still one message.
+      const key = `${message.platform}:${chatId}:${message.messageId}`;
+      if (routing.has(key) || repo.hasPlatformMessage(message.platform, chatId, message.messageId)) {
+        logger.info({ chatId, messageId: message.messageId }, "Message already being handled, ignoring redelivery");
+        return;
+      }
+      routing.add(key);
 
       logger.info(
         { chatId, platform: message.platform, isForwarded: message.isForwarded },

@@ -1,0 +1,15 @@
+# The driver image: the app image plus the Antithesis SDK, the workload, the scripted model and the test template.
+# Built from the REPO ROOT (run.sh does): docker build -f deploy/antithesis/Dockerfile.driver --build-arg BASE=<app image> .
+# The same image runs the stub (stub/server.ts): the scripted model and the third parties, no token in any image.
+ARG BASE
+FROM ${BASE}
+WORKDIR /app
+# Build time only: at run time there is no network.
+COPY deploy/antithesis/package.json deploy/antithesis/
+RUN cd deploy/antithesis && npm install --omit=dev --no-audit --no-fund
+COPY deploy/antithesis/driver deploy/antithesis/driver
+COPY deploy/antithesis/stub deploy/antithesis/stub
+# The test template, where Antithesis looks for it.
+COPY deploy/antithesis/test /opt/antithesis/test
+RUN chmod +x /opt/antithesis/test/v1/forwardcheck/*
+CMD ["sleep", "infinity"]

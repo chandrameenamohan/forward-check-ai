@@ -135,6 +135,38 @@ export class InvestigationRepository {
     return toInvestigation(row);
   }
 
+  /** True when this platform message already has an investigation (a webhook delivered again). */
+  hasPlatformMessage(platform: string, chatId: string, messageId: string): boolean {
+    return this.db
+      .prepare("SELECT 1 FROM investigations WHERE source_platform = ? AND platform_chat_id = ? AND platform_message_id = ?")
+      .get(platform, chatId, messageId) !== undefined;
+  }
+
+  /**
+   * Mark every investigation a dead process left running as failed. Call once at startup:
+   * nothing is running yet, so whatever is pending or investigating will never finish.
+   */
+  failInterrupted(): Array<{ id: string; platform: string | null; chatId: string | null }> {
+    const interrupted = this.db
+      .prepare("SELECT id, source_platform AS platform, platform_chat_id AS chatId FROM investigations WHERE status IN ('pending', 'investigating')")
+      .all() as Array<{ id: string; platform: string | null; chatId: string | null }>;
+    this.db.prepare("UPDATE investigations SET status = 'failed' WHERE status IN ('pending', 'investigating')").run();
+    return interrupted;
+  }
+
+  /** Copy a finished investigation's results onto another row (the same claim, asked again). */
+  copyResults(fromId: string, toId: string): void {
+    this.db
+      .prepare(
+        `UPDATE investigations SET
+           (extracted_claim, classifier_result, search_strategy, agent_reports, challenge_report, final_verdict, source_url, pipeline_duration_ms, total_cost_usd, status, completed_at)
+           = (SELECT extracted_claim, classifier_result, search_strategy, agent_reports, challenge_report, final_verdict, source_url, 0, 0, status, datetime('now')
+              FROM investigations WHERE id = ?)
+         WHERE id = ?`,
+      )
+      .run(fromId, toId);
+  }
+
   updateSourceUrl(id: string, sourceUrl: string): void {
     this.db
       .prepare("UPDATE investigations SET source_url = ? WHERE id = ?")

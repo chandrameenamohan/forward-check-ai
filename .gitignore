@@ -11,3 +11,6 @@ coverage/
 quality-report.md
 tmp/
 eval/results/
+
+# Antithesis harness run state
+deploy/antithesis/.run/

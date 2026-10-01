@@ -34,7 +34,12 @@ export function createApp(repo?: InvestigationRepository, eventBus?: PipelineEve
   const app = express();
 
   // JSON body parsing
-  app.use(express.json());
+  // The raw bytes are kept: a webhook's signature is over what was sent, not over a re-serialisation of it.
+  app.use(express.json({
+    verify: (req, _res, buf) => {
+      (req as unknown as Record<string, unknown>)["rawBody"] = buf.toString("utf8");
+    },
+  }));
 
   // EJS view engine
   app.set("view engine", "ejs");

@@ -43,6 +43,7 @@ function makeMockPipeline(result?: Partial<InvestigateResult>): InvestigationPip
 function makeMockRepo(): InvestigationRepository {
   return {
     updateStatus: vi.fn(),
+    hasPlatformMessage: vi.fn().mockReturnValue(false),
   } as unknown as InvestigationRepository;
 }
 
@@ -233,5 +234,28 @@ describe("createMessageRouter", () => {
       "Watch Live Investigation",
       "https://example.com/live/inv-live",
     );
+  });
+
+  it("should investigate a message once when its delivery is repeated", async () => {
+    const pipeline = makeMockPipeline();
+    const router = createMessageRouter(pipeline, repo, "https://example.com");
+    const message = makePlatformMessage();
+
+    await Promise.all([
+      router.route(message, makeMockResponder()),
+      router.route(message, makeMockResponder()),
+    ]);
+
+    expect(pipeline.investigate).toHaveBeenCalledTimes(1);
+  });
+
+  it("should ignore a redelivered message that already has an investigation", async () => {
+    vi.mocked(repo.hasPlatformMessage).mockReturnValue(true);
+    const pipeline = makeMockPipeline();
+    const router = createMessageRouter(pipeline, repo, "https://example.com");
+
+    await router.route(makePlatformMessage(), makeMockResponder());
+
+    expect(pipeline.investigate).not.toHaveBeenCalled();
   });
 });

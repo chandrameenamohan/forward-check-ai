@@ -1,0 +1,91 @@
+# ForwardCheck's hermetic slice: the app's own image, unchanged, with everything outside it scripted and no internet.
+# Its own compose project, every network internal, no published port. run.sh drives it.
+name: forwardcheck-antithesis
+
+x-driver: &driver
+  image: forwardcheck-antithesis-driver
+  environment:
+    STATE: /state
+    APP_URL: http://app:3000
+    TOXIPROXY_URL: http://toxiproxy:8474
+    DATABASE_PATH: /data/forwardcheck.db
+    WHATSAPP_APP_SECRET: harness-app-secret
+  volumes:
+    - ./.run:/state
+    - data:/data
+  networks: [main]
+
+services:
+  # The scripted model (:8001), a news site (:8002), and Brave / Google Fact Check / WhatsApp Graph (:443, by Host).
+  stub:
+    image: forwardcheck-antithesis-driver
+    command: ["node", "--import", "tsx/esm", "/app/deploy/antithesis/stub/server.ts"]
+    environment:
+      STATE: /state
+      CERTS: /certs
+      STUB_MODEL_LATENCY_MS: "250"
+    volumes:
+      - ./.run:/state
+      - ./.run/certs:/certs:ro
+    networks: [main]
+
+  # Between the app and everything it calls. One listener per dependency, so a fault can be aimed at one.
+  # The three https names are hard-coded in the app: each is an alias of this container on a network of its own,
+  # and the listener binds that network's address.
+  toxiproxy:
+    image: ghcr.io/shopify/toxiproxy:2.12.0
+    command: ["-host=0.0.0.0", "-config=/config/toxiproxy.json"]
+    volumes:
+      - ./toxiproxy:/config:ro
+    depends_on: [stub]
+    networks:
+      main: {}
+      news: { aliases: [news.example] }
+      brave: { aliases: [api.search.brave.com] }
+      factcheck: { aliases: [factchecktools.googleapis.com] }
+      graph: { aliases: [graph.facebook.com] }
+
+  # The image the repo's Dockerfile builds, UNCHANGED. Everything below is configuration.
+  app:
+    image: forwardcheck-app
+    environment:
+      ANTHROPIC_API_KEY: scripted-model-no-key
+      ANTHROPIC_BASE_URL: http://toxiproxy:8001
+      TELEGRAM_BOT_TOKEN: "0:not-in-the-slice"
+      BRAVE_SEARCH_API_KEY: harness
+      GOOGLE_FACTCHECK_API_KEY: harness
+      WHATSAPP_ENABLED: "true"
+      WHATSAPP_PHONE_NUMBER_ID: harness-phone
+      WHATSAPP_ACCESS_TOKEN: harness
+      WHATSAPP_VERIFY_TOKEN: harness
+      WHATSAPP_APP_SECRET: harness-app-secret
+      BASE_URL: http://app:3000
+      LOG_LEVEL: info
+      # The stub's certificate for the three https names: trusted by configuration, not by code.
+      NODE_EXTRA_CA_CERTS: /certs/cert.pem
+    volumes:
+      - data:/data
+      - ./.run/certs:/certs:ro
+    depends_on: [toxiproxy]
+    networks: [main, news, brave, factcheck, graph]
+
+  # The workload and the judge. It reads the app's database and the stub's log directly, never through toxiproxy.
+  driver:
+    <<: *driver
+  # A second address, for the workload that must exhaust one address's rate limit without spending the driver's.
+  burst:
+    <<: *driver
+
+networks:
+  main: { internal: true }
+  # The app refuses to fetch a private address for a user. The news site therefore lives on a network whose
+  # range is a public one: still internal, still no route out.
+  news:
+    internal: true
+    ipam: { config: [{ subnet: 11.11.11.0/24 }] }
+  brave: { internal: true }
+  factcheck: { internal: true }
+  graph: { internal: true }
+
+volumes:
+  data:

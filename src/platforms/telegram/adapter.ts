@@ -166,6 +166,11 @@ export class TelegramAdapter implements PlatformAdapter {
     return this.bot.botInfo?.username;
   }
 
+  /** Send a plain message outside any investigation (e.g. an apology after a restart). */
+  async notify(chatId: string, text: string): Promise<void> {
+    await new TelegramResponder(this.bot.api).sendText(chatId, text);
+  }
+
   async start(): Promise<void> {
     this.responder = new TelegramResponder(this.bot.api);
     this.startBotWithRetry();
