@@ -1,6 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import type { MessageCreateParamsNonStreaming, Message } from "@anthropic-ai/sdk/resources/messages/messages.js";
 import { createLogger } from "../config/logger.js";
+import { sdkCreateMessage } from "./agent-sdk.js";
 
 const logger = createLogger({ level: "info" });
 
@@ -32,9 +33,12 @@ export interface CreateMessageResult {
  */
 export class ClaudeClient {
   private readonly client: Anthropic;
+  private readonly apiKey: string | undefined;
 
-  constructor(apiKey: string) {
-    this.client = new Anthropic({ apiKey });
+  /** Without an API key, calls go through the Claude Agent SDK (local Claude Code login). */
+  constructor(apiKey?: string) {
+    this.apiKey = apiKey;
+    this.client = new Anthropic({ apiKey: apiKey || "unused" });
   }
 
   /** Expose client for internal mocking in tests */
@@ -50,6 +54,21 @@ export class ClaudeClient {
   async createMessage(
     params: MessageCreateParamsNonStreaming,
   ): Promise<CreateMessageResult> {
+    if (!this.apiKey) {
+      const result = await sdkCreateMessage(params);
+      logger.info(
+        {
+          model: params.model,
+          inputTokens: result.response.usage.input_tokens,
+          outputTokens: result.response.usage.output_tokens,
+          costUsd: result.costUsd.toFixed(6),
+          stopReason: result.response.stop_reason,
+        },
+        "Claude Agent SDK call completed",
+      );
+      return result;
+    }
+
     const effectiveParams =
       params.temperature !== undefined || params.thinking
         ? params

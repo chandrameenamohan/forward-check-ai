@@ -2,7 +2,8 @@ import { z } from "zod";
 import dotenv from "dotenv";
 
 export const envSchema = z.object({
-  ANTHROPIC_API_KEY: z.string().min(1, "ANTHROPIC_API_KEY is required"),
+  // Optional: when unset, the Claude Agent SDK uses the local Claude Code login
+  ANTHROPIC_API_KEY: z.string().optional(),
   TELEGRAM_BOT_TOKEN: z.string().min(1, "TELEGRAM_BOT_TOKEN is required"),
   TELEGRAM_BOT_USERNAME: z.string().default("forward_check_beta_bot"),
   BRAVE_SEARCH_API_KEY: z.string().optional(),

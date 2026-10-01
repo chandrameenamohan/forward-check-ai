@@ -212,6 +212,11 @@ Construct the strongest possible counter-argument to the investigator consensus.
     challengeInput["thinkingExcerpt"] = thinkingExcerpt;
   }
 
+  // Truncate the model's own excerpt if it exceeds 500 chars to prevent Zod rejection
+  if (typeof challengeInput["thinkingExcerpt"] === "string") {
+    challengeInput["thinkingExcerpt"] = challengeInput["thinkingExcerpt"].substring(0, 500);
+  }
+
   // Validate with Zod schema
   const validation = ChallengeReportSchema.safeParse(challengeInput);
   if (!validation.success) {

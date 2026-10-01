@@ -75,6 +75,7 @@ export function createChatRouter(
       );
     }).catch((err: unknown) => {
       logger.error({ err, id }, "Chat pipeline failed");
+      repo.updateStatus(id, "failed");
     });
 
     res.status(201).json({

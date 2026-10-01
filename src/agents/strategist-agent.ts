@@ -238,6 +238,11 @@ export async function runStrategist(
     strategyInput["thinkingExcerpt"] = thinkingExcerpt;
   }
 
+  // Truncate the model's own excerpt if it exceeds 500 chars to prevent Zod rejection
+  if (typeof strategyInput["thinkingExcerpt"] === "string") {
+    strategyInput["thinkingExcerpt"] = strategyInput["thinkingExcerpt"].substring(0, 500);
+  }
+
   // Validate with Zod schema
   const validation = SearchStrategySchema.safeParse(strategyInput);
   if (!validation.success) {

@@ -344,7 +344,7 @@ Follow the 4-phase process (Strategize → Synthesize → Evaluate → Verdict).
       }
       return toolRegistry.execute(name, input);
     },
-    timeoutMs: 180_000,
+    timeoutMs: 300_000, // search without a Brave key is slow (Claude WebSearch fallback)
   });
 
   let totalCostUsd = result.totalCostUsd;
