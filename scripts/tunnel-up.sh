@@ -5,16 +5,24 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 export PATH="/Applications/Docker.app/Contents/Resources/bin:$PATH"
 
-docker compose up -d --build app tunnel
+# The tunnel first, and left alone if it is already running: its address changes whenever it restarts.
+docker compose up -d tunnel
+
+# Ask the tunnel itself for its address. (Its log also holds the addresses of earlier starts.)
 url=""
 for _ in $(seq 1 30); do
-  # The newest address in the log: the tunnel prints a new one each time it starts.
-  url="$(docker compose logs tunnel 2>&1 | grep -oE 'https://[a-z0-9-]+\.trycloudflare\.com' | tail -1 || true)"
-  [ -n "$url" ] && break
+  host="$(curl -s --max-time 3 http://127.0.0.1:20241/quicktunnel | sed -nE 's/.*"hostname":"([^"]+)".*/\1/p' || true)"
+  [ -n "$host" ] && { url="https://$host"; break; }
   sleep 1
 done
-[ -n "$url" ] || { echo "the tunnel printed no address; see: docker compose logs tunnel"; exit 1; }
+[ -n "$url" ] || { echo "the tunnel reported no address; see: docker compose logs tunnel"; exit 1; }
 
-# Only the app is recreated: the tunnel keeps running, so the address stays the same.
-BASE_URL="$url" docker compose up -d --no-deps app
-echo "ForwardCheck is live at $url/chat"
+BASE_URL="$url" docker compose up -d --build app
+
+# Do not announce an address that does not answer yet.
+for _ in $(seq 1 30); do
+  [ "$(curl -s -o /dev/null -w '%{http_code}' --max-time 5 "$url/health")" = 200 ] && { echo "ForwardCheck is live at $url/chat"; exit 0; }
+  sleep 2
+done
+echo "the app is up, but $url did not answer; see: docker compose logs tunnel"
+exit 1

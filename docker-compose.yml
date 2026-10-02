@@ -21,11 +21,14 @@ services:
     restart: unless-stopped
 
   # A Cloudflare quick tunnel: a public https address for the app, no account needed.
-  # The address is new each time this container starts; scripts/tunnel-up.sh reads it from the log.
+  # The address is new each time this container starts; scripts/tunnel-up.sh asks the tunnel for it.
+  # No depends_on: recreating the app must not restart the tunnel, or the address changes under it.
   tunnel:
     image: cloudflare/cloudflared:latest
-    command: tunnel --no-autoupdate --url http://app:3000
-    depends_on: [app]
+    command: tunnel --no-autoupdate --metrics 0.0.0.0:2000 --url http://app:3000
+    ports:
+      # Where the tunnel reports its own address (loopback only).
+      - "127.0.0.1:20241:2000"
     restart: unless-stopped
 
 volumes:
