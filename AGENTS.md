@@ -305,3 +305,83 @@ Telegram Message → Classifier (Haiku) → Claim Strategist (Opus 4.6)
 - **WhatsApp Task 8.1:** Added optional `whatsAppAdapter?: WhatsAppAdapter` parameter to `createApp()` in `src/server/app.ts` (7th positional parameter, backward compatible). When provided, mounts `whatsAppAdapter.getWebhookRouter()` on the Express app BEFORE the 404 handler so webhook routes are reachable. When not provided, no WhatsApp routes are mounted — `GET /webhook/whatsapp` returns 404. Import is type-only (`import type { WhatsAppAdapter }`) to avoid pulling in WhatsApp module code when not used. 4 tests in `app-whatsapp.test.ts`: 404 when not configured, 200 verification when configured, 403 for invalid token, existing routes unaffected. All 853 tests + 8 skipped pass with 0 regressions. `npx tsc --noEmit` passes.
 - **WhatsApp Task 8.2:** Wired `WhatsAppAdapter` into `src/index.ts` entry point. Added imports for `WhatsAppAdapter` and `createMessageRouter`. Created shared `messageRouter = createMessageRouter(pipeline, repo, baseUrl)` (step 10) for all platform adapters. Conditional WhatsApp initialization (step 12): checks `config.WHATSAPP_ENABLED && config.WHATSAPP_PHONE_NUMBER_ID && config.WHATSAPP_ACCESS_TOKEN && config.WHATSAPP_VERIFY_TOKEN` — creates adapter, passes to `createApp()`, logs "WhatsApp adapter initialized". When `WHATSAPP_ENABLED` is true but credentials are missing, logs a warning with the missing var names. WhatsApp adapter passed to `createApp()` (step 13) so webhook routes are mounted. `whatsAppAdapter.start()` called after Telegram adapter start (step 16, no-op for webhook-based but logs readiness). Shutdown handler (step 17) calls `whatsAppAdapter?.stop()` alongside Telegram stop. Base URL resolution moved earlier (step 9) since both adapters need it. 3 integration tests in `app-whatsapp-startup.test.ts`: start without WhatsApp, initialize with env vars present, warning on missing credentials. All 856 tests + 8 skipped pass with 0 regressions (4 pre-existing API credit failures unrelated). `npx tsc --noEmit` passes.
 - **WhatsApp Task 8.3:** Conditionally shows WhatsApp CTA buttons on the landing page when WhatsApp is enabled. Added `whatsappEnabled: boolean` and `whatsappPhoneNumber: string | null` template locals to the landing route in `app.ts` — derived from `!!whatsAppAdapter` and an optional `whatsappPhoneNumber` 8th param to `createApp()`. Template renders `fc-cta-whatsapp` button with `wa.me/<phone_number>` deep link in both hero CTAs and final CTA section, guarded by `<% if (whatsappEnabled && whatsappPhoneNumber) { ... } %>`. WhatsApp brand color `#25D366` background, `#fff` text, WhatsApp SVG logo icon, matching box-shadow glow. Hero button says "Try it on WhatsApp", final CTA says "Open in WhatsApp". Styles in `_landing-styles.ejs`: `.fc-cta-whatsapp` class with hover lift + glow transition, added to `.fc-cta-arrow:hover` rule. 6 tests in `landing-whatsapp.test.ts`. All 862 tests + 8 skipped pass with 0 regressions (6 pre-existing API credit failures unrelated). `npx tsc --noEmit` passes.
+
+<!-- BEGIN BEADS INTEGRATION v:1 profile:minimal hash:970c3bf2 -->
+## Beads Issue Tracker
+
+This project uses **bd (beads)** for issue tracking. Run `bd prime` to see full workflow context and commands.
+
+### Quick Reference
+
+```bash
+bd ready              # Find available work
+bd show <id>          # View issue details
+bd update <id> --claim  # Claim work
+bd close <id>         # Complete work
+```
+
+### Rules
+
+- Use `bd` for ALL task tracking — do NOT use TodoWrite, TaskCreate, or markdown TODO lists
+- Run `bd prime` for detailed command reference and session close protocol
+- Use `bd remember` for persistent knowledge — do NOT use MEMORY.md files
+
+**Architecture in one line:** issues live in a local Dolt DB; sync uses `refs/dolt/data` on your git remote; `.beads/issues.jsonl` is a passive export. See https://github.com/gastownhall/beads/blob/main/docs/SYNC_CONCEPTS.md for details and anti-patterns.
+
+## Agent Context Profiles
+
+The managed Beads block is task-tracking guidance, not permission to override repository, user, or orchestrator instructions.
+
+- **Conservative (default)**: Use `bd` for task tracking. Do not run git commits, git pushes, or Dolt remote sync unless explicitly asked. At handoff, report changed files, validation, and suggested next commands.
+- **Minimal**: Keep tool instruction files as pointers to `bd prime`; use the same conservative git policy unless active instructions say otherwise.
+- **Team-maintainer**: Only when the repository explicitly opts in, agents may close beads, run quality gates, commit, and push as part of session close. A current "do not commit" or "do not push" instruction still wins.
+
+## Session Completion
+
+This protocol applies when ending a Beads implementation workflow. It is subordinate to explicit user, repository, and orchestrator instructions.
+
+1. **File issues for remaining work** - Create beads for anything that needs follow-up
+2. **Run quality gates** (if code changed) - Tests, linters, builds
+3. **Update issue status** - Close finished work, update in-progress items
+4. **Handle git/sync by active profile**:
+   ```bash
+   # Conservative/minimal/default: report status and proposed commands; wait for approval.
+   git status
+
+   # Team-maintainer opt-in only, unless current instructions forbid it:
+   git pull --rebase
+   bd dolt push
+   git push
+   git status
+   ```
+5. **Hand off** - Summarize changes, validation, issue status, and any blocked sync/commit/push step
+
+**Critical rules:**
+- Explicit user or orchestrator instructions override this Beads block.
+- Do not commit or push without clear authority from the active profile or the current user request.
+- If a required sync or push is blocked, stop and report the exact command and error.
+<!-- END BEADS INTEGRATION -->
+
+<!-- BEGIN BEADS CODEX SETUP: generated by bd setup codex -->
+## Beads Issue Tracker
+
+Use Beads (`bd`) for durable task tracking in repositories that include it. Use the `beads` skill at `.agents/skills/beads/SKILL.md` (project install) or `~/.agents/skills/beads/SKILL.md` (global install) for Beads workflow guidance, then use the `bd` CLI for issue operations.
+
+### Quick Reference
+
+```bash
+bd ready                # Find available work
+bd show <id>            # View issue details
+bd update <id> --claim  # Claim work
+bd close <id>           # Complete work
+bd prime                # Refresh Beads context
+```
+
+### Rules
+
+- Use `bd` for all task tracking; do not create markdown TODO lists.
+- Run `bd prime` when Beads context is missing or stale. Codex 0.129.0+ can load Beads context automatically through native hooks; use `/hooks` to inspect or toggle them.
+- Keep persistent project memory in Beads via `bd remember`; do not create ad hoc memory files.
+
+**Architecture in one line:** issues live in a local Dolt DB; sync uses `refs/dolt/data` on your git remote; `.beads/issues.jsonl` is a passive export. See https://github.com/gastownhall/beads/blob/main/docs/SYNC_CONCEPTS.md for details and anti-patterns.
+<!-- END BEADS CODEX SETUP -->

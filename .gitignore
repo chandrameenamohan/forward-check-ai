@@ -20,3 +20,8 @@ deploy/antithesis/.run/
 
 # Browser automation scratch files
 .playwright-mcp/
+
+# Beads / Dolt files (added by bd init)
+.dolt/
+.beads-credential-key
+.beads/proxieddb/
