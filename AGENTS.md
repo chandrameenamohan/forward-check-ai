@@ -1,5 +1,14 @@
 # AGENTS.md — ForwardCheck-AI Operational Guide
 
+## Start here
+
+- **Read `HANDOFF.md` first.** It holds the current state (what runs where, what is merged, the owner's rules)
+  and supersedes anything below that disagrees with it.
+- **Open work is in beads:** `bd ready` lists it, `bd show fc-f2v` is the handoff itself. The beads database is
+  local to this machine (`.beads/`, not committed).
+- **Never read or print `.env`.** Scripts may load it and print results, never values.
+- **To start the app:** `scripts/tunnel-up.sh` (Docker app + Cloudflare tunnel; prints the public address).
+
 ## Project Info
 
 - **Name:** ForwardCheck-AI
