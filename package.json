@@ -26,11 +26,13 @@
     "@types/jsdom": "^27.0.0",
     "@types/node": "^25.2.3",
     "@vitest/coverage-v8": "^4.0.18",
+    "antithesis-sdk": "^0.2.0",
     "typescript": "^5.9.3",
     "vitest": "^4.0.18"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.74.0",
+    "@anthropic-ai/claude-agent-sdk": "^0.3.286",
+    "@anthropic-ai/sdk": "^0.131.0",
     "@mozilla/readability": "^0.6.0",
     "better-sqlite3": "^12.6.2",
     "dotenv": "^17.2.4",

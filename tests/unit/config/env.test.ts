@@ -14,20 +14,14 @@ describe("Environment configuration", () => {
     expect(config.TELEGRAM_BOT_TOKEN).toBe("test-bot-token");
   });
 
-  it("should throw on missing ANTHROPIC_API_KEY", () => {
+  it("should allow missing ANTHROPIC_API_KEY (Claude Agent SDK login is used instead)", () => {
     const env = { TELEGRAM_BOT_TOKEN: "test-bot-token" };
 
-    expect(() => loadEnv(env)).toThrow();
+    expect(loadEnv(env).ANTHROPIC_API_KEY).toBeUndefined();
   });
 
   it("should throw on missing TELEGRAM_BOT_TOKEN", () => {
     const env = { ANTHROPIC_API_KEY: "test-key-123" };
-
-    expect(() => loadEnv(env)).toThrow();
-  });
-
-  it("should throw on empty ANTHROPIC_API_KEY", () => {
-    const env = { ANTHROPIC_API_KEY: "", TELEGRAM_BOT_TOKEN: "test-bot-token" };
 
     expect(() => loadEnv(env)).toThrow();
   });

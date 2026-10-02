@@ -318,7 +318,7 @@ describe("Live verdict page routes", () => {
     const html = await res.text();
 
     expect(html).toContain("Haiku");
-    expect(html).toContain("Opus 4.6");
+    expect(html).toContain("Fable 5.1");
     expect(html).toContain("fc-model-badge");
   });
 

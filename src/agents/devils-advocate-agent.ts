@@ -91,11 +91,6 @@ const SUBMIT_CHALLENGE_TOOL = {
         type: "string" as const,
         description: "Brief summary of the counter-argument and its outcome.",
       },
-      thinkingExcerpt: {
-        type: "string" as const,
-        description: "A brief excerpt from your thinking process (max 500 chars). Displayed on the verdict page.",
-        maxLength: 500,
-      },
     },
     required: [
       "challenges",
@@ -103,7 +98,6 @@ const SUBMIT_CHALLENGE_TOOL = {
       "suggestedConfidenceAdjustment",
       "counterArgumentSucceeded",
       "counterArgumentSummary",
-      "thinkingExcerpt",
     ],
   },
 };
@@ -208,8 +202,14 @@ Construct the strongest possible counter-argument to the investigator consensus.
 
   // Inject thinking excerpt from actual thinking block
   const challengeInput = toolUseBlock.input as Record<string, unknown>;
-  if (thinkingExcerpt) {
-    challengeInput["thinkingExcerpt"] = thinkingExcerpt;
+  // The model is never asked for its reasoning (a field like that is refused as reasoning extraction).
+  // The excerpt shown on the page is the thinking summary the API returns, or else the counter-argument's summary.
+  challengeInput["thinkingExcerpt"] = thinkingExcerpt
+    || (typeof challengeInput["counterArgumentSummary"] === "string" ? challengeInput["counterArgumentSummary"] : "");
+
+  // Truncate the model's own excerpt if it exceeds 500 chars to prevent Zod rejection
+  if (typeof challengeInput["thinkingExcerpt"] === "string") {
+    challengeInput["thinkingExcerpt"] = challengeInput["thinkingExcerpt"].substring(0, 500);
   }
 
   // Validate with Zod schema

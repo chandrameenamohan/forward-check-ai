@@ -1,5 +1,6 @@
 import type { Tool } from "@anthropic-ai/sdk/resources/messages/messages.js";
 import { createLogger } from "../config/logger.js";
+import { claudeWebSearch } from "../services/agent-sdk.js";
 
 const logger = createLogger({ level: "info" });
 
@@ -41,6 +42,16 @@ export async function braveWebSearch(
   count: number = 5,
   apiKey: string,
 ): Promise<BraveSearchResponse> {
+  if (!apiKey) {
+    try {
+      return { results: await claudeWebSearch(query, count) };
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      logger.error({ error: message }, "Claude web search fallback failed");
+      return { results: [] };
+    }
+  }
+
   const url = new URL("https://api.search.brave.com/res/v1/web/search");
   url.searchParams.set("q", query);
   url.searchParams.set("count", String(count));

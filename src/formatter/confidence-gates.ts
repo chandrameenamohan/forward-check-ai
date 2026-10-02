@@ -7,6 +7,8 @@ type GatedCategory = "likely-true" | "partially-true" | "unverified" | "likely-f
 
 const BYPASS_CATEGORIES = new Set(["satire", "opinion"]);
 
+const POLES = new Set(["likely-true", "likely-false"]);
+
 interface Gate {
   min: number;
   max: number;
@@ -48,7 +50,12 @@ export function enforceConfidenceGates(verdict: FinalVerdict): FinalVerdict {
     return { ...verdict };
   }
 
-  const correctCategory = getCategoryForConfidence(verdict.confidence);
+  let correctCategory: FinalVerdict["category"] = getCategoryForConfidence(verdict.confidence);
+  // The Judge said one pole and scored the other (likely-false at 97): it contradicted itself, and the score
+  // alone must not turn its verdict into the opposite one. Say what is known: nothing was verified.
+  if (POLES.has(verdict.category) && POLES.has(correctCategory) && correctCategory !== verdict.category) {
+    correctCategory = "unverified";
+  }
 
   if (correctCategory !== verdict.category) {
     logger.warn(

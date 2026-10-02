@@ -60,6 +60,11 @@ export class WhatsAppAdapter implements PlatformAdapter {
     await this.messageRouter.route(message, this.responder);
   }
 
+  /** Send a plain message outside any investigation (e.g. an apology after a restart). */
+  async notify(chatId: string, text: string): Promise<void> {
+    await this.responder.sendText(chatId, text);
+  }
+
   /**
    * Returns the Express router containing GET (verification) and
    * POST (incoming messages) webhook endpoints.

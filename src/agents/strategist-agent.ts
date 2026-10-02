@@ -38,7 +38,7 @@ function deepParseJsonStrings(obj: unknown): unknown {
 
 const STRATEGIST_SYSTEM_PROMPT = `You are a Claim Strategist — an assignment editor at an investigative newsroom. Your job is to PLAN an investigation before any searching begins.
 
-You will receive a factual claim and its classification. Using your extended thinking, develop a comprehensive investigation strategy.
+You will receive a factual claim and its classification. Develop a comprehensive investigation strategy.
 
 Your strategy must include:
 
@@ -176,13 +176,8 @@ const SUBMIT_STRATEGY_TOOL = {
         },
         required: ["whatWouldProveTrue", "whatWouldProveFalse"],
       },
-      thinkingExcerpt: {
-        type: "string" as const,
-        description: "A brief excerpt from your thinking process (max 500 chars). This will be displayed on the verdict page.",
-        maxLength: 500,
-      },
     },
-    required: ["claimCharacteristics", "investigatorGuidance", "falsificationCriteria", "thinkingExcerpt"],
+    required: ["claimCharacteristics", "investigatorGuidance", "falsificationCriteria"],
   },
 };
 
@@ -233,9 +228,15 @@ export async function runStrategist(
   // so we build a new object tree instead of mutating in place).
   const strategyInput = deepParseJsonStrings(toolUseBlock.input) as Record<string, unknown>;
 
-  // Inject thinking excerpt from actual thinking block (overrides what the model may have put)
-  if (thinkingExcerpt) {
-    strategyInput["thinkingExcerpt"] = thinkingExcerpt;
+  // The model is never asked for its reasoning (a field like that is refused as reasoning extraction).
+  // The excerpt shown on the page is the thinking summary the API returns, or else the strategy's own assessment.
+  const characteristics = strategyInput["claimCharacteristics"] as { verifiabilityAssessment?: unknown } | undefined;
+  strategyInput["thinkingExcerpt"] = thinkingExcerpt
+    || (typeof characteristics?.verifiabilityAssessment === "string" ? characteristics.verifiabilityAssessment : "");
+
+  // Truncate the model's own excerpt if it exceeds 500 chars to prevent Zod rejection
+  if (typeof strategyInput["thinkingExcerpt"] === "string") {
+    strategyInput["thinkingExcerpt"] = strategyInput["thinkingExcerpt"].substring(0, 500);
   }
 
   // Validate with Zod schema

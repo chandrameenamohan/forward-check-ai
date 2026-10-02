@@ -1,6 +1,6 @@
 import type { MessageParam } from "@anthropic-ai/sdk/resources/messages/messages.js";
 import type { ClaudeClient } from "../services/claude-client.js";
-import { MODELS } from "../services/claude-client.js";
+import { judgeModel } from "../services/claude-client.js";
 import { FinalVerdictSchema, type FinalVerdict } from "../schemas/final-verdict.js";
 import type { AgentReport } from "../schemas/agent-report.js";
 import type { ChallengeReport } from "../schemas/challenge-report.js";
@@ -77,14 +77,14 @@ DO NOT use confidence to express "how certain you are in your verdict." A \`like
 
 **Devil's Advocate Outcome**: Report whether the DA's counter-argument failed, partially succeeded, or succeeded.
 
-IMPORTANT: Your thinking summary will be displayed to end users on the verdict page. Make it clear, concise, and explain your reasoning process.
+IMPORTANT: The \`summary\` and \`reasoning\` you submit are displayed to end users on the verdict page. Make them clear and concise.
 
 When ready, call the submit_verdict tool with your complete verdict.`;
 
 /** Tool definition for submit_verdict — structured final verdict output */
 const SUBMIT_VERDICT_TOOL = {
   name: "submit_verdict",
-  description: "Submit the final verdict with category, confidence decomposition, reasoning, manipulation techniques, and thinking summary.",
+  description: "Submit the final verdict with category, confidence decomposition, reasoning, and manipulation techniques.",
   input_schema: {
     type: "object" as const,
     properties: {
@@ -203,10 +203,6 @@ const SUBMIT_VERDICT_TOOL = {
         type: "boolean" as const,
         description: "Whether deep reasoning mode was activated for this investigation.",
       },
-      thinkingSummary: {
-        type: "string" as const,
-        description: "Summary of your thinking process. This will be displayed to end users on the verdict page. Make it clear and concise.",
-      },
     },
     required: [
       "category",
@@ -219,7 +215,6 @@ const SUBMIT_VERDICT_TOOL = {
       "sources",
       "whatWouldChangeMyMind",
       "devilsAdvocateOutcome",
-      "thinkingSummary",
     ],
   },
 };
@@ -308,7 +303,7 @@ export async function runJudge(
 
   const result = await runAgent({
     client,
-    model: MODELS.OPUS,
+    model: judgeModel(),
     systemPrompt: JUDGE_SYSTEM_PROMPT,
     messages: [
       {
@@ -344,7 +339,7 @@ Follow the 4-phase process (Strategize → Synthesize → Evaluate → Verdict).
       }
       return toolRegistry.execute(name, input);
     },
-    timeoutMs: 180_000,
+    timeoutMs: 600_000, // max effort plus its own searches: the slowest step by far
   });
 
   let totalCostUsd = result.totalCostUsd;
@@ -374,7 +369,7 @@ Follow the 4-phase process (Strategize → Synthesize → Evaluate → Verdict).
 
     const retryResult = await runAgent({
       client,
-      model: MODELS.OPUS,
+      model: judgeModel(),
       systemPrompt: JUDGE_SYSTEM_PROMPT,
       messages: retryMessages,
       maxTurns: 1,
@@ -406,9 +401,10 @@ Follow the 4-phase process (Strategize → Synthesize → Evaluate → Verdict).
 
   // Inject thinking summary from actual thinking blocks
   const verdictInput = submitCall.input as Record<string, unknown>;
-  if (thinkingSummary) {
-    verdictInput["thinkingSummary"] = thinkingSummary;
-  }
+  // The model is never asked for its reasoning (a field like that is refused as reasoning extraction).
+  // The excerpt shown on the page is the thinking summary the API returns, or else the verdict's own reasoning.
+  verdictInput["thinkingSummary"] = thinkingSummary
+    || (typeof verdictInput["reasoning"] === "string" ? verdictInput["reasoning"].substring(0, 500) : "");
 
   // Truncate summary if it exceeds 500 chars to prevent Zod rejection
   if (typeof verdictInput["summary"] === "string" && verdictInput["summary"].length > 500) {

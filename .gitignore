@@ -2,6 +2,8 @@ node_modules/
 dist/
 data/
 .env
+.env.*
+!.env.example
 .ralph-logs/
 *.db
 *.db-wal
@@ -11,3 +13,15 @@ coverage/
 quality-report.md
 tmp/
 eval/results/
+
+# Antithesis harness run state
+deploy/antithesis/.run/
+.gstack/
+
+# Browser automation scratch files
+.playwright-mcp/
+
+# Beads / Dolt files (added by bd init)
+.dolt/
+.beads-credential-key
+.beads/proxieddb/

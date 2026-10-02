@@ -127,4 +127,28 @@ describe("Express server — WhatsApp webhook mounting", () => {
     const unknownRes = await fetch(`http://127.0.0.1:${port}/unknown`);
     expect(unknownRes.status).toBe(404);
   });
+
+  it("should accept a correctly signed webhook whose JSON is not spelled as JSON.stringify would", async () => {
+    const { createHmac } = await import("node:crypto");
+    const { createWhatsAppWebhookRouter } = await import("../../../src/platforms/whatsapp/webhook.js");
+    const secret = "app-secret";
+    const handler = { handleMessage: vi.fn().mockResolvedValue(undefined) };
+    const adapter = {
+      getWebhookRouter: () => createWhatsAppWebhookRouter(handler, "verify-token", secret),
+    } as unknown as WhatsAppAdapter;
+    const port = await startServer(adapter);
+
+    // Meta escapes slashes and non-ASCII: the signature is over these bytes, not over a re-serialisation.
+    const raw = '{"object":"whatsapp_business_account","entry":[{"id":"1","changes":[{"field":"messages","value":{"messaging_product":"whatsapp","metadata":{"display_phone_number":"1","phone_number_id":"2"},"messages":[{"from":"15551234567","id":"wamid.1","timestamp":"1","type":"text","text":{"body":"caf\\u00e9 at 1\\/2 price?"}}]}}]}]}';
+    const signature = `sha256=${createHmac("sha256", secret).update(raw).digest("hex")}`;
+
+    const res = await fetch(`http://127.0.0.1:${port}/webhook/whatsapp`, {
+      method: "POST",
+      headers: { "content-type": "application/json", "x-hub-signature-256": signature },
+      body: raw,
+    });
+
+    expect(res.status).toBe(200);
+    expect(handler.handleMessage).toHaveBeenCalledOnce();
+  });
 });

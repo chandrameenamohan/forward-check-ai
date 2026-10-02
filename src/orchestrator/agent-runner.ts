@@ -145,46 +145,46 @@ async function runAgentLoop(config: AgentConfig): Promise<AgentResult> {
       content: response.content as unknown as ContentBlockParam[],
     });
 
-    // Execute each tool call and collect results
-    const toolResults: ContentBlockParam[] = [];
+    // Execute the turn's tool calls in parallel and collect results in order
+    const toolResults: ContentBlockParam[] = await Promise.all(
+      toolUseBlocks.map(async (block) => {
+        if (block.type !== "tool_use") throw new Error("unreachable");
 
-    for (const block of toolUseBlocks) {
-      if (block.type !== "tool_use") continue;
+        let resultContent: string;
+        let isError = false;
 
-      let resultContent: string;
-      let isError = false;
-
-      try {
-        if (onToolCall) {
-          resultContent = await onToolCall(block.name, block.input);
-        } else {
-          resultContent = `Error: No tool handler registered for "${block.name}"`;
+        try {
+          if (onToolCall) {
+            resultContent = await onToolCall(block.name, block.input);
+          } else {
+            resultContent = `Error: No tool handler registered for "${block.name}"`;
+            isError = true;
+          }
+        } catch (err) {
+          const errorMessage =
+            err instanceof Error ? err.message : String(err);
+          resultContent = `Error executing tool "${block.name}": ${errorMessage}`;
           isError = true;
+          logger.warn(
+            { tool: block.name, error: errorMessage },
+            "Tool execution failed",
+          );
         }
-      } catch (err) {
-        const errorMessage =
-          err instanceof Error ? err.message : String(err);
-        resultContent = `Error executing tool "${block.name}": ${errorMessage}`;
-        isError = true;
-        logger.warn(
-          { tool: block.name, error: errorMessage },
-          "Tool execution failed",
-        );
-      }
 
-      allToolCalls.push({
-        name: block.name,
-        input: block.input,
-        result: resultContent,
-      });
+        allToolCalls.push({
+          name: block.name,
+          input: block.input,
+          result: resultContent,
+        });
 
-      toolResults.push({
-        type: "tool_result",
-        tool_use_id: block.id,
-        content: resultContent,
-        is_error: isError,
-      } as ContentBlockParam);
-    }
+        return {
+          type: "tool_result",
+          tool_use_id: block.id,
+          content: resultContent,
+          is_error: isError,
+        } as ContentBlockParam;
+      }),
+    );
 
     // Push tool results as a user message
     messages.push({

@@ -15,6 +15,7 @@ import type { InvestigationPipeline } from "../orchestrator/pipeline.js";
 import type { FeedbackRepository } from "../db/feedback-repository.js";
 import type { GitHubIssueService } from "../services/github-issues.js";
 import { createRateLimiter } from "./middleware/rate-limit.js";
+import { judgeModel, modelLabel } from "../services/claude-client.js";
 import type { WhatsAppAdapter } from "../platforms/whatsapp/adapter.js";
 
 const logger = createLogger({ level: "info" });
@@ -34,11 +35,19 @@ export function createApp(repo?: InvestigationRepository, eventBus?: PipelineEve
   const app = express();
 
   // JSON body parsing
-  app.use(express.json());
+  // The raw bytes are kept: a webhook's signature is over what was sent, not over a re-serialisation of it.
+  app.use(express.json({
+    verify: (req, _res, buf) => {
+      (req as unknown as Record<string, unknown>)["rawBody"] = buf.toString("utf8");
+    },
+  }));
 
   // EJS view engine
   app.set("view engine", "ejs");
   app.set("views", join(__dirname, "views"));
+
+  // The Judge's badge on every page names the model it really runs on.
+  app.locals["judgeModelLabel"] = modelLabel(judgeModel());
 
   // Serve static files from /public directory under /static path
   app.use("/static", express.static(join(__dirname, "..", "..", "public")));

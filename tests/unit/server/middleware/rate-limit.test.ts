@@ -62,7 +62,8 @@ describe("Rate limiting middleware", () => {
   });
 
   it("should reset count after window expires", async () => {
-    vi.useFakeTimers();
+    // Only the clock is faked: the limiter reads Date.now(), and fetch needs real timers to run.
+    vi.useFakeTimers({ toFake: ["Date"] });
 
     const app = createTestApp(2, 1_000); // 1 second window
     const port = await startServer(app);

@@ -1,6 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import type { MessageCreateParamsNonStreaming, Message } from "@anthropic-ai/sdk/resources/messages/messages.js";
 import { createLogger } from "../config/logger.js";
+import { sdkCreateMessage } from "./agent-sdk.js";
 
 const logger = createLogger({ level: "info" });
 
@@ -10,6 +11,23 @@ export const MODELS = {
   SONNET: "claude-sonnet-4-5-20250929",
   OPUS: "claude-opus-4-6",
 } as const;
+
+/**
+ * The Judge's model: the final verdict is the one step where a stronger model pays.
+ * Read at call time, so a JUDGE_MODEL set in .env is seen (the .env is loaded after this module).
+ */
+export const judgeModel = (): string => process.env["JUDGE_MODEL"] || "claude-fable-5-1";
+
+/**
+ * A model's name for a badge. Only Fable keeps its version: on a Claude Code login the other
+ * pinned IDs run as their family's current model, so their version is not known here.
+ */
+export function modelLabel(model: string): string {
+  const match = /(fable|opus|sonnet|haiku)(?:-(\d+)-(\d+))?/.exec(model);
+  if (!match) return model;
+  const name = match[1]!.charAt(0).toUpperCase() + match[1]!.slice(1);
+  return match[1] === "fable" && match[2] ? `${name} ${match[2]}.${match[3]}` : name;
+}
 
 export type ModelId = (typeof MODELS)[keyof typeof MODELS];
 
@@ -32,9 +50,12 @@ export interface CreateMessageResult {
  */
 export class ClaudeClient {
   private readonly client: Anthropic;
+  private readonly apiKey: string | undefined;
 
-  constructor(apiKey: string) {
-    this.client = new Anthropic({ apiKey });
+  /** Without an API key, calls go through the Claude Agent SDK (local Claude Code login). */
+  constructor(apiKey?: string) {
+    this.apiKey = apiKey;
+    this.client = new Anthropic({ apiKey: apiKey || "unused" });
   }
 
   /** Expose client for internal mocking in tests */
@@ -50,6 +71,21 @@ export class ClaudeClient {
   async createMessage(
     params: MessageCreateParamsNonStreaming,
   ): Promise<CreateMessageResult> {
+    if (!this.apiKey) {
+      const result = await sdkCreateMessage(params);
+      logger.info(
+        {
+          model: params.model,
+          inputTokens: result.response.usage.input_tokens,
+          outputTokens: result.response.usage.output_tokens,
+          costUsd: result.costUsd.toFixed(6),
+          stopReason: result.response.stop_reason,
+        },
+        "Claude Agent SDK call completed",
+      );
+      return result;
+    }
+
     const effectiveParams =
       params.temperature !== undefined || params.thinking
         ? params

@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+cd /app && exec node --import tsx/esm /app/deploy/antithesis/driver/main.ts parallel_driver_partial_failure

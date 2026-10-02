@@ -55,10 +55,16 @@ describe("enforceConfidenceGates", () => {
     expect(result.category).toBe("unverified");
   });
 
-  it("should override likely-true to likely-false when confidence is 20", () => {
+  it("should override likely-true to unverified when confidence is 20", () => {
     const verdict = makeVerdict({ category: "likely-true", confidence: 20 });
     const result = enforceConfidenceGates(verdict);
-    expect(result.category).toBe("likely-false");
+    expect(result.category).toBe("unverified");
+  });
+
+  it("should never turn the Judge's likely-false into likely-true, however high the score", () => {
+    const verdict = makeVerdict({ category: "likely-false", confidence: 97 });
+    const result = enforceConfidenceGates(verdict);
+    expect(result.category).toBe("unverified");
   });
 
   it("should override partially-true to likely-true when confidence is 90", () => {

@@ -25,14 +25,21 @@ export interface WhatsAppReplyButton {
 export class WhatsAppCloudClient {
   private readonly baseUrl: string;
   private readonly accessToken: string;
+  private readonly retryDelaysMs: readonly number[];
 
+  /**
+   * @param retryDelaysMs - Waits before each retry of a send that failed for a passing reason
+   *   (network error, 429, 5xx). Empty = no retry.
+   */
   constructor(
     phoneNumberId: string,
     accessToken: string,
     apiVersion: string = "v21.0",
+    retryDelaysMs: readonly number[] = [1000, 3000, 9000],
   ) {
     this.baseUrl = `https://graph.facebook.com/${apiVersion}/${phoneNumberId}/messages`;
     this.accessToken = accessToken;
+    this.retryDelaysMs = retryDelaysMs;
   }
 
   /**
@@ -118,6 +125,15 @@ export class WhatsAppCloudClient {
    * Handles both HTTP and network errors gracefully.
    */
   private async post(body: Record<string, unknown>): Promise<WhatsAppSendResult> {
+    for (const delayMs of this.retryDelaysMs) {
+      const { result, retryable } = await this.postOnce(body);
+      if (!retryable) return result;
+      await new Promise((resolve) => setTimeout(resolve, delayMs));
+    }
+    return (await this.postOnce(body)).result;
+  }
+
+  private async postOnce(body: Record<string, unknown>): Promise<{ result: WhatsAppSendResult; retryable: boolean }> {
     try {
       const response = await fetch(this.baseUrl, {
         method: "POST",
@@ -134,17 +150,17 @@ export class WhatsAppCloudClient {
           { status: response.status, error: errorData },
           "WhatsAppCloudClient: API error",
         );
-        return { messageId: "", success: false };
+        return { result: { messageId: "", success: false }, retryable: response.status === 429 || response.status >= 500 };
       }
 
       const data = await response.json() as Record<string, unknown>;
       const messages = data["messages"] as Array<{ id: string }> | undefined;
       const messageId = messages?.[0]?.id ?? "";
 
-      return { messageId, success: true };
+      return { result: { messageId, success: true }, retryable: false };
     } catch (err: unknown) {
       logger.error({ err }, "WhatsAppCloudClient: network error");
-      return { messageId: "", success: false };
+      return { result: { messageId: "", success: false }, retryable: true };
     }
   }
 }

@@ -1,0 +1,35 @@
+# ForwardCheck on this machine. Secrets come from .env (never baked into the image).
+#   docker compose up -d --build     start / update
+#   docker compose logs -f app       watch
+#   docker compose down              stop (the database volume is kept)
+services:
+  app:
+    build: .
+    env_file: .env
+    environment:
+      # The container's own settings win over .env's local-dev values.
+      PORT: "3000"
+      DATABASE_PATH: /data/forwardcheck.db
+      NODE_ENV: production
+      # The address in the links the bot sends. scripts/tunnel-up.sh sets it to the tunnel's address.
+      BASE_URL: ${BASE_URL:-http://localhost:3100}
+    ports:
+      # Loopback only: ngrok is the way in from outside.
+      - "127.0.0.1:3100:3000"
+    volumes:
+      - forwardcheck-data:/data
+    restart: unless-stopped
+
+  # A Cloudflare quick tunnel: a public https address for the app, no account needed.
+  # The address is new each time this container starts; scripts/tunnel-up.sh asks the tunnel for it.
+  # No depends_on: recreating the app must not restart the tunnel, or the address changes under it.
+  tunnel:
+    image: cloudflare/cloudflared:latest
+    command: tunnel --no-autoupdate --metrics 0.0.0.0:2000 --url http://app:3000
+    ports:
+      # Where the tunnel reports its own address (loopback only).
+      - "127.0.0.1:20241:2000"
+    restart: unless-stopped
+
+volumes:
+  forwardcheck-data:

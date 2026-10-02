@@ -214,7 +214,7 @@ describe("WhatsAppCloudClient", () => {
     const { WhatsAppCloudClient } = await import(
       "../../../../src/platforms/whatsapp/client.js"
     );
-    const client = new WhatsAppCloudClient(PHONE_NUMBER_ID, ACCESS_TOKEN);
+    const client = new WhatsAppCloudClient(PHONE_NUMBER_ID, ACCESS_TOKEN, "v21.0", []);
 
     // All methods should return { success: false } instead of throwing
     const textResult = await client.sendTextMessage(RECIPIENT, "test");
@@ -248,11 +248,40 @@ describe("WhatsAppCloudClient", () => {
     const { WhatsAppCloudClient } = await import(
       "../../../../src/platforms/whatsapp/client.js"
     );
-    const client = new WhatsAppCloudClient(PHONE_NUMBER_ID, ACCESS_TOKEN);
+    const client = new WhatsAppCloudClient(PHONE_NUMBER_ID, ACCESS_TOKEN, "v21.0", []);
 
     const result = await client.sendTextMessage(RECIPIENT, "test");
     expect(result.success).toBe(false);
     expect(result.messageId).toBe("");
+  });
+
+  it("should retry a send that failed for a passing reason and deliver it once the API is back", async () => {
+    fetchSpy.mockRejectedValueOnce(new Error("Network error"));
+    mockFetchError(503);
+    const { WhatsAppCloudClient } = await import(
+      "../../../../src/platforms/whatsapp/client.js"
+    );
+    const client = new WhatsAppCloudClient(PHONE_NUMBER_ID, ACCESS_TOKEN, "v21.0", [0, 0, 0]);
+    fetchSpy.mockRejectedValueOnce(new Error("Network error"));
+    mockFetchSuccess();
+
+    const result = await client.sendTextMessage(RECIPIENT, "test");
+
+    expect(result.success).toBe(true);
+  });
+
+  it("should not retry a send the API refused for good (4xx)", async () => {
+    mockFetchError(400);
+    const { WhatsAppCloudClient } = await import(
+      "../../../../src/platforms/whatsapp/client.js"
+    );
+    const client = new WhatsAppCloudClient(PHONE_NUMBER_ID, ACCESS_TOKEN, "v21.0", [0, 0, 0]);
+    const before = fetchSpy.mock.calls.length;
+
+    const result = await client.sendTextMessage(RECIPIENT, "test");
+
+    expect(result.success).toBe(false);
+    expect(fetchSpy.mock.calls.length - before).toBe(1);
   });
 
   it("should use custom API version when provided", async () => {

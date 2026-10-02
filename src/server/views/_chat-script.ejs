@@ -215,11 +215,13 @@
       // ── Polling fallback for browsers without EventSource ──
 
       var POLL_INTERVAL_MS = 3000;
-      var POLL_TIMEOUT = 180 * 1000; // 3 minutes
+      var POLL_TIMEOUT = 600 * 1000; // 10 minutes: a hard claim takes five or six
       var pollTimer = null;
       var pollStartTime = null;
 
+<%- include('_poll-replay') %>
       function pollInvestigation() {
+        replayed = {};
         showPipelineStatus('Real-time updates unavailable. Checking for updates every few seconds.', 'warning');
         pollStartTime = Date.now();
 
@@ -242,6 +244,7 @@
             })
             .then(function(data) {
               if (!data) return;
+              replayRow(data);
 
               if (data.status === 'completed' || data.status === 'completed_non_factual') {
                 clearInterval(pollTimer);
@@ -264,9 +267,11 @@
                     ? JSON.parse(data.classifier_result) : data.classifier_result;
                   showNonFactualResponse(classResult.category || 'other');
                 }
-              } else if (data.status === 'investigating') {
-                // Update progress bar to show something is happening
-                setSegmentComplete('classify');
+              } else if (data.status === 'failed') {
+                clearInterval(pollTimer);
+                pollTimer = null;
+                clearInterval(elapsedTimer);
+                showPipelineStatus('Something broke and this investigation did not finish. Please try again.', 'error');
               }
             })
             .catch(function() {
@@ -289,8 +294,22 @@
         startPipelineTimeout();
         evtSource = new EventSource(streamUrl);
 
+        // A proxy that buffers the stream (a Cloudflare quick tunnel does) delivers no event at all,
+        // not even the history the server sends at once. After 8 seconds of nothing, poll instead.
+        var source = evtSource;
+        var streamAlive = false;
+        setTimeout(function() {
+          if (streamAlive || evtSource !== source) return;
+          source.close();
+          evtSource = null;
+          clearPipelineTimeout();
+          hideSpinner();
+          pollInvestigation();
+        }, 8000);
+
         // ── Pipeline lifecycle ──
         evtSource.addEventListener('pipeline:start', function(e) {
+          streamAlive = true;
           hideSpinner();
           resetPipelineTimeout();
         });

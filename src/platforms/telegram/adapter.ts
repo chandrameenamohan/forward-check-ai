@@ -13,7 +13,8 @@ const logger = createLogger({ level: "info" });
 const FEEDBACK_MIN_LENGTH = 10;
 
 /** Maximum time (ms) to wait for the pipeline before timing out. */
-const PIPELINE_TIMEOUT_MS = 300_000;
+// A hard claim takes five or six minutes; this only has to end one that is truly stuck.
+const PIPELINE_TIMEOUT_MS = 900_000;
 
 function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
   return new Promise<T>((resolve, reject) => {
@@ -125,6 +126,7 @@ export class TelegramAdapter implements PlatformAdapter {
   readonly platform = "telegram";
 
   private readonly token: string;
+  private readonly allowedUsers: ReadonlySet<string>;
   private readonly pipeline: InvestigationPipeline;
   private readonly baseUrl: string;
   private readonly repo: InvestigationRepository;
@@ -140,7 +142,10 @@ export class TelegramAdapter implements PlatformAdapter {
     repo: InvestigationRepository,
     feedbackRepo?: FeedbackRepository,
     githubService?: GitHubIssueService,
+    /** Telegram user IDs or usernames allowed to use the bot. Empty or absent = anyone. */
+    allowedUsers: readonly string[] = [],
   ) {
+    this.allowedUsers = new Set(allowedUsers.map((entry) => entry.trim().replace(/^@/, "").toLowerCase()).filter(Boolean));
     this.token = token;
     this.pipeline = pipeline;
     this.baseUrl = baseUrl;
@@ -164,6 +169,11 @@ export class TelegramAdapter implements PlatformAdapter {
   /** Get the bot username (available after start()). */
   getBotUsername(): string | undefined {
     return this.bot.botInfo?.username;
+  }
+
+  /** Send a plain message outside any investigation (e.g. an apology after a restart). */
+  async notify(chatId: string, text: string): Promise<void> {
+    await new TelegramResponder(this.bot.api).sendText(chatId, text);
   }
 
   async start(): Promise<void> {
@@ -225,6 +235,23 @@ export class TelegramAdapter implements PlatformAdapter {
    * Registers all Grammy handlers: /start, /bug, /feedback, and message:text.
    */
   private registerHandlers(): void {
+    // A private bot: every investigation spends the owner's model usage, so strangers are turned away
+    // before any handler runs. They are told their ID, which is what the owner needs to let them in.
+    if (this.allowedUsers.size > 0) {
+      this.bot.use(async (ctx, next) => {
+        const id = String(ctx.from?.id ?? "");
+        const username = (ctx.from?.username ?? "").toLowerCase();
+        if (this.allowedUsers.has(id) || (username !== "" && this.allowedUsers.has(username))) {
+          await next();
+          return;
+        }
+        logger.warn({ userId: id, username }, "Telegram message from a user who is not allowed");
+        if (ctx.chat) {
+          await ctx.api.sendMessage(ctx.chat.id, `This bot is private. To ask for access, send its owner your Telegram ID: ${id}`);
+        }
+      });
+    }
+
     // /start command
     this.bot.command("start", async (ctx) => {
       await ctx.api.sendMessage(

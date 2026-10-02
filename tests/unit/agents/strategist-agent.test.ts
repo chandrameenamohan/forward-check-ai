@@ -136,6 +136,9 @@ describe("runStrategist", () => {
     // Verify Opus model was used
     expect(mockCreate).toHaveBeenCalledTimes(1);
     const callArgs = mockCreate.mock.calls[0]![0] as Record<string, unknown>;
+    // The model must never be asked to hand over its reasoning: a field or sentence that does is
+    // refused by the API as reasoning extraction.
+    expect(JSON.stringify([callArgs["system"], callArgs["tools"]])).not.toMatch(/thinking/i);
     expect(callArgs["model"]).toBe(MODELS.OPUS);
   });
 

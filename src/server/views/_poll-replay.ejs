@@ -1,0 +1,45 @@
+      // ── Agent cards from polling ──
+      // When the event stream is not getting through, the cards are driven from the investigation's row instead:
+      // each stage's result is saved as it finishes. Only the live "searching for..." lines are lost.
+      var replayed = {};
+
+      function replayRow(row) {
+        var parse = function(value) { return typeof value === 'string' ? JSON.parse(value) : value; };
+        var once = function(key, fn) { if (!replayed[key]) { replayed[key] = true; fn(); } };
+        var classifier = parse(row.classifier_result);
+        var strategy = parse(row.search_strategy);
+        var reports = parse(row.agent_reports);
+        var challenge = parse(row.challenge_report);
+        var verdict = parse(row.final_verdict);
+
+        once('classifier:start', function() { updateClassifier('start', {}); });
+        if (classifier) once('classifier', function() {
+          updateClassifier('complete', { result: classifier, costUsd: 0 });
+          if (classifier.category === 'factual_claim') updateStrategist('start', { claim: classifier.extractedClaim });
+        });
+        if (strategy) once('strategy', function() {
+          updateStrategist('complete', { strategy: strategy, thinkingExcerpt: strategy.thinkingExcerpt, costUsd: 0 });
+          updateInvestigators('start', {});
+        });
+        if (reports) once('reports', function() {
+          var scores = reports.map(function(report) { return report.confidenceScore; });
+          var spread = Math.max.apply(null, scores) - Math.min.apply(null, scores);
+          reports.forEach(function(report) { updateInvestigators('complete', { role: report.agentRole, report: report, costUsd: 0 }); });
+          // An investigator with no report by now failed: its card must not go on saying it is searching.
+          Object.keys(invRoleMap).forEach(function(role) {
+            if (reports.some(function(report) { return report.agentRole === role; })) return;
+            setCardState('fc-card-inv-' + invRoleMap[role], 'failed');
+            var status = document.getElementById('fc-inv-' + invRoleMap[role] + '-status');
+            if (status) status.textContent = 'This investigator could not finish';
+          });
+          if (spread > 30) updateInvestigators('disagreement', { spread: spread, confidenceScores: scores });
+          updateDA('start', { effortLevel: spread > 30 ? 'max' : 'high' });
+        });
+        if (challenge) once('challenge', function() {
+          updateDA('complete', { report: challenge, thinkingExcerpt: challenge.thinkingExcerpt, costUsd: 0 });
+          updateJudge('start', {});
+        });
+        if (verdict) once('verdict', function() {
+          updateJudge('complete', { verdict: verdict, thinkingExcerpt: verdict.thinkingSummary, costUsd: 0 });
+        });
+      }

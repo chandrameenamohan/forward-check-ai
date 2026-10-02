@@ -95,10 +95,10 @@ describe("Confidence gate boundary regression tests", () => {
       expect(result.category).toBe("unverified");
     });
 
-    it("should correct likely-false with confidence 90 to likely-true", () => {
+    it("should correct likely-false with confidence 90 to unverified, never to the opposite pole", () => {
       const verdict = makeFinalVerdict({ category: "likely-false", confidence: 90 });
       const result = enforceConfidenceGates(verdict);
-      expect(result.category).toBe("likely-true");
+      expect(result.category).toBe("unverified");
     });
 
     it("should correct partially-true with confidence 25 to likely-false", () => {
@@ -119,10 +119,10 @@ describe("Confidence gate boundary regression tests", () => {
       expect(result.category).toBe("partially-true");
     });
 
-    it("should correct likely-true with confidence 15 to likely-false", () => {
+    it("should correct likely-true with confidence 15 to unverified, never to the opposite pole", () => {
       const verdict = makeFinalVerdict({ category: "likely-true", confidence: 15 });
       const result = enforceConfidenceGates(verdict);
-      expect(result.category).toBe("likely-false");
+      expect(result.category).toBe("unverified");
     });
   });
 });

@@ -114,7 +114,11 @@ const telegramAdapter = new TelegramAdapter(
   repo,
   feedbackRepo,
   githubService,
+  config.TELEGRAM_ALLOWED_USERS.split(","),
 );
+if (config.TELEGRAM_ALLOWED_USERS.trim() === "") {
+  logger.warn("TELEGRAM_ALLOWED_USERS not set — anyone who finds the bot can use it");
+}
 
 // 12. Conditionally create WhatsApp adapter
 let whatsAppAdapter: WhatsAppAdapter | undefined;
@@ -136,6 +140,21 @@ if (
   logger.warn(
     "WHATSAPP_ENABLED is true but required credentials are missing (WHATSAPP_PHONE_NUMBER_ID, WHATSAPP_ACCESS_TOKEN, WHATSAPP_VERIFY_TOKEN). WhatsApp adapter not started.",
   );
+}
+
+// 12b. Nothing is running yet: whatever a previous process left pending or investigating will never finish.
+// Say so in the database, and tell the people who were waiting.
+const interrupted = repo.failInterrupted();
+if (interrupted.length > 0) {
+  logger.warn({ count: interrupted.length }, "Marked investigations interrupted by a restart as failed");
+  const apology = "Sorry, your investigation was interrupted by a restart on our side. Please send the claim again.";
+  for (const { platform, chatId } of interrupted) {
+    if (!chatId) continue;
+    const adapter = platform === "whatsapp" ? whatsAppAdapter : platform === "telegram" ? telegramAdapter : undefined;
+    adapter?.notify(chatId, apology).catch((err: unknown) => {
+      logger.error({ err, platform }, "Failed to tell a user their investigation was interrupted");
+    });
+  }
 }
 
 // 13. Create Express app with routes (with event bus for SSE endpoint)
