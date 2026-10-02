@@ -126,6 +126,7 @@ export class TelegramAdapter implements PlatformAdapter {
   readonly platform = "telegram";
 
   private readonly token: string;
+  private readonly allowedUsers: ReadonlySet<string>;
   private readonly pipeline: InvestigationPipeline;
   private readonly baseUrl: string;
   private readonly repo: InvestigationRepository;
@@ -141,7 +142,10 @@ export class TelegramAdapter implements PlatformAdapter {
     repo: InvestigationRepository,
     feedbackRepo?: FeedbackRepository,
     githubService?: GitHubIssueService,
+    /** Telegram user IDs or usernames allowed to use the bot. Empty or absent = anyone. */
+    allowedUsers: readonly string[] = [],
   ) {
+    this.allowedUsers = new Set(allowedUsers.map((entry) => entry.trim().replace(/^@/, "").toLowerCase()).filter(Boolean));
     this.token = token;
     this.pipeline = pipeline;
     this.baseUrl = baseUrl;
@@ -231,6 +235,23 @@ export class TelegramAdapter implements PlatformAdapter {
    * Registers all Grammy handlers: /start, /bug, /feedback, and message:text.
    */
   private registerHandlers(): void {
+    // A private bot: every investigation spends the owner's model usage, so strangers are turned away
+    // before any handler runs. They are told their ID, which is what the owner needs to let them in.
+    if (this.allowedUsers.size > 0) {
+      this.bot.use(async (ctx, next) => {
+        const id = String(ctx.from?.id ?? "");
+        const username = (ctx.from?.username ?? "").toLowerCase();
+        if (this.allowedUsers.has(id) || (username !== "" && this.allowedUsers.has(username))) {
+          await next();
+          return;
+        }
+        logger.warn({ userId: id, username }, "Telegram message from a user who is not allowed");
+        if (ctx.chat) {
+          await ctx.api.sendMessage(ctx.chat.id, `This bot is private. To ask for access, send its owner your Telegram ID: ${id}`);
+        }
+      });
+    }
+
     // /start command
     this.bot.command("start", async (ctx) => {
       await ctx.api.sendMessage(

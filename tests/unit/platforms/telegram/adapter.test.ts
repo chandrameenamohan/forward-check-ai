@@ -369,4 +369,47 @@ describe("TelegramAdapter", () => {
     );
     expect(shortBugMsg).toBeDefined();
   });
+
+  describe("private bot (allowed users)", () => {
+    async function send(allowed: string[], from: Record<string, unknown>) {
+      const { TelegramAdapter } = await import("../../../../src/platforms/telegram/adapter.js");
+      const pipeline = {
+        investigate: vi.fn().mockResolvedValue({
+          verdict: null, investigationId: "inv-1", nonFactualResponse: "Hello", totalCostUsd: 0, durationMs: 0,
+        } satisfies InvestigateResult),
+      } as unknown as InvestigationPipeline;
+      const adapter = new TelegramAdapter(FAKE_TOKEN, pipeline, BASE_URL, fakeRepo, undefined, undefined, allowed);
+      const bot = adapter.getBot();
+      bot.botInfo = fakeBotInfo;
+      const sent: string[] = [];
+      bot.api.config.use((_prev, method, payload) => {
+        const p = payload as Record<string, unknown>;
+        if (method === "sendMessage") sent.push(String(p["text"]));
+        return { ok: true, result: { message_id: 1, date: 0, chat: { id: p["chat_id"], type: "private" }, text: p["text"] } } as never;
+      });
+      await bot.handleUpdate(makeMessageUpdate({ text: "The moon is made of cheese, is it?", from: { id: 100, is_bot: false, first_name: "Test", ...from } }));
+      return { pipeline, sent };
+    }
+
+    it("should turn away a user who is not allowed, tell them their ID, and investigate nothing", async () => {
+      const { pipeline, sent } = await send(["555"], { id: 100 });
+      expect(pipeline.investigate).not.toHaveBeenCalled();
+      expect(sent).toEqual(["This bot is private. To ask for access, send its owner your Telegram ID: 100"]);
+    });
+
+    it("should serve a user allowed by ID", async () => {
+      const { pipeline } = await send(["555", " 100 "], { id: 100 });
+      expect(pipeline.investigate).toHaveBeenCalledOnce();
+    });
+
+    it("should serve a user allowed by username, whatever its case or @", async () => {
+      const { pipeline } = await send(["@SomeFriend"], { id: 100, username: "somefriend" });
+      expect(pipeline.investigate).toHaveBeenCalledOnce();
+    });
+
+    it("should serve anyone when no one is listed", async () => {
+      const { pipeline } = await send([""], { id: 100 });
+      expect(pipeline.investigate).toHaveBeenCalledOnce();
+    });
+  });
 });

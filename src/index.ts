@@ -114,7 +114,11 @@ const telegramAdapter = new TelegramAdapter(
   repo,
   feedbackRepo,
   githubService,
+  config.TELEGRAM_ALLOWED_USERS.split(","),
 );
+if (config.TELEGRAM_ALLOWED_USERS.trim() === "") {
+  logger.warn("TELEGRAM_ALLOWED_USERS not set — anyone who finds the bot can use it");
+}
 
 // 12. Conditionally create WhatsApp adapter
 let whatsAppAdapter: WhatsAppAdapter | undefined;
