@@ -215,7 +215,7 @@ describe("Chat page — GET /chat", () => {
     expect(html).toContain("fc-model-badge--opus");
     expect(html).toContain("Haiku");
     expect(html).toContain("Sonnet");
-    expect(html).toContain("Opus 4.6");
+    expect(html).toContain("Fable 5.1");
   });
 
   // ── Task 3.3: Real-time agent cards — show findings as investigators complete ──
@@ -452,6 +452,18 @@ describe("Chat page — GET /chat", () => {
     expect(html).toContain("3000");
     // Polling timeout should be 3 minutes
     expect(html).toContain("POLL_TIMEOUT");
+  });
+
+  it("GET /chat should fall back to polling when the stream delivers no event (a buffering proxy)", async () => {
+    const port = await startServer();
+    const res = await fetch(`http://127.0.0.1:${port}/chat`);
+    const html = await res.text();
+    expect(html).toContain("streamAlive");
+    // The agent cards are driven from the polled row, not left idle.
+    expect(html).toContain("function replayRow");
+    expect(html).toContain("replayRow(data)");
+    // A failed investigation must end the polling too, not run it to the timeout.
+    expect(html).toContain("data.status === 'failed'");
   });
 
   // ── Task 6.1: Mobile layout (375px) — sticky input, vertical timeline ──

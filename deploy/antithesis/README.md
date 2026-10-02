@@ -42,7 +42,7 @@ deploy/antithesis/run.sh no-internet
 deploy/antithesis/run.sh down
 ```
 
-`model-frozen` needs `SETTLE_MS=330000`: a claim may take that long to give up on a model that stopped answering.
+`model-frozen` needs `SETTLE_MS=930000`: a claim may take that long to give up on a model that stopped answering.
 
 A run is a PASS only when every evaluated property holds, every command finished, and the app container is
 running. State of a run is in `.run/` (git-ignored): the SDK's output, the ledger, the cues, the stub's log.

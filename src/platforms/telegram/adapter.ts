@@ -13,7 +13,8 @@ const logger = createLogger({ level: "info" });
 const FEEDBACK_MIN_LENGTH = 10;
 
 /** Maximum time (ms) to wait for the pipeline before timing out. */
-const PIPELINE_TIMEOUT_MS = 300_000;
+// A hard claim takes five or six minutes; this only has to end one that is truly stuck.
+const PIPELINE_TIMEOUT_MS = 900_000;
 
 function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
   return new Promise<T>((resolve, reject) => {

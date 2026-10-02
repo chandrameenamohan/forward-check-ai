@@ -46,7 +46,7 @@ export interface EvalHarnessConfig {
   timeoutMs?: number;
 }
 
-const DEFAULT_TIMEOUT_MS = 300_000;
+const DEFAULT_TIMEOUT_MS = 900_000; // the eval scores verdicts: a slow claim is not a wrong one
 
 // ── EvalHarness class ───────────────────────────────────────────
 

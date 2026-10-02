@@ -13,7 +13,7 @@ evidence: tests/unit/db/investigation-repository.test.ts (failInterrupted), test
 
 ## Property
 
-Every chat claim answered 201 and every signed WhatsApp text answered 200 has a row, and every such row reaches a terminal status within SETTLE_MS (45 s; 330 s for a frozen model) of the faults stopping.
+Every chat claim answered 201 and every signed WhatsApp text answered 200 has a row, and every such row reaches a terminal status within SETTLE_MS (45 s; 930 s for a frozen model) of the faults stopping.
 
 ## Assertion
 

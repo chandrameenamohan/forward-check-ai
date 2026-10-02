@@ -7,7 +7,8 @@ import { createLogger } from "../config/logger.js";
 const logger = createLogger({ level: "info" });
 
 /** Maximum time (ms) to wait for the pipeline before timing out. */
-const PIPELINE_TIMEOUT_MS = 300_000;
+// A hard claim takes five or six minutes; this only has to end one that is truly stuck.
+const PIPELINE_TIMEOUT_MS = 900_000;
 
 export interface MessageRouter {
   route(message: PlatformMessage, responder: PlatformResponder): Promise<void>;

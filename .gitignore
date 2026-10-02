@@ -14,3 +14,7 @@ eval/results/
 
 # Antithesis harness run state
 deploy/antithesis/.run/
+.gstack/
+
+# Browser automation scratch files
+.playwright-mcp/

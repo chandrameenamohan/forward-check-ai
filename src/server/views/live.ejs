@@ -178,7 +178,35 @@
 
       // ── Pipeline lifecycle events ──
 
+<%- include('_poll-replay') %>
+      // A proxy that buffers the stream (a Cloudflare quick tunnel does) delivers no event at all.
+      // After 8 seconds of nothing, ask for the status every few seconds and go to the verdict when it is in.
+      var streamAlive = false;
+      setTimeout(function() {
+        if (streamAlive) return;
+        evtSource.close();
+        hideSpinner();
+        showStatus('Live updates are not getting through. Checking for your verdict every few seconds...', 'warning');
+        var poll = setInterval(function() {
+          fetch('/api/investigation/' + investigationId)
+            .then(function(res) { return res.ok ? res.json() : null; })
+            .then(function(data) {
+              if (!data) return;
+              replayRow(data);
+              if (data.status === 'completed' || data.status === 'completed_non_factual') {
+                clearInterval(poll);
+                window.location.href = '/v/' + investigationId;
+              } else if (data.status === 'failed') {
+                clearInterval(poll);
+                showStatus('Something broke and this investigation did not finish. Please try again.', 'error');
+              }
+            })
+            .catch(function() { /* try again on the next tick */ });
+        }, 3000);
+      }, 8000);
+
       evtSource.addEventListener('pipeline:start', function(e) {
+        streamAlive = true;
         hideSpinner();
       });
 
