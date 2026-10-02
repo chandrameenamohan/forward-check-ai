@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, type Mock } from "vitest";
-import { ClaudeClient, MODELS } from "../../../src/services/claude-client.js";
+import { ClaudeClient, MODELS, judgeModel } from "../../../src/services/claude-client.js";
 import type { Message } from "@anthropic-ai/sdk/resources/messages/messages.js";
 import { FinalVerdictSchema } from "../../../src/schemas/final-verdict.js";
 import { ToolRegistry } from "../../../src/tools/tool-registry.js";
@@ -228,7 +228,11 @@ describe("runJudge", () => {
     // Verify Opus model was used
     expect(mockCreate).toHaveBeenCalled();
     const callArgs = mockCreate.mock.calls[0]![0] as Record<string, unknown>;
-    expect(callArgs["model"]).toBe(MODELS.OPUS);
+    expect(callArgs["model"]).toBe(judgeModel());
+    // The model must never be asked to hand over its reasoning: a field or sentence that does is
+    // refused by the API as reasoning extraction.
+    expect(JSON.stringify([callArgs["system"], callArgs["tools"]])).not.toMatch(/thinking/i);
+    expect(judgeModel()).toBe(process.env["JUDGE_MODEL"] || "claude-fable-5-1");
   });
 
   it("should include confidence decomposition with 4 components", async () => {

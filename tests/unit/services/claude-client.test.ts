@@ -142,3 +142,14 @@ describe("ClaudeClient", () => {
     );
   });
 });
+
+describe("modelLabel", () => {
+  it("should name the Judge's badge after the model it runs on", async () => {
+    const { modelLabel } = await import("../../../src/services/claude-client.js");
+    expect(modelLabel("claude-fable-5-1")).toBe("Fable 5.1");
+    // On a Claude Code login the pinned Opus/Sonnet/Haiku IDs run as the family's current model.
+    expect(modelLabel("claude-opus-4-6")).toBe("Opus");
+    expect(modelLabel("claude-sonnet-4-5-20250929")).toBe("Sonnet");
+    expect(modelLabel("something-else")).toBe("something-else");
+  });
+});

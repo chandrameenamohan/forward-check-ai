@@ -12,6 +12,23 @@ export const MODELS = {
   OPUS: "claude-opus-4-6",
 } as const;
 
+/**
+ * The Judge's model: the final verdict is the one step where a stronger model pays.
+ * Read at call time, so a JUDGE_MODEL set in .env is seen (the .env is loaded after this module).
+ */
+export const judgeModel = (): string => process.env["JUDGE_MODEL"] || "claude-fable-5-1";
+
+/**
+ * A model's name for a badge. Only Fable keeps its version: on a Claude Code login the other
+ * pinned IDs run as their family's current model, so their version is not known here.
+ */
+export function modelLabel(model: string): string {
+  const match = /(fable|opus|sonnet|haiku)(?:-(\d+)-(\d+))?/.exec(model);
+  if (!match) return model;
+  const name = match[1]!.charAt(0).toUpperCase() + match[1]!.slice(1);
+  return match[1] === "fable" && match[2] ? `${name} ${match[2]}.${match[3]}` : name;
+}
+
 export type ModelId = (typeof MODELS)[keyof typeof MODELS];
 
 /** Per-million-token pricing (USD) */
